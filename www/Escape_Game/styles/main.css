@@ -20,39 +20,11 @@ body {
 }
 
 #screen {
+    border: none;
     background-color: #000;
     flex-grow: 1;
     padding: 20px;
     overflow-y: auto;
     border-top: 5px solid #555;
     background-size: cover;
-}
-
-#windowsLogIn {
-    position: relative;
-    top: 20%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#windowsLogIn img {
-    width: 12%;
-    margin-bottom: 1%;
-}
-
-#windowsLogIn p {
-    color: whitesmoke;
-    font-family: "Noto Sans Newa";
-    margin: 1% 0;
-    font-size: 22px;
-    text-shadow: 2px 2px 10px black;
-}
-
-#windowsLogIn input {
-    border: 3px solid grey;
-    background-color: whitesmoke;
-    border-radius: 0px;
-    width: 25%;
-    padding: 0 5px;
 }

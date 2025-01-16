@@ -1,21 +1,52 @@
 class Computer {
     username;
     #screen;
+    #motDePasse;
+    #openLogInHandler;
+
+    // application
+    #explorer;
+    #browser;
+    #terminal;
 
     /**
      * Init l'ordinateur
      * @param {String} idScreen id de l'objet html pour l'écran
+     * @param {String} username Nom d'utilisateur
+     * @param {String} mdp Mot de passe
      */
-    constructor(idScreen, username) {
+    constructor(idScreen, username, mdp) {
         this.#screen = document.getElementById(idScreen);
+        this.#screen.style.border = 'none';
         this.username = username;
+        this.#motDePasse = mdp;
+
+        // Initialisation des applications fictives
+        this.#explorer = document.createElement('div');
+        this.#explorer.className = 'desktop-app';
+
+        this.#browser = document.createElement('div');
+        this.#browser.className = 'desktop-app';
+
+        this.#terminal = document.createElement('div');
+        this.#terminal.className = 'desktop-app';
+
+        // Gestionnaire d'événement lié à l'ouverture du login
+        this.#openLogInHandler = this.#openLogIn.bind(this);
     }
 
     start() {
-        // Démarrage de l'ordi
-        this.#screen.style.backgroundImage = 'url("assets/wallpaper.jpg")';
+        // Fond d'écran
+        this.#screen.style.backgroundImage = 'url("assets/wallpaper_lock.jpg")';
 
         // Afficher la date et l'heure
+        this.addToScreen(this.#createDateTimeContainer());
+
+        // Activer l'interaction
+        this.#screen.addEventListener('click', this.#openLogInHandler);
+    }
+
+    #createDateTimeContainer() {
         const dateTimeCont = document.createElement('div');
         this.addToScreen(dateTimeCont);
         FunctionAsset.applyStyle(dateTimeCont, {
@@ -31,11 +62,8 @@ class Computer {
         // L'heure
         const time = document.createElement('span');
         dateTimeCont.appendChild(time);
-        FunctionAsset.applyStyle(time, {
-            fontSize: '50px',
-        });
+        FunctionAsset.applyStyle(time, { fontSize: '50px' });
 
-        // Toutes les 60 secondes...
         time.innerText = this.#getTime();
         setInterval(() => {
             time.innerText = this.#getTime();
@@ -43,41 +71,72 @@ class Computer {
 
         // La date
         const theDate = document.createElement('span');
-        FunctionAsset.applyStyle(theDate, {
-            fontSize: '25px',
-        });
+        FunctionAsset.applyStyle(theDate, { fontSize: '25px' });
         theDate.innerText = this.#getDate();
         dateTimeCont.appendChild(theDate);
+        return dateTimeCont;
+    }
 
+    async #openLogIn() {
+        // Supprime l'écouteur d'événements pour éviter les clics multiples
+        this.#screen.removeEventListener('click', this.#openLogInHandler);
 
-        // Activer le onclick
-        let open = async () => {
-            this.#screen.removeEventListener('click', open);
-            // Slide du time date
+        // Supprimer la date et l'heure
+        const dateTimeCont = this.#screen.querySelector('div');
+        if (dateTimeCont) {
             dateTimeCont.style.transition = 'all 0.5s';
             dateTimeCont.style.top = '-40%';
             await FunctionAsset.sleep(0.5);
-
-            // Floue dans le background
-            this.#screen.style.transition = 'all 0.5s';
             dateTimeCont.remove();
-
-            // Login
-            const cont = document.createElement('div');
-            cont.id = 'windowsLogIn';
-            FunctionAsset.applyStyle(cont, {
-                position: 'relative',
-                top: '10%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            });
-            cont.innerHTML = `<img src="assets/citeMetierLogo.png">
-            <p>${this.username}</p>
-            <input type="password" name="passwordLogIn" id="passwordLogIn" placeholder="Mot de passe">`;
-            this.addToScreen(cont);
         }
-        this.#screen.addEventListener('click', open);
+
+        // Floue dans le background
+        this.#screen.style.transition = 'all 0.5s';
+        this.#screen.style.backgroundBlendMode = 'luminosity';
+
+        // Afficher l'écran de login
+        this.addToScreen(this.#createLoginContainer());
+    }
+
+    #createLoginContainer() {
+        const cont = document.createElement('div');
+        cont.id = 'windowsLogIn';
+        FunctionAsset.applyStyle(cont, {
+            position: 'relative',
+            top: '10%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+        });
+
+        const img_pop = document.createElement('img');
+        img_pop.src = 'assets/citeMetierLogo.png';
+        cont.appendChild(img_pop);
+
+        const p_username = document.createElement('p');
+        p_username.innerText = this.username;
+        cont.appendChild(p_username);
+
+        const inpt_pswd = document.createElement('input');
+        inpt_pswd.setAttribute('type', 'password');
+        inpt_pswd.name = 'passwordLogIn';
+        inpt_pswd.id = 'passwordLogIn';
+        inpt_pswd.placeholder = 'Mot de passe';
+        cont.appendChild(inpt_pswd);
+        inpt_pswd.focus();
+
+        // Voir le keypress lorsqu'il doit entrer le mot de passe
+        const keyPressHandler = async (event) => {
+            if (event.key !== "Enter") return;
+            if (inpt_pswd.value !== this.#motDePasse) return;
+            document.removeEventListener('keypress', keyPressHandler);
+            cont.style.display = 'none';
+            await FunctionAsset.sleep(0.65);
+            this.open();
+        };
+        document.addEventListener('keypress', keyPressHandler);
+        inpt_pswd.focus();
+        return cont;
     }
 
     #getDate() {
@@ -91,15 +150,15 @@ class Computer {
             "septembre", "octobre", "novembre", "décembre"
         ];
 
-        let d = new Date();
-        let jour = jours[d.getDay()];
-        let date = d.getDate();
-        let moisNom = mois[d.getMonth()];
+        const d = new Date();
+        const jour = jours[d.getDay()];
+        const date = d.getDate();
+        const moisNom = mois[d.getMonth()];
         return `${jour} ${date} ${moisNom}`.toLowerCase();
     }
 
     #getTime() {
-        let now = new Date();
+        const now = new Date();
         return now.toLocaleTimeString("fr-FR", {
             hour: "2-digit",
             minute: "2-digit",
@@ -108,5 +167,70 @@ class Computer {
 
     addToScreen(elem) {
         this.#screen.appendChild(elem);
+    }
+
+    clearScreen() {
+        this.#screen.innerHTML = '';
+    }
+
+    open() {
+        // Fond d'écran
+        this.#screen.style.backgroundBlendMode = 'normal';
+        this.#screen.style.backgroundImage = 'url("assets/wallpaper_open.jpg")';
+
+        // Init des applications
+        this.#applicationFactory(this.#explorer, 'assets/folder.png', 'Fichiers');
+        this.#applicationFactory(this.#terminal, 'assets/terminal.png', 'Terminal');
+        this.#applicationFactory(this.#browser, 'assets/browser.png', 'Navigateur');
+
+        this.clearScreen();
+        this.openDesktop();
+    }
+
+    #applicationFactory(elementContainer, img, title){
+        const img_icon = document.createElement('img');
+        img_icon.className = 'desktop-icon';
+        img_icon.src = img;
+        elementContainer.appendChild(img_icon);
+
+        const p_title = document.createElement('span');
+        p_title.innerText = title;
+        elementContainer.appendChild(p_title);
+    }
+
+    openDesktop() {
+        let desktop_app_positions = [
+            [this.#explorer, this.#terminal, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null],
+            [this.#browser, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, this.#explorer, null, null],
+            [null, null, null, null, null, null, null, this.#browser, null]
+        ];
+
+        const ICON_SIZE = Math.floor(this.#screen.clientWidth / desktop_app_positions[0].length);
+
+        const table = document.createElement('table');
+        table.className = 'desktop';
+        for (let row = 0; row < desktop_app_positions.length; row++) {
+            const tr = document.createElement('tr');
+
+            for (let col = 0; col < desktop_app_positions[row].length; col++) {
+                const colElem = desktop_app_positions[row][col];
+                const td = document.createElement('td');
+                FunctionAsset.applyStyle(td, {
+                    boxSizing: 'border-box',
+                    width: `${ICON_SIZE}px`,
+                    height: `${ICON_SIZE}px`,
+                    margin: '0',
+                    padding: '0',
+                });
+                if (colElem) {
+                    td.appendChild(colElem.cloneNode(true));
+                }
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+        this.addToScreen(table);
     }
 }
