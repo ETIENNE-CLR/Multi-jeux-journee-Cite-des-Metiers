@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../lib/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <title>Multi-jeux - Journée Cité des Métiers</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg-dark text-white text-center py-4 mb-4">
+        <h1 class="display-4">Multi-jeux - Journée Cité des Métiers</h1>
+        <p class="lead">Explorez, jouez et apprenez avec nos jeux interactifs !</p>
+    </header>
+
+    <main class="container">
+        <div class="row g-4">
+            <!-- Card 1: Escape Game -->
+            <div class="col-md-4">
+                <div class="card game-card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">Escape Game numérique</h5>
+                        <p class="card-text">Résolvez des énigmes en explorant un ordinateur virtuel.</p>
+                        <a href="Escape_Game/index.html" class="btn btn-primary">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Memory -->
+            <div class="col-md-4">
+                <div class="card game-card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">Mémory numérique</h5>
+                        <p class="card-text">Trouvez les paires de cartes contenant des bouts de code.</p>
+                        <a href="Memory/index.html" class="btn btn-primary">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Horloge -->
+            <div class="col-md-4">
+                <div class="card game-card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">Horloge personnalisée</h5>
+                        <p class="card-text">Modifiez l'apparence d'une horloge grâce au CSS.</p>
+                        <a href="Horloge/index.html" class="btn btn-primary">Jouer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center mt-4">
+        <div class="container">
+            <p class="mb-0">© 2025 Multi-jeux - Journée Cité des Métiers</p>
+        </div>
+    </footer>
+</body>
+<script src="../lib/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+
+</html>
