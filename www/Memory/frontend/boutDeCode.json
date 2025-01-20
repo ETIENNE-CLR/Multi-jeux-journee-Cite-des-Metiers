@@ -1,0 +1,45 @@
+{
+    "python": {
+        "declaration-de-variable":[
+            "number = 10"
+        ],
+        "condition": [
+            "if number > 0:",
+            "\tprint(\"Ce nombre est positif !\")"
+        ],
+        "boucle-for":[
+            "for i in range(10):",
+            "\tprint(i)"
+        ]
+    },
+    "javascript": {
+        "declaration-de-variable": [
+            "let number = 10;"
+        ],
+        "condition": [
+            "if (number > 0) {",
+            "\tconsole.log(\"Ce nombre est positif !\");",
+            "}"
+        ],
+        "boucle-for": [
+            "for (let i = 0; i < 10; i++) {",
+            "\tconsole.log(i);",
+            "}"
+        ]
+    },
+    "php":{
+        "declaration-de-variable": [
+            "$number = 10;"
+        ],
+        "condition": [
+            "if ($number > 0) {",
+            "\techo \"Ce nombre est positif !\";",
+            "}"
+        ],
+        "boucle-for": [
+            "for ($i = 0; $i < 10; $i++) {",
+            "\techo $i;",
+            "}"
+        ]
+    }
+}

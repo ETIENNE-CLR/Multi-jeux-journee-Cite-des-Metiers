@@ -17,23 +17,24 @@
         }
 
         footer {
-            background-color: #343a40;
-            color: #ffffff;
             padding: 10px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <header class="bg-dark text-white text-center py-4 mb-4">
-        <h1 class="display-4">Multi-jeux - Journée Cité des Métiers</h1>
-        <p class="lead">Explorez, jouez et apprenez avec nos jeux interactifs !</p>
+    <header class="bg-primary text-light text-center py-4 mb-4">
+        <h1 class="display-4">Journée Cité des Métiers</h1>
+        <p class="lead fs-4">Explorez, jouez et apprenez avec nos jeux interactifs !</p>
     </header>
 
     <main class="container">
-        <div class="row g-4">
+        <div class="d-flex justify-content-center row g-6">
             <!-- Card 1: Escape Game -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card game-card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <h5 class="card-title text-primary">Escape Game numérique</h5>
@@ -44,7 +45,7 @@
             </div>
 
             <!-- Card 2: Memory -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card game-card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <h5 class="card-title text-primary">Mémory numérique</h5>
@@ -55,7 +56,7 @@
             </div>
 
             <!-- Card 3: Horloge -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card game-card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <h5 class="card-title text-primary">Horloge personnalisée</h5>
@@ -67,7 +68,7 @@
         </div>
     </main>
 
-    <footer class="text-center mt-4">
+    <footer class="bg-primary text-light text-center mt-4">
         <div class="container">
             <p class="mb-0">© 2025 Multi-jeux - Journée Cité des Métiers</p>
         </div>

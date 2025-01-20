@@ -170,7 +170,10 @@ class Computer {
     }
 
     clearScreen() {
-        this.#screen.innerHTML = '';
+        let dskp = document.getElementById('desktop');
+        if (dskp) {
+            dskp.remove();
+        }
     }
 
     open() {
@@ -183,11 +186,68 @@ class Computer {
         this.#applicationFactory(this.#terminal, 'assets/terminal.png', 'Terminal');
         this.#applicationFactory(this.#browser, 'assets/browser.png', 'Navigateur');
 
+        this.addAppClickListener(this.#explorer, this.openExplorer);
+        this.addAppClickListener(this.#terminal, this.openTerminal);
+        this.addAppClickListener(this.#browser, this.openBrowser);
+
         this.clearScreen();
         this.openDesktop();
     }
 
-    #applicationFactory(elementContainer, img, title){
+    addAppClickListener(app, openFunction) {
+        app.addEventListener('click', () => {
+            app.removeEventListener('click', openFunction);
+            openFunction.call(this);
+        });
+    }
+
+    openExplorer() {
+        this.clearScreen();
+        const window = document.createElement('div');
+        FunctionAsset.applyStyle(window, {
+            width: 'auto',
+            height: '45vh',
+            backgroundColor: 'rgb(231 231 231)'
+        });
+
+        const btn_window_options = document.createElement('div');
+        window.appendChild(btn_window_options);
+        btn_window_options.innerHTML = `
+        <div class="d-flex gap-2">
+            <i class="btnWindowOptions deleteWindow bi bi-dash"></i>
+            <i class="btnWindowOptions bi bi-copy disabled"></i>
+            <i class="btnWindowOptions deleteWindow bi bi-x-lg"></i>
+        </div>`;
+        btn_window_options.className = 'col-12 d-flex justify-content-end align-items-center';
+        FunctionAsset.applyStyle(btn_window_options, {
+            display: 'flex',
+            backgroundColor: 'white',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            padding: '0.2%'
+        });
+
+        // Appliquer les actions des boutons
+        Array.from(document.querySelectorAll('.deleteWindow')).forEach(btn => {
+            btn.addEventListener('click', function(){
+                console.log('coucou');
+            });
+        });
+
+
+        this.addToScreen(window);
+    }
+
+    openTerminal() {
+        this.clearScreen();
+    }
+
+    openBrowser() {
+        this.clearScreen();
+    }
+
+
+    #applicationFactory(elementContainer, img, title) {
         const img_icon = document.createElement('img');
         img_icon.className = 'desktop-icon';
         img_icon.src = img;
@@ -200,17 +260,17 @@ class Computer {
 
     openDesktop() {
         let desktop_app_positions = [
-            [this.#explorer, this.#terminal, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null, null],
+            [this.#explorer, null, null, null, null, null, null, null, null],
+            [this.#terminal, null, null, null, null, null, null, null, null],
             [this.#browser, null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, this.#explorer, null, null],
-            [null, null, null, null, null, null, null, this.#browser, null]
+            [null, null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null, null]
         ];
 
         const ICON_SIZE = Math.floor(this.#screen.clientWidth / desktop_app_positions[0].length);
 
         const table = document.createElement('table');
-        table.className = 'desktop';
+        table.id = 'desktop';
         for (let row = 0; row < desktop_app_positions.length; row++) {
             const tr = document.createElement('tr');
 
@@ -225,7 +285,7 @@ class Computer {
                     padding: '0',
                 });
                 if (colElem) {
-                    td.appendChild(colElem.cloneNode(true));
+                    td.appendChild(colElem);
                 }
                 tr.appendChild(td);
             }
