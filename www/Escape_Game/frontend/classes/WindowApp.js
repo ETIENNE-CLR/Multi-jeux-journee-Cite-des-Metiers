@@ -7,7 +7,7 @@ class WindowApp {
     desktopIconApp;
     computerElement;
     innerFrame;
-    #_element;
+    _element;
 
     /**
      * Constructeur de la classe WindowApp.
@@ -27,8 +27,8 @@ class WindowApp {
         });
 
         // Créer la fenêtre
-        this.#_element = document.createElement('div');
-        FunctionAsset.applyStyle(this.#_element, {
+        this._element = document.createElement('div');
+        FunctionAsset.applyStyle(this._element, {
             width: '-webkit-fill-available',
             display: 'flex',
             flexDirection: 'column'
@@ -36,7 +36,7 @@ class WindowApp {
 
         // Ajouter les bordures + le contenu
         this.#initWindowBorder();
-        this.#_element.appendChild(this.innerFrame);
+        this._element.appendChild(this.innerFrame);
         this.#activeOpenApp();
     }
 
@@ -47,7 +47,7 @@ class WindowApp {
     #initWindowBorder() {
         // Container de base
         const border = document.createElement('div');
-        this.#_element.appendChild(border);
+        this._element.appendChild(border);
         FunctionAsset.applyStyle(border, {
             display: 'flex',
             alignItems: 'center',
@@ -92,7 +92,7 @@ class WindowApp {
 
         // Pour fermer l'application
         const closeToDesktop = () =>{
-            this.#_element.remove();
+            this._element.remove();
             this.computerElement.openDesktop();
         } 
         btn_dash.addEventListener('click', closeToDesktop);
@@ -106,7 +106,11 @@ class WindowApp {
     }
 
     open() {
+        this._openBase();
+    }
+
+    _openBase() {
         this.computerElement.clearScreen();
-        this.computerElement.screen.appendChild(this.#_element);
+        this.computerElement.screen.appendChild(this._element);
     }
 }

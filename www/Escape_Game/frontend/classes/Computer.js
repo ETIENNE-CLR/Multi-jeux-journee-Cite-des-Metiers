@@ -22,10 +22,23 @@ class Computer {
         this.#motDePasse = mdp;
 
         // Initialisation des applications fictives
-        this.#explorer = new WindowApp('Explorateur de fichiers', this, new DesktopIconApp('assets/folder.png', 'Fichiers'));
+        let fileTree = {
+            "Document": {
+                "directories": {
+                    "Nouveau dossier": {
+                        "files": [
+                            "test.md"
+                        ]
+                    }
+                },
+                "files": [
+                    "lien utiles.txt"
+                ]
+            }
+        };
+        this.#explorer = new FileExplorer(fileTree, this);
         this.#browser = new WindowApp('Navigateur internet', this, new DesktopIconApp('assets/browser.png', 'Navigateur'));
         this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
-        this.initInnerFrameApplication();
 
         // Gestionnaire d'événement lié à l'ouverture du login
         this.#openLogInHandler = this.#openLogIn.bind(this);
@@ -218,28 +231,5 @@ class Computer {
             table.appendChild(tr);
         }
         this.addToScreen(table);
-    }
-
-    initInnerFrameApplication() {
-        this.innerFrameExplorer();
-    }
-    innerFrameExplorer() {
-        // Créer l'explorateur de fichiers
-        FunctionAsset.applyStyle(this.#explorer.innerFrame, {
-            display: 'flex'
-        });
-
-        const aside = document.createElement('div');
-        aside.className = 'col-3 p-2';
-        aside.innerHTML = '<p>Aside</p>';
-        this.#explorer.innerFrame.appendChild(aside);
-        FunctionAsset.applyStyle(aside, {
-            borderRight: '1px solid lightgrey'
-        });
-
-        const main = document.createElement('div');
-        main.className = 'col-9 p-2';
-        main.innerHTML = '<p>Main</p>';
-        this.#explorer.innerFrame.appendChild(main);
     }
 }
