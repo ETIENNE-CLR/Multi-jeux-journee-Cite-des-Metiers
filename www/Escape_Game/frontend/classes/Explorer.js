@@ -37,10 +37,14 @@ class FileExplorer extends WindowApp {
         const container = document.createElement('div');
 
         // Afficher le chemin absolue
-        const divPath = document.createElement('div');
-        divPath.innerText = this.actualPath;
+        const divPath = document.createElement('input');
+        divPath.value = this.actualPath;
+        divPath.readOnly = true;
         container.appendChild(divPath);
         FunctionAsset.applyStyle(divPath, {
+            width: '100%',
+            padding: '0% 1%',
+            border: '1px solid grey'
         });
 
         Array.from(this.tree).forEach(file => {
