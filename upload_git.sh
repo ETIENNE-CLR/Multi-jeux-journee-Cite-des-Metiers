@@ -2,6 +2,7 @@
 
 # Convertir le fichier en format Linux :
 # dos2unix upload_git.sh
+# bash upload_git.sh ""
 
 # Fonction pour afficher un message visible et clair dans la console
 messageSortie=""
@@ -17,8 +18,8 @@ eval "$(ssh-agent -s)"
 
 # Obtention du nom de la clé privée
 cleSSH="Cle_github"     # Clé de mon PC portable
-cleSSH="etienneclr_key" # Clé du PC de l'école
 cleSSH="id_rsa"         # Clé de mon PC gaming
+cleSSH="etienneclr_key" # Clé du PC de l'école
 
 # Ajouter votre clef privée à l'agent
 ssh-add ~/.ssh/$cleSSH
