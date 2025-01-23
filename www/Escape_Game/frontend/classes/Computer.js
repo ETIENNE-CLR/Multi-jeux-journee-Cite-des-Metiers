@@ -1,6 +1,6 @@
 class Computer {
     username;
-    #screen;
+    screen;
     #motDePasse;
     #openLogInHandler;
 
@@ -16,20 +16,16 @@ class Computer {
      * @param {String} mdp Mot de passe
      */
     constructor(idScreen, username, mdp) {
-        this.#screen = document.getElementById(idScreen);
-        this.#screen.style.border = 'none';
+        this.screen = document.getElementById(idScreen);
+        this.screen.style.border = 'none';
         this.username = username;
         this.#motDePasse = mdp;
 
         // Initialisation des applications fictives
-        this.#explorer = document.createElement('div');
-        this.#explorer.className = 'desktop-app';
-
-        this.#browser = document.createElement('div');
-        this.#browser.className = 'desktop-app';
-
-        this.#terminal = document.createElement('div');
-        this.#terminal.className = 'desktop-app';
+        this.#explorer = new WindowApp('Explorateur de fichiers', this, new DesktopIconApp('assets/folder.png', 'Fichiers'));
+        this.#browser = new WindowApp('Navigateur internet', this, new DesktopIconApp('assets/browser.png', 'Navigateur'));
+        this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
+        this.initInnerFrameApplication();
 
         // Gestionnaire d'événement lié à l'ouverture du login
         this.#openLogInHandler = this.#openLogIn.bind(this);
@@ -37,13 +33,13 @@ class Computer {
 
     start() {
         // Fond d'écran
-        this.#screen.style.backgroundImage = 'url("assets/wallpaper_lock.jpg")';
+        this.screen.style.backgroundImage = 'url("assets/wallpaper_lock.jpg")';
 
         // Afficher la date et l'heure
         this.addToScreen(this.#createDateTimeContainer());
 
         // Activer l'interaction
-        this.#screen.addEventListener('click', this.#openLogInHandler);
+        this.screen.addEventListener('click', this.#openLogInHandler);
     }
 
     #createDateTimeContainer() {
@@ -79,10 +75,10 @@ class Computer {
 
     async #openLogIn() {
         // Supprime l'écouteur d'événements pour éviter les clics multiples
-        this.#screen.removeEventListener('click', this.#openLogInHandler);
+        this.screen.removeEventListener('click', this.#openLogInHandler);
 
         // Supprimer la date et l'heure
-        const dateTimeCont = this.#screen.querySelector('div');
+        const dateTimeCont = this.screen.querySelector('div');
         if (dateTimeCont) {
             dateTimeCont.style.transition = 'all 0.5s';
             dateTimeCont.style.top = '-40%';
@@ -91,8 +87,8 @@ class Computer {
         }
 
         // Floue dans le background
-        this.#screen.style.transition = 'all 0.5s';
-        this.#screen.style.backgroundBlendMode = 'luminosity';
+        this.screen.style.transition = 'all 0.5s';
+        this.screen.style.backgroundBlendMode = 'luminosity';
 
         // Afficher l'écran de login
         this.addToScreen(this.#createLoginContainer());
@@ -166,30 +162,17 @@ class Computer {
     }
 
     addToScreen(elem) {
-        this.#screen.appendChild(elem);
+        this.screen.appendChild(elem);
     }
 
     clearScreen() {
-        let dskp = document.getElementById('desktop');
-        if (dskp) {
-            dskp.remove();
-        }
+        this.screen.innerHTML = '';
     }
 
     open() {
         // Fond d'écran
-        this.#screen.style.backgroundBlendMode = 'normal';
-        this.#screen.style.backgroundImage = 'url("assets/wallpaper_open.jpg")';
-
-        // Init des applications
-        this.#applicationFactory(this.#explorer, 'assets/folder.png', 'Fichiers');
-        this.#applicationFactory(this.#terminal, 'assets/terminal.png', 'Terminal');
-        this.#applicationFactory(this.#browser, 'assets/browser.png', 'Navigateur');
-
-        this.addAppClickListener(this.#explorer, this.openExplorer);
-        this.addAppClickListener(this.#terminal, this.openTerminal);
-        this.addAppClickListener(this.#browser, this.openBrowser);
-
+        this.screen.style.backgroundBlendMode = 'normal';
+        this.screen.style.backgroundImage = 'url("assets/wallpaper_open.jpg")';
         this.clearScreen();
         this.openDesktop();
     }
@@ -201,73 +184,16 @@ class Computer {
         });
     }
 
-    openExplorer() {
-        this.clearScreen();
-        const window = document.createElement('div');
-        FunctionAsset.applyStyle(window, {
-            width: 'auto',
-            height: '45vh',
-            backgroundColor: 'rgb(231 231 231)'
-        });
-
-        const btn_window_options = document.createElement('div');
-        window.appendChild(btn_window_options);
-        btn_window_options.innerHTML = `
-        <div class="d-flex gap-2">
-            <i class="btnWindowOptions deleteWindow bi bi-dash"></i>
-            <i class="btnWindowOptions bi bi-copy disabled"></i>
-            <i class="btnWindowOptions deleteWindow bi bi-x-lg"></i>
-        </div>`;
-        btn_window_options.className = 'col-12 d-flex justify-content-end align-items-center';
-        FunctionAsset.applyStyle(btn_window_options, {
-            display: 'flex',
-            backgroundColor: 'white',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            padding: '0.2%'
-        });
-
-        // Appliquer les actions des boutons
-        Array.from(document.querySelectorAll('.deleteWindow')).forEach(btn => {
-            btn.addEventListener('click', function(){
-                console.log('coucou');
-            });
-        });
-
-
-        this.addToScreen(window);
-    }
-
-    openTerminal() {
-        this.clearScreen();
-    }
-
-    openBrowser() {
-        this.clearScreen();
-    }
-
-
-    #applicationFactory(elementContainer, img, title) {
-        const img_icon = document.createElement('img');
-        img_icon.className = 'desktop-icon';
-        img_icon.src = img;
-        elementContainer.appendChild(img_icon);
-
-        const p_title = document.createElement('span');
-        p_title.innerText = title;
-        elementContainer.appendChild(p_title);
-    }
-
     openDesktop() {
         let desktop_app_positions = [
-            [this.#explorer, null, null, null, null, null, null, null, null],
-            [this.#terminal, null, null, null, null, null, null, null, null],
-            [this.#browser, null, null, null, null, null, null, null, null],
+            [this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
+            [this.#terminal.desktopIconApp.element, null, null, null, null, null, null, null, null],
+            [this.#browser.desktopIconApp.element, null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null, null]
         ];
 
-        const ICON_SIZE = Math.floor(this.#screen.clientWidth / desktop_app_positions[0].length);
+        const ICON_SIZE = Math.floor(this.screen.clientWidth / desktop_app_positions[0].length);
 
         const table = document.createElement('table');
         table.id = 'desktop';
@@ -292,5 +218,28 @@ class Computer {
             table.appendChild(tr);
         }
         this.addToScreen(table);
+    }
+
+    initInnerFrameApplication() {
+        this.innerFrameExplorer();
+    }
+    innerFrameExplorer() {
+        // Créer l'explorateur de fichiers
+        FunctionAsset.applyStyle(this.#explorer.innerFrame, {
+            display: 'flex'
+        });
+
+        const aside = document.createElement('div');
+        aside.className = 'col-3 p-2';
+        aside.innerHTML = '<p>Aside</p>';
+        this.#explorer.innerFrame.appendChild(aside);
+        FunctionAsset.applyStyle(aside, {
+            borderRight: '1px solid lightgrey'
+        });
+
+        const main = document.createElement('div');
+        main.className = 'col-9 p-2';
+        main.innerHTML = '<p>Main</p>';
+        this.#explorer.innerFrame.appendChild(main);
     }
 }

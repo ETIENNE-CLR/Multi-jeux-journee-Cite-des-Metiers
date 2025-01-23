@@ -1,3 +1,4 @@
+/* Tout le div qui contient le desktop */
 #desktop {
     border-collapse: collapse;
     width: 100%;
@@ -7,6 +8,7 @@
     overflow: hidden;
 }
 
+/* Icon d'une app sur le bureau */
 .desktop-app {
     display: flex;
     flex-direction: column;
@@ -24,24 +26,21 @@
     cursor: pointer;
 }
 
+/* Faire genre de sélection */
 .desktop-app:hover {
     transition: all 0.1s;
     background-color: #2196f36e;
 }
 
-
+/* image dans les icones du bureau */
 .desktop-icon {
     width: 65%;
 }
 
+/* texte dans les icones du bureau */
 .desktop-app span {
     font-family: 'Noto Sans Newa';
     font-size: 85%;
     color: whitesmoke;
     text-shadow: 2px 2px 4px black;
-}
-
-.btnWindowOptions {
-    margin: 0 5px;
-    cursor: pointer;
 }
