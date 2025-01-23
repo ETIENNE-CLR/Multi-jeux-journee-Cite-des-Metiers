@@ -64,3 +64,12 @@ Ce jeu interactif a pour objectif d’initier les visiteurs à la manipulation d
 - **Technologies** : Utilisation de HTML/CSS/JS et Bootstrap.
 - **Performance** : Chargement rapide et animations fluides.
 - **Modularité** : Facilité à ajouter ou modifier des fonctionnalités.
+
+## Trello
+Voici un bouton qui mène au Trello du projet :<br>
+<a href="https://trello.com/invite/b/6791f0384c6b6009b6a3c5a7/ATTI491ed1afbccec0425d60205878e12fdbDAB0B761/multi-jeux-cite-des-metiers">
+    <button>Lien du Trello</button>
+</a>
+
+---
+Multi-jeux pour la Cité des Métiers - Etienne Caulier 2025
