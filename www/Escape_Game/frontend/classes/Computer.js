@@ -22,21 +22,29 @@ class Computer {
         this.#motDePasse = mdp;
 
         // Initialisation des applications fictives
-        let fileTree = {
-            "Document": {
-                "directories": {
-                    "Nouveau dossier": {
+        let explorerTree = {
+            "directories": [
+                {
+                    "name": "Documents",
+                    "content": {
+                        "directories": [
+                            {
+                                "name": "Nouveau dossier",
+                                "content": {
+                                    "files": [
+                                        "test.md"
+                                    ]
+                                }
+                            }
+                        ],
                         "files": [
-                            "test.md"
+                            "lien utiles.txt"
                         ]
                     }
-                },
-                "files": [
-                    "lien utiles.txt"
-                ]
-            }
+                }
+            ]
         };
-        this.#explorer = new FileExplorer(fileTree, this);
+        this.#explorer = new FileExplorer(explorerTree, this);
         this.#browser = new WindowApp('Navigateur internet', this, new DesktopIconApp('assets/browser.png', 'Navigateur'));
         this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
 
