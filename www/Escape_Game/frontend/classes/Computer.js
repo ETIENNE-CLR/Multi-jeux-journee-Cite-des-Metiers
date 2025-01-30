@@ -23,26 +23,12 @@ class Computer {
 
         // Initialisation des applications fictives
         let explorerTree = {
-            "directories": [
-                {
-                    "name": "Documents",
-                    "content": {
-                        "directories": [
-                            {
-                                "name": "Nouveau dossier",
-                                "content": {
-                                    "files": [
-                                        "test.md"
-                                    ]
-                                }
-                            }
-                        ],
-                        "files": [
-                            "lien utiles.txt"
-                        ]
-                    }
-                }
-            ]
+            "Documents": {
+                "Nouveau dossier": {
+                    "test.md": null
+                },
+                "lien utiles.txt": null
+            }
         };
         this.#explorer = new FileExplorer(explorerTree, this);
         this.#browser = new WindowApp('Navigateur internet', this, new DesktopIconApp('assets/browser.png', 'Navigateur'));

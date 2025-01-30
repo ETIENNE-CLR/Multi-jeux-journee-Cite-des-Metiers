@@ -55,11 +55,12 @@ class FileExplorer extends WindowApp {
             border: '1px solid grey'
         });
         btn_back.addEventListener('click', () => {
-            let formattedPath = this.actualPath.substring(1, this.actualPath.length);
-            if (formattedPath.includes('/')) {
-                let array = formattedPath.split('/');
-                array.slice(array.length - 3, 2);
+            let temp = stringPathToArray(this.actualPath);
+            let newActualPath = '/';
+            for (let pkj = 0; pkj < temp.length - 1; pkj++) {
+                newActualPath += `${temp[pkj]}/`;
             }
+            this.ActualPath = newActualPath;
         });
 
         // Afficher le chemin absolue
@@ -73,55 +74,85 @@ class FileExplorer extends WindowApp {
             border: '1px solid grey'
         });
 
-        // Formatter le path
-        function formattedPath(arrayStringPath) {
-            let formatted = [];
-            arrayStringPath.forEach(pathElement => {
-                if (pathElement != ''){
-                    formatted.push(pathElement);
-                }
-            });
-            return formatted;
-        }
-
-        // Récupérer le tableau selon le path actuel
-        let tableKey = '';
-        let pathCopy = `${this.ActualPath}`;
-        do {
-            pathCopy += 'directories/';
-            let pathArray = pathCopy.split('/');
-            pathArray = formattedPath(pathArray);
-            tableKey = pathArray.reverse()[0];
-
-            while (pathArray.length - 1 > 0) {
-                pathArray.pop();
-            }
-            pathCopy = pathArray.join('/');
-        } while (pathCopy.includes('/'));
-
-
-        // Créer les dossiers
+        // Créer le corps de la fenêtre
         const divFileContainer = document.createElement('div');
         divFileContainer.id = 'divFileContainer';
-        divFileContainer.style.padding = '2% 1.5%';
         container.appendChild(divFileContainer);
-        Array.from(this.tree[tableKey]).forEach(dir => {
-            let icon = new DesktopIconApp('assets/folder.png', dir.name);
-            FunctionAsset.applyStyle(icon.element.querySelector('span'), {
-                color: 'black',
-                textShadow: 'none'
-            });
+        FunctionAsset.applyStyle(divFileContainer, {
+            padding: '2% 1.5%',
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexDirection: 'row'
+        });
 
+        // Récupérer le contenu du dossier actuel
+        function stringPathToArray(stringPath) {
+            let formattedArray = [];
+            stringPath.split('/').forEach(pathElement => {
+                if (pathElement != '') {
+                    formattedArray.push(pathElement);
+                }
+            });
+            return formattedArray;
+        }
+        let allBeforeKeys = stringPathToArray(this.ActualPath);
+        let jsonActualPath = this.tree;
+        for (let joi = 0; joi < allBeforeKeys.length; joi++) {
+            jsonActualPath = jsonActualPath[allBeforeKeys[joi]];
+        }
+
+        // Récupérer toutes les clés enfants actuelles
+        let directorys = [];
+        let files = [];
+
+        // Génération des tableaux
+        Object.entries(jsonActualPath).forEach(([key, value]) => {
+            if (typeof value === "object") {
+                // C'est un dossier
+                directorys.push(key);
+            } else {
+                // C'est un fichier
+                files.push(key);
+            }
+        });
+
+        let iconContainerStyle = {
+            width: '15%',
+            margin: '0.25% 1%'
+        };
+        let iconTextStyle = {
+            color: 'black',
+            textShadow: 'none'
+        };
+
+        // Créer les dossiers enfants s'il y en a
+        Array.from(directorys).forEach(dir => {
+            // Création du conteneur de l'icone
             const iconCon = document.createElement('div');
-            iconCon.style.width = '10%';
-            iconCon.appendChild(icon.element);
+            FunctionAsset.applyStyle(iconCon, iconContainerStyle);
             divFileContainer.appendChild(iconCon);
+
+            // Création de l'icone
+            let icon = new DesktopIconApp('assets/folder.png', dir);
+            FunctionAsset.applyStyle(icon.element.querySelector('span'), iconTextStyle);
+            iconCon.appendChild(icon.element);
             icon.element.addEventListener('click', () => {
-                this.ActualPath += `${dir.name}/`;
+                this.ActualPath += `${dir}/`;
             });
         });
 
+        // Créer les fichiers enfants s'il y en a
+        Array.from(files).forEach(file => {
+            // Création du conteneur de l'icone
+            const iconCon = document.createElement('div');
+            FunctionAsset.applyStyle(iconCon, iconContainerStyle);
+            divFileContainer.appendChild(iconCon);
 
+            // Création de l'icone
+            let icon = new DesktopIconApp('assets/file.png', file);
+            FunctionAsset.applyStyle(icon.element.querySelector('span'), iconTextStyle);
+            iconCon.appendChild(icon.element);
+        });
 
         // Réafficher la vue
         this.#mainBody.innerHTML = '';
