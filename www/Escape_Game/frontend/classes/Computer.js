@@ -3,6 +3,7 @@ class Computer {
 	screen;
 	#motDePasse;
 	#openLogInHandler;
+	openedWindows;
 
 	// application
 	#explorer;
@@ -20,6 +21,7 @@ class Computer {
 		this.screen.style.border = 'none';
 		this.username = username;
 		this.#motDePasse = mdp;
+		this.openedWindows = [];
 
 		// Initialisation des applications fictives
 		let explorerTree = [

@@ -36,7 +36,6 @@ class FileExplorer extends WindowApp {
 		textArea.value = this.getContent();
 		textArea.addEventListener('change', () => {
 			let content = textArea.value;
-			console.log(content);
 			this.setContent(content);
 		});
 	}

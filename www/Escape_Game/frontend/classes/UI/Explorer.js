@@ -153,9 +153,6 @@ class Explorer extends WindowApp {
 			let icon = file.desktopIconApp;
 			FunctionAsset.applyStyle(icon.element.querySelector('span'), iconTextStyle);
 			iconCon.appendChild(icon.element);
-			icon.element.addEventListener('click', () => {
-				file.open();
-			});
 		});
 
 		// Réafficher la vue
