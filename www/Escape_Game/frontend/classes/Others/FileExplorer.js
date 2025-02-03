@@ -33,7 +33,12 @@ class FileExplorer extends WindowApp {
 			this.innerFrame.appendChild(textArea);
 			this.innerFrame.style.height = '400px';
 		}
-		textArea.innerText = this.getContent();
+		textArea.value = this.getContent();
+		textArea.addEventListener('change', () => {
+			let content = textArea.value;
+			console.log(content);
+			this.setContent(content);
+		});
 	}
 	
 	open() {
