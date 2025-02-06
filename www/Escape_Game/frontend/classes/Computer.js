@@ -33,7 +33,13 @@ class Computer {
 			])
 		];
 		this.#explorer = new Explorer(explorerTree, this);
-		this.#browser = new WindowApp('Navigateur internet', this, new DesktopIconApp('assets/browser.png', 'Navigateur'));
+		this.#browser = new Browser(this, [
+			new Website("Home", "home.com", SiteMaker.home()),
+			new Website("News", "news.com", SiteMaker.news()),
+			new Website("Mon forum", "forum.com", SiteMaker.forum()),
+			new Website("Ma compagnie", "ma-compagnie.com", SiteMaker.company()),
+			new Website("Not found", "not-found", SiteMaker.notFound()),
+		]);
 		this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
 
 		// Gestionnaire d'événement lié à l'ouverture du login

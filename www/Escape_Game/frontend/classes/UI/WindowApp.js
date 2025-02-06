@@ -9,6 +9,11 @@ class WindowApp {
 	innerFrame;
 	_element;
 	#indexOpenedWindow;
+	
+	set Title(value){
+		this.title = value;
+		this._element.querySelector('span').innerText = this.title;
+	}
 
 	/**
 	 * Constructeur de la classe WindowApp.
@@ -24,7 +29,8 @@ class WindowApp {
 		this.#indexOpenedWindow = null;
 		this.innerFrame = document.createElement('div');
 		FunctionAsset.applyStyle(this.innerFrame, {
-			backgroundColor: 'white'
+			backgroundColor: 'white',
+			height: '400px'
 			// backgroundColor: '#efefef' // Teinte gris très blanc
 		});
 
@@ -97,7 +103,6 @@ class WindowApp {
 			this._element.remove();
 			this.computerElement.openedWindows.splice(this.#indexOpenedWindow, 1);
 			this.#indexOpenedWindow = null;
-			console.log('après supp ', this.computerElement.openedWindows);
 
 			this.computerElement.openDesktop();
 			if (this.computerElement.openedWindows.length > 0) {
@@ -122,7 +127,6 @@ class WindowApp {
 		if (this.#indexOpenedWindow == null) {
 			this.#indexOpenedWindow = this.computerElement.openedWindows.length;
 			this.computerElement.openedWindows[this.#indexOpenedWindow] = this;
-			console.log('après ajout ', this.computerElement.openedWindows);
 		}
 
 		// ui
