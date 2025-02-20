@@ -2,6 +2,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 	// Init de l'ordi
 	let myOrdi = new Computer('screen', 'ESCAPE GAME', 'jsp');
-	// myOrdi.start();
-	myOrdi.open();
+	myOrdi.start();
+	// myOrdi.open();
 }, false);

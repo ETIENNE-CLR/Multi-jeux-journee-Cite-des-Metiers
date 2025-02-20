@@ -1,19 +1,18 @@
 // Au chargement de la page...
 document.addEventListener('DOMContentLoaded', async function () {
-    // Initialisation des variables
-    let cardContentArray = await fetchCardContent();
-    let DECK_GAME = [];
-    const NB_PAIR = 8;
-    
-    // Génération des cartes aléatoires pour le mémory
-    for (let poiu = 0; poiu < NB_PAIR; poiu++) {
-        const element = array[poiu];
-        
-    }
+	// Initialisation des cartes
+	let game = new MemoryGame(await fetchCardContent());
 });
 
-
 async function fetchCardContent() {
-    return {};
-
+	try {
+		const response = await fetch('frontend/boutDeCode.json');
+		if (!response.ok) {
+			throw new Error("Erreur lors de la récupération des données");
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error(error);
+	}
 }

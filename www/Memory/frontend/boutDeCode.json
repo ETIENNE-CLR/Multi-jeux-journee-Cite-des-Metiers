@@ -1,20 +1,10 @@
 {
-    "python": {
-        "declaration-de-variable":[
-            "number = 10"
-        ],
-        "condition": [
-            "if number > 0:",
-            "\tprint(\"Ce nombre est positif !\")"
-        ],
-        "boucle-for":[
-            "for i in range(10):",
-            "\tprint(i)"
-        ]
-    },
-    "javascript": {
+    "JavaScript": {
         "declaration-de-variable": [
             "let number = 10;"
+        ],
+        "declaration-de-constantes": [
+            "const PHRASE = 'Cité des métiers';"
         ],
         "condition": [
             "if (number > 0) {",
@@ -27,7 +17,7 @@
             "}"
         ]
     },
-    "php":{
+    "PHP":{
         "declaration-de-variable": [
             "$number = 10;"
         ],

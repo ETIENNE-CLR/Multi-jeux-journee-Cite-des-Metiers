@@ -7,3 +7,9 @@ J'ai terminé la navigation de l'explorateur de fichier. J'ai donc commencé sur
 
 ## 06 02 2025
 J'ai fait en sorte que le navigateur affiche des pages différentes en fonction de l'URL.
+
+## 13 02 2025
+J'ai avancé sur le memory (l'affichage, UI des cartes générées à partir d'un fichier JSON)
+
+## 20 02 2025
+J'ai corrigé un problème d'affichage avec les cartes, ensuite j'ai mis en place une nouvelle classe JS `MemoryGame`.

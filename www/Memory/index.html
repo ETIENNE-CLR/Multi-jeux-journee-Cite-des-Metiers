@@ -2,24 +2,55 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../lib/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-    <title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../../lib/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="styles/card.css">
+	<title>Memory</title>
 </head>
 
-<body>
-    <header class="col-12 p-5">
-        <h2 class="text-center">Jeu du mémory en code !</h2>
-    </header>
-    <main>
-        <table>
-            <!-- UI du jeu a afficher -->
-        </table>
-    </main>
+<body class="col-md-8 mx-auto border border-1">
+	<header class="col-12 pt-5 mb-5">
+		<a href="../index.html" class="btn btn-secondary ms-4">Retour</a>
+		<h2 class="text-center">Jeu du mémory en code !</h2>
+	</header>
+	<aside class="col-12 px-3 mb-5" style="display: none;">
+		<h3>Choisissez vos languages :</h3>
+		<div class="container d-flex justify-content-between">
+			<div class="btn-group col-5" role="group" aria-label="Basic radio toggle button group">
+				<input type="radio" class="btn-check" name="btnradio1" id="btnradio1a" checked>
+				<label class="btn btn-outline-primary" for="btnradio1a">Python</label>
+			
+				<input type="radio" class="btn-check" name="btnradio1" id="btnradio2a">
+				<label class="btn btn-outline-primary" for="btnradio2a">C#</label>
+			
+				<input type="radio" class="btn-check" name="btnradio1" id="btnradio3a">
+				<label class="btn btn-outline-primary" for="btnradio3a">JavaScript</label>
+			
+				<input type="radio" class="btn-check" name="btnradio1" id="btnradio4a">
+				<label class="btn btn-outline-primary" for="btnradio4a">PHP</label>
+			</div>
+			
+			<div class="btn-group col-5" role="group" aria-label="Basic radio toggle button group">
+				<input type="radio" class="btn-check" name="btnradio2" id="btnradio1b" checked>
+				<label class="btn btn-outline-success" for="btnradio1b">Python</label>
+			
+				<input type="radio" class="btn-check" name="btnradio2" id="btnradio2b">
+				<label class="btn btn-outline-success" for="btnradio2b">C#</label>
+			
+				<input type="radio" class="btn-check" name="btnradio2" id="btnradio3b">
+				<label class="btn btn-outline-success" for="btnradio3b">JavaScript</label>
+			
+				<input type="radio" class="btn-check" name="btnradio2" id="btnradio4b">
+				<label class="btn btn-outline-success" for="btnradio4b">PHP</label>
+			</div>
+		</div>
+	</aside>
+	<main class="col-12 d-flex flex-wrap"></main>
 </body>
 <script src="../../lib/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-<script src="frontend/classes/card.js"></script>
+<script src="frontend/classes/MemoryCard.js"></script>
+<script src="frontend/classes/MemoryGame.js"></script>
 <script src="frontend/script.js"></script>
 
 </html>

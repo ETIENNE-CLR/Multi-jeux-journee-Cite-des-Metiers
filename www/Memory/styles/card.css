@@ -1,0 +1,45 @@
+:root {
+	--DARK-OVERLAY: #00000087;
+	--LIGHT-TEXT: #efefef;
+}
+
+.memoryCard {
+	transition: all 0.2s;
+	width: 27%;
+	height: 16vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	margin: 3%;
+	border-radius: 10px;
+	background-image: url('../assets/card-back2.png');
+	background-size: cover;
+}
+
+.memoryCard.displayed h1,
+.memoryCard.displayed p {
+	background-color: var(--DARK-OVERLAY);
+}
+
+.memoryCard h1 {
+	padding-top: 6%;
+	font-size: 105%;
+	margin: 0;
+	text-align: center;
+	width: -webkit-fill-available;
+	color: var(--LIGHT-TEXT);
+}
+
+.memoryCard p {
+	margin: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: -webkit-fill-available;
+	color: var(--LIGHT-TEXT);
+	align-items: center;
+	padding: 5% 5% 15% 5%;
+	font-family: monospace;
+}
