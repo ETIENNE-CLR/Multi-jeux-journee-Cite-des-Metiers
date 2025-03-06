@@ -3,27 +3,32 @@ class MemoryCard {
 	#language;
 	#type;
 	#content;
-	
+	#displayMode;
+
 	get Element() { return this.#element }
 	get Language() { return this.#language }
 	get Type() { return this.#type }
 	get Content() { return this.#content }
-	
+	get DisplayMode() { return this.#displayMode }
+
 	constructor(language, type, content) {
 		this.#language = language;
 		this.#type = type;
 		this.#content = '';
 		content.forEach(ligne => {
-			this.#content += ligne + '\r';	
+			this.#content += ligne + '\r';
 		});
-		
+
 		// Création de la carte
 		this.#element = document.createElement('div');
 		this.#element.className = 'memoryCard';
-		this.displayCard();
+		Object.assign(this.#element.style, {
+			transform: 'rotateY(180deg)',
+			transition: 'all 0.5s'
+		});
 	}
-	
-	displayCard(){
+
+	#displayCard() {
 		this.#element.innerHTML = '';
 		this.#element.classList.add('displayed');
 		const lbl_language = document.createElement('h1');
@@ -38,4 +43,42 @@ class MemoryCard {
 		});
 		this.#element.appendChild(p_code);
 	}
+
+	async #turnCard(mode) {
+		if (this.#displayMode == mode) { return }
+		this.#displayMode = mode;
+		let timer = 0.1;
+
+		switch (this.#displayMode) {
+			case 'show':
+				this.#element.style.transform = 'rotateY(360deg)'
+				await sleep(timer)
+				this.#displayCard();
+				break;
+
+			case 'hide':
+				this.#element.style.transform = 'rotateY(180deg)'
+				await sleep(timer)
+				this.#element.innerHTML = '';
+				break;
+
+			default:
+				throw new Error("Ce mode d'affichage n'existe pas :", this.#displayMode);
+		}
+	}
+
+	#handle = () => {
+		this.#turnCard('show');
+	};
+
+	activate() {
+		this.#element.addEventListener('click', this.#handle);
+	}
+	desactivate() {
+		this.#element.removeEventListener('click', this.#handle);
+	}
+}
+
+function sleep(secondes) {
+	return new Promise(resolve => setTimeout(resolve, secondes * 1000));
 }

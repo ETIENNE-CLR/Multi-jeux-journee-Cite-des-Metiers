@@ -13,3 +13,6 @@ J'ai avancé sur le memory (l'affichage, UI des cartes générées à partir d'u
 
 ## 20 02 2025
 J'ai corrigé un problème d'affichage avec les cartes, ensuite j'ai mis en place une nouvelle classe JS `MemoryGame`.
+
+## 06 03 2025
+J'ai gérer le mode d'affichage (tournée/retournée) sur les cartes du mémory puis j'ai géré l'écouteur des evenements (quand on clique sur deux cartes, ça bloque)

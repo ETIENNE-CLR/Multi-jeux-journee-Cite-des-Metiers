@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', async function () {
 	// Initialisation des cartes
 	let game = new MemoryGame(await fetchCardContent());
+	game.start();
 });
 
 async function fetchCardContent() {

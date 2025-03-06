@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Convertir le fichier en format Linux :
-# dos2unix upload_git.sh
-# bash upload_git.sh ""
+# dos2unix upload_git.sh; bash upload_git.sh ""
 
 # Fonction pour afficher un message visible et clair dans la console
 messageSortie=""

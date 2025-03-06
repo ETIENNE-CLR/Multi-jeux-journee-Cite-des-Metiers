@@ -11,12 +11,34 @@
 			background-color: #f8f9fa;
 		}
 
+		header {
+			justify-content: center;
+			flex-direction: column;
+			align-items: center;
+			display: flex;
+		}
+
+		header>* {
+			animation: chillAnimation 3s ease-in-out infinite;
+			width: fit-content;
+		}
+
+		main * {
+			background-color: transparent;
+		}
+
 		a {
 			text-decoration: none;
 		}
 
+		.game-card {
+			transition: all 0.2s;
+			transform: scale(1);
+		}
+
 		.game-card:hover {
-			transform: scale(1.05);
+			transition: all 0.2s;
+			transform: scale(1.05) rotate(-4deg);
 			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 		}
 
@@ -25,6 +47,23 @@
 			position: absolute;
 			bottom: 0;
 			width: 100%;
+		}
+
+		@keyframes chillAnimation {
+			0% {
+				transform: translateY(0) scale(1);
+				opacity: 0.9;
+			}
+
+			50% {
+				transform: translateY(-10px) scale(1.05);
+				opacity: 1;
+			}
+
+			100% {
+				transform: translateY(0) scale(1);
+				opacity: 0.9;
+			}
 		}
 	</style>
 </head>
@@ -36,7 +75,8 @@
 	</header>
 
 	<main class="container">
-		<div class="d-flex justify-content-center row g-6">
+		<div class="d-flex gap-5 flex-wrap col-lg-8 mx-auto">
+	
 			<!-- Card 1: Escape Game -->
 			<div class="col-md-3">
 				<a href="Escape_Game/index.html">
@@ -82,5 +122,21 @@
 	</footer>
 </body>
 <script src="../lib/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+<script>
+	const pastelColors = [
+		"#bee1ff", "#ffdfba", "#ffb3ba", "#ffb3ff", "#c9c9ff", "#baffc9", "#ffffba", "#bae1ff", "#f2c1c1", "#d1f0b1",
+		"#e6e6fa", "#f5e1fd", "#f4cccc", "#d5f5e3", "#fdebd0", "#cfe2f3", "#f3e5f5",
+	];
+	let lesDiv = document.querySelectorAll('main>div>div>a>div');
+	lesDiv.forEach(div => {
+		div.style.transition = 'all 0.2s';
+		div.addEventListener('mouseenter', () => {
+			div.style.backgroundColor = pastelColors[Math.floor(Math.random() * pastelColors.length)];
+		});
+		div.addEventListener('mouseleave', () => {
+			div.style.backgroundColor = 'transparent';
+		});
+	});
+</script>
 
 </html>
