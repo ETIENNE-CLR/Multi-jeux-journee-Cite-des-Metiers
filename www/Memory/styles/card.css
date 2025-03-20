@@ -15,6 +15,7 @@
 	border-radius: 10px;
 	background-image: url('../assets/card-back2.png');
 	background-size: cover;
+	cursor: pointer;
 }
 
 .memoryCard.displayed h1,
@@ -51,7 +52,7 @@
 
 	25% {
 		transform: scale(0.9);
-	}
+	} 
 
 	50% {
 		transform: scale(1.1);

@@ -44,7 +44,7 @@ export class MemoryCard {
 		this.#element.appendChild(p_code);
 	}
 
-	async #turnCard(mode) {
+	async turnCard(mode) {
 		if (this.#displayMode == mode) { return }
 		this.#displayMode = mode;
 		let timer = 0.1;
@@ -68,9 +68,9 @@ export class MemoryCard {
 	}
 
 	#handle = () => {
-		this.#turnCard('show');
+		this.turnCard('show');
 	};
-
+	
 	activate() {
 		this.#element.addEventListener('click', this.#handle);
 	}
@@ -81,10 +81,13 @@ export class MemoryCard {
 		let anim = 1.5;
 		this.#element.style.animation = `retrieve ${anim}s ease-in forwards`;
 		await sleep(anim);
-		this.#element.remove();
+		Object.assign(this.#element.style, {
+			transition: 'opacity 0.2s',
+			opacity: '0'
+		});
 	}
 }
 
-function sleep(secondes) {
+export function sleep(secondes) {
 	return new Promise(resolve => setTimeout(resolve, secondes * 1000));
 }
