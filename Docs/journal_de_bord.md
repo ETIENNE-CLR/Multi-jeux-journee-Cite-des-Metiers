@@ -20,3 +20,5 @@ J'ai gérer le mode d'affichage (tournée/retournée) sur les cartes du mémory 
 ## 13 03 2025
 Journée blanche, j'ai bien skié
 
+## 20 03 2025
+J'ai terminé le jeu du memory (avec animations !)
