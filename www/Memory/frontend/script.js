@@ -1,3 +1,5 @@
+import { MemoryGame } from "./classes/MemoryGame.js";
+
 // Au chargement de la page...
 document.addEventListener('DOMContentLoaded', async function () {
 	// Initialisation des cartes

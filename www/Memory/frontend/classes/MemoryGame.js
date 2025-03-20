@@ -1,4 +1,6 @@
-class MemoryGame {
+import { MemoryCard } from "./MemoryCard.js";
+
+export class MemoryGame {
 	cards;
 
 	constructor(jsonCards) {
@@ -13,7 +15,7 @@ class MemoryGame {
 				this.cards.push(new MemoryCard(language, type, code));
 			});
 		});
-		this.cards.sort(() => Math.random() - 0.5);
+		// this.cards.sort(() => Math.random() - 0.5);
 
 		// Afficher les cartes
 		let cont = document.body.querySelector('main');
@@ -35,8 +37,7 @@ class MemoryGame {
 
 		await waitWhile(() => this.cards.filter(e => e.DisplayMode == 'show').length < 2);
 		let visibledCard = this.cards.filter(e => e.DisplayMode == 'show');
-		console.log(visibledCard);
-		
+		console.log(visibledCard);		
 
 		// Désactiver les cartes au clic
 		this.cards.forEach(carte => {
@@ -54,7 +55,18 @@ class MemoryGame {
 	}
 
 	#isPair(visibledCard){
+		if (visibledCard[0].Type == visibledCard[1].Type) {
+			// C'est la bonne paire
+			this.#hideCard(visibledCard);
+		} else {
+			// C'est pas la bonne
+		}
+	}
 
+	#hideCard(arrayCard){
+		arrayCard.forEach(c => {
+			c.retrieve();
+		});
 	}
 }
 

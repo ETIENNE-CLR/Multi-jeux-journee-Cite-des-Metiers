@@ -16,3 +16,7 @@ J'ai corrigé un problème d'affichage avec les cartes, ensuite j'ai mis en plac
 
 ## 06 03 2025
 J'ai gérer le mode d'affichage (tournée/retournée) sur les cartes du mémory puis j'ai géré l'écouteur des evenements (quand on clique sur deux cartes, ça bloque)
+
+## 13 03 2025
+Journée blanche, j'ai bien skié
+

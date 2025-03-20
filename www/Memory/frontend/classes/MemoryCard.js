@@ -1,4 +1,4 @@
-class MemoryCard {
+export class MemoryCard {
 	#element;
 	#language;
 	#type;
@@ -39,7 +39,7 @@ class MemoryCard {
 		const p_code = document.createElement('p');
 		p_code.innerText = this.Content;
 		Object.assign(p_code.style, {
-			fontSize: `${Math.max(10, 25 - p_code.innerText.length / 2)}px`
+			fontSize: `${Math.max(15, 25 - p_code.innerText.length / 2)}px`
 		});
 		this.#element.appendChild(p_code);
 	}
@@ -76,6 +76,12 @@ class MemoryCard {
 	}
 	desactivate() {
 		this.#element.removeEventListener('click', this.#handle);
+	}
+	async retrieve() {
+		let anim = 1.5;
+		this.#element.style.animation = `retrieve ${anim}s ease-in forwards`;
+		await sleep(anim);
+		this.#element.remove();
 	}
 }
 
