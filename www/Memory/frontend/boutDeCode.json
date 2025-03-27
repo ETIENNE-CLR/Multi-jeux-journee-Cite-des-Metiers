@@ -7,7 +7,7 @@
             "const PHRASE = 'Cité des métiers';"
         ],
         "condition": [
-            "if (number > 0) {",
+            "if (number >= 0) {",
             "\tconsole.log(\"Ce nombre est positif !\");",
             "}"
         ],
@@ -17,14 +17,17 @@
             "}"
         ]
     },
-    "PHP":{
+    "PHP": {
         "declaration-de-variable": [
             "$number = 10;"
         ],
         "condition": [
-            "if ($number > 0) {",
+            "if ($number >= 0) {",
             "\techo \"Ce nombre est positif !\";",
             "}"
+        ],
+        "declaration-de-constantes": [
+            "define('PHRASE', 'Cité des métiers');"
         ],
         "boucle-for": [
             "for ($i = 0; $i < 10; $i++) {",

@@ -1,0 +1,46 @@
+{
+    "color": [
+        "#bee1ff",
+        "#ffdfba",
+        "#ffb3ba",
+        "#ffb3ff",
+        "#c9c9ff",
+        "#baffc9",
+        "#ffffba",
+        "#bae1ff",
+        "#f2c1c1",
+        "#d1f0b1",
+        "#e6e6fa",
+        "#f5e1fd",
+        "#f4cccc",
+        "#d5f5e3",
+        "#fdebd0",
+        "#cfe2f3",
+        "#f3e5f5"
+    ],
+    "text-align": [
+        "left",
+        "center",
+        "right",
+        "justify"
+    ],
+    "background-color" : [
+        "#bee1ff",
+        "#ffdfba",
+        "#ffb3ba",
+        "#ffb3ff",
+        "#c9c9ff",
+        "#baffc9",
+        "#ffffba",
+        "#bae1ff",
+        "#f2c1c1",
+        "#d1f0b1",
+        "#e6e6fa",
+        "#f5e1fd",
+        "#f4cccc",
+        "#d5f5e3",
+        "#fdebd0",
+        "#cfe2f3",
+        "#f3e5f5"
+    ]
+}
