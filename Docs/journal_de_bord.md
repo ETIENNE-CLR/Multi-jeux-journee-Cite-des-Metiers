@@ -24,4 +24,8 @@ Journée blanche, j'ai bien skié
 J'ai terminé le jeu du memory (avec animations !)
 
 ## 27 03 2025
-J'ai commencé le css challenge
+J'ai commencé le css challenge : séparation des écrans.
+
+## 03 04 2025
+J'ai continué le css challenge : j'ai implémenté la vue + j'ai fait en sorte qu'on peut appliquer un style.
+Il me reste plus qu'à prédéfinir le style de l'objectif + vérifier que c'est correcte

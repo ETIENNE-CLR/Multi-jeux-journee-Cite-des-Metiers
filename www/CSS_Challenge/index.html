@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../lib/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/pseudoCoding.css">
     <title>CSS Challenge</title>
 </head>
 
@@ -14,15 +15,111 @@
         <h2 class="text-center">CSS Challenge</h2>
     </header>
 
-    <h2 class="h5 ms-3">Reproduisez le style !</h2>
-    <main class="d-flex col-12">
-        <div class="col-md-6 border border-1">
-            <p>coucou</p>
+    <main class="col-12 border border-1">
+        <h2 class="h5 ms-3">Reproduisez le style !</h2>
+        <div class="col-md-6 mx-auto p-2">
+            <p class="py-4">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores, quas laboriosam beatae quam sequi
+                pariatur repudiandae ullam voluptas earum ratione sint animi rerum dolores debitis et iste ab quod
+                dignissimos! Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, debitis. Alias est in
+                officia distinctio maiores deserunt repudiandae qui? Neque quis rerum quibusdam. Perferendis vero sunt
+                saepe mollitia distinctio corrupti.
+            </p>
         </div>
-        <div class="col-md-6 border border-1">
-            <p>coucou</p>
+        <div class="d-flex">
+            <div class="col-md-6 p-2">
+                <p id="drawing">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa fugiat, dolore error cumque
+                    asperiores non sed praesentium magnam est et eum unde corporis officia quis voluptas, dolores minima
+                    nobis repellendus. Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, debitis. Alias
+                    est in officia distinctio maiores deserunt repudiandae qui? Neque quis rerum quibusdam. Perferendis
+                    vero sunt saepe mollitia distinctio corrupti.
+                </p>
+            </div>
+            <div class="col-md-6 border border-1" id="code_container">
+                <div class="col-11 mx-auto pt-3 mb-3">
+                    <!-- Color -->
+                    <div class="cssRow">
+                        <label for="color_input" class="cssAttribute">color:</label>
+                        <input type="text" class="form-control" id="color_input" value="black">
+                    </div>
+                    <datalist id="color_datalist"></datalist>
+
+                    <!-- Background-color -->
+                    <div class="cssRow">
+                        <label for="background-color_input" class="cssAttribute">background-color:</label>
+                        <input type="text" class="form-control" id="background-color_input" value="transparent">
+                    </div>
+                    <datalist id="background-color_datalist"></datalist>
+
+                    <!-- font-size -->
+                    <div class="cssRow">
+                        <label for="font-size_input" class="cssAttribute">font-size:</label>
+                        <input type="text" class="form-control numberValue" id="font-size_input" value="15px">
+                    </div>
+                    <datalist id="font-size_datalist"></datalist>
+
+                    <!-- font-family -->
+                    <div class="cssRow">
+                        <label for="font-family_input" class="cssAttribute">font-family:</label>
+                        <select class="form-select" id="font-family_input">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+
+                    <!-- text-align -->
+                    <div class="cssRow">
+                        <label for="text-align_input" class="cssAttribute">text-align:</label>
+                        <select class="form-select" id="text-align_input">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+
+                    <!-- font-weight -->
+                    <div class="cssRow">
+                        <label for="font-weight_input" class="cssAttribute">font-weight:</label>
+                        <input type="text" class="form-control numberValue" id="font-weight_input" value="0">
+                    </div>
+                    <datalist id="font-weight_datalist"></datalist>
+
+                    <!-- margin -->
+                    <div class="cssRow">
+                        <label for="margin_input" class="cssAttribute">margin:</label>
+                        <input type="text" class="form-control numberValue" id="margin_input" value="0px">
+                    </div>
+                    <datalist id="margin_datalist"></datalist>
+
+                    <!-- padding -->
+                    <div class="cssRow">
+                        <label for="padding_input" class="cssAttribute">padding:</label>
+                        <input type="text" class="form-control numberValue" id="padding_input" value="0px">
+                    </div>
+                    <datalist id="padding_datalist"></datalist>
+
+                    <!-- border -->
+                    <div class="cssRow">
+                        <label for="border_input" class="cssAttribute">border:</label>
+                        <input type="text" class="form-control" id="border_input" value="0px solid black">
+                    </div>
+                    <datalist id="border_datalist"></datalist>
+
+                    <!-- border-radius -->
+                    <div class="cssRow">
+                        <label for="border-radius_input" class="cssAttribute">border-radius:</label>
+                        <input type="text" class="form-control numberValue" id="border-radius_input" value="0px">
+                    </div>
+                    <datalist id="border-radius_datalist"></datalist>
+                </div>
+            </div>
         </div>
     </main>
 </body>
+<script type="module" src="js/applyCode.js"></script>
 
 </html>

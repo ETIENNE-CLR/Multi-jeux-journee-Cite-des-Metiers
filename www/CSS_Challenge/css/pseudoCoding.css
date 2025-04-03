@@ -1,0 +1,55 @@
+#code_container {
+    --DARK-BACKGROUND: #1f1f1f;
+    --STRING-TEXT-ATTRIBUT: #9cdcfe;
+    --STRING-TEXT-CODE: #ce9178;
+    --STRING-NUMBER-CODE: #b5cea8;
+    --ROW-NUMBER: #6e7681;
+}
+
+#code_container {
+    background-color: var(--DARK-BACKGROUND);
+}
+
+#code_container *,
+#code_container option {
+    /* background-color: transparent !important; */
+    background-color: transparent;
+    font-family: 'Courier New', Courier, monospace;
+    color: whitesmoke;
+    border: none;
+}
+
+/* Ligne */
+.cssRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+/* Ce qui défini l'attribut */
+.cssRow .cssAttribute {
+    width: 45% !important;
+    width: -webkit-fill-available;
+    margin: 0.5% 1.5%;
+    color: var(--STRING-TEXT-ATTRIBUT) !important;
+    font-weight: 600;
+}
+
+/* Ce qui défini la valeur */
+.cssRow * {
+    color: var(--STRING-TEXT-CODE) !important;
+    background-color: var(--DARK-BACKGROUND) !important;
+    border: none;
+}
+
+.numberValue {
+    color: var(--STRING-NUMBER-CODE) !important;
+}
+
+.rowNumber {
+    width: 5%;
+    font-size: 15px;
+    text-align: end;
+    color: var(--ROW-NUMBER) !important;
+}
