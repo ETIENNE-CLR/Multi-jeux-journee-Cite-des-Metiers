@@ -56,4 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.setAttribute('list', datalist.id);
         }
     });
+
+    // Définition des styles à appliquer à l'objectif
+    const objectif = document.getElementById('objectif');
+    Object.assign(objectif.style, Tools.getRandomValueFromList(jsonData.objectifs));
 });

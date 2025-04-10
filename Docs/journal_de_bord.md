@@ -29,3 +29,6 @@ J'ai commencé le css challenge : séparation des écrans.
 ## 03 04 2025
 J'ai continué le css challenge : j'ai implémenté la vue + j'ai fait en sorte qu'on peut appliquer un style.
 Il me reste plus qu'à prédéfinir le style de l'objectif + vérifier que c'est correcte
+
+## 10 04 2025
+J'ai fait les présélections (objectifs) des styles de css challenge
