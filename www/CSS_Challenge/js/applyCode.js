@@ -1,3 +1,4 @@
+import { EtiennesAlert } from "./EtiennesAlert.js";
 import { Tools } from "./Tools.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Implémenter les écouteurs d'evenement
     idsInputs.forEach(id => {
         const e = document.getElementById(`${id}${prefix_cssElementInput}`);
-        e.addEventListener('change', () => {
+        e.addEventListener('input', () => {
             drawingText.style[id] = e.value;
         });
 
@@ -60,4 +61,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Définition des styles à appliquer à l'objectif
     const objectif = document.getElementById('objectif');
     Object.assign(objectif.style, Tools.getRandomValueFromList(jsonData.objectifs));
+
+    // Validation du code
+    const btnValid = document.getElementById('validate');
+    btnValid.addEventListener('click', () => {
+        let styleCorrect = true;
+
+        // Verif color
+        // Verif bg-color
+        // Verif fontSize
+        // Verif fontFamily
+        // Verif textAlign
+        // Verif fontweight
+        // Verif padding
+        // Verif border
+        // Verif borderradius
+
+        // Display
+        if (styleCorrect) {
+            let a = new EtiennesAlert(`Vous avez réussi !`);
+            a.show();
+        }
+    });
 });

@@ -8,6 +8,7 @@
 
 #code_container {
     background-color: var(--DARK-BACKGROUND);
+    border-radius: 10px;
 }
 
 #code_container *,
