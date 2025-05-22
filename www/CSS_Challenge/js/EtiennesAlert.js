@@ -22,7 +22,7 @@ export class EtiennesAlert {
             position: 'absolute',
             transform: 'translate(-50%, -50%)',
             color: 'whitesmoke',
-            backgroundColor: 'rgb(100 100 100 / 30%)',
+            backgroundColor: 'rgb(100 100 100 / 75%)',
             padding: '1% 3%',
             borderRadius: '50%',
             fontWeight: '400',
