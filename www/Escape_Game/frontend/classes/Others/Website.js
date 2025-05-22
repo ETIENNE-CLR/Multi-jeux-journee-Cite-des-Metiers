@@ -1,4 +1,4 @@
-class Website {
+export class Website {
 	name;
 	url;
 	body;

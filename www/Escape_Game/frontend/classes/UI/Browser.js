@@ -1,4 +1,9 @@
-class Browser extends WindowApp {
+import { DesktopIconApp } from "../Others/IconApp.js";
+import { FunctionAsset } from "../Tools/FunctionAsset.js";
+import { SiteMaker } from "../Tools/SiteMaker.js";
+import { WindowApp } from "../UI/WindowApp.js";
+
+export class Browser extends WindowApp {
 	#urls;
 	currentUrl;
 	#history;

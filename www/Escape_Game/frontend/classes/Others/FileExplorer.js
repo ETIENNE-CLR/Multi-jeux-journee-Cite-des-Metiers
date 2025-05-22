@@ -1,4 +1,8 @@
-class FileExplorer extends WindowApp {
+import { FunctionAsset } from "../Tools/FunctionAsset.js";
+import { WindowApp } from "../UI/WindowApp.js";
+import { DesktopIconApp } from "./IconApp.js";
+
+export class FileExplorer extends WindowApp {
 	name;
 	content;
 	

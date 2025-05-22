@@ -1,4 +1,4 @@
-class FolderExplorer {
+export class FolderExplorer {
 	constructor(name, children = []) {
 		this.name = name;
 		this.children = children;

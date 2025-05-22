@@ -1,11 +1,21 @@
-class Computer {
+import { FileExplorer } from "./Others/FileExplorer.js";
+import { FolderExplorer } from "./Others/FolderExplorer.js";
+import { DesktopIconApp } from "./Others/IconApp.js";
+import { Website } from "./Others/Website.js";
+import { FunctionAsset } from "./Tools/FunctionAsset.js";
+import { SiteMaker } from "./Tools/SiteMaker.js";
+import { Browser } from "./UI/Browser.js";
+import { Explorer } from "./UI/Explorer.js";
+import { WindowApp } from "./UI/WindowApp.js";
+
+export class Computer {
 	username;
 	screen;
 	#motDePasse;
 	#openLogInHandler;
 	openedWindows;
 
-	// application
+	// applications
 	#explorer;
 	#browser;
 	#terminal;
@@ -29,6 +39,33 @@ class Computer {
 				new FolderExplorer("Nouveau dossier", [
 					new FileExplorer("test.md", this, "## Ceci est un test !")
 				]),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
+				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
 				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")
 			])
 		];

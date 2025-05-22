@@ -1,4 +1,4 @@
-class FunctionAsset {
+export class FunctionAsset {
     /**
      * Fonction qui permet de mettre le mode plein écran
      */

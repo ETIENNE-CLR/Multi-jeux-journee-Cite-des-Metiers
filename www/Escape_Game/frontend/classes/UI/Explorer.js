@@ -1,4 +1,10 @@
-class Explorer extends WindowApp {
+import { FileExplorer } from "../Others/FileExplorer.js";
+import { FolderExplorer } from "../Others/FolderExplorer.js";
+import { DesktopIconApp } from "../Others/IconApp.js";
+import { FunctionAsset } from "../Tools/FunctionAsset.js";
+import { WindowApp } from "../UI/WindowApp.js";
+
+export class Explorer extends WindowApp {
 	tree;
 	actualPath;
 	#mainBody;

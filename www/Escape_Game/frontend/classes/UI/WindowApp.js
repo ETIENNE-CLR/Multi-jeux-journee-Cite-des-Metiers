@@ -1,8 +1,10 @@
+import { FunctionAsset } from "../Tools/FunctionAsset.js";
+
 /**
  * Classe WindowApp
  * Cette classe représente une fenêtre d'application sur un bureau virtuel.
  */
-class WindowApp {
+export class WindowApp {
 	title;
 	desktopIconApp;
 	computerElement;
@@ -30,7 +32,7 @@ class WindowApp {
 		this.innerFrame = document.createElement('div');
 		FunctionAsset.applyStyle(this.innerFrame, {
 			backgroundColor: 'white',
-			height: '400px'
+			minHeight: '400px'
 			// backgroundColor: '#efefef' // Teinte gris très blanc
 		});
 

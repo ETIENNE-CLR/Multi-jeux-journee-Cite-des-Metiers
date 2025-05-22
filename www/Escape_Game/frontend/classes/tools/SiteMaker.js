@@ -1,4 +1,6 @@
-class SiteMaker {
+import { FunctionAsset } from "./FunctionAsset.js";
+
+export class SiteMaker {
 	static home() {
 		const body = document.createElement('div');
 		body.innerHTML = `
