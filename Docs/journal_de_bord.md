@@ -32,3 +32,9 @@ Il me reste plus qu'à prédéfinir le style de l'objectif + vérifier que c'est
 
 ## 10 04 2025
 J'ai fait les présélections (objectifs) des styles de css challenge
+
+## 15 05 2025
+J'ai commencé la vérification des champs css dans css challenge
+
+## 22 05 2025
+J'ai fini CSS Challenge
