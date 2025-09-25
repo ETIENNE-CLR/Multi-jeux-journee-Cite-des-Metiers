@@ -11,8 +11,8 @@ export class WindowApp {
 	innerFrame;
 	_element;
 	#indexOpenedWindow;
-	
-	set Title(value){
+
+	set Title(value) {
 		this.title = value;
 		this._element.querySelector('span').innerText = this.title;
 	}

@@ -1,3 +1,4 @@
+import { Browser } from "../UI/Browser.js";
 import { FunctionAsset } from "./FunctionAsset.js";
 
 export class SiteMaker {
@@ -80,6 +81,12 @@ export class SiteMaker {
 		return body;
 	}
 
+	/**
+	 * Méthode qui permet de rechercher les sites disponibles en fonction d'une recherche (recherche en dure)
+	 * @param {String} search La recherche du site
+	 * @param {Browser} browser Le browser qui recherche la page
+	 * @returns {HTMLElement} Contenu du body de la fenetre
+	 */
 	static research(search, browser) {
 		let results = [];
 
@@ -90,7 +97,7 @@ export class SiteMaker {
 			}
 		});
 
-		// Afficher les resultats
+		// Afficher les resultats - Résultat de la recherche
 		const body = document.createElement('div');
 		body.className = "col-10 ms-4";
 		results.forEach(resultat => {
@@ -151,7 +158,7 @@ export class SiteMaker {
 			btn_link.innerText = `Site de ${resultat.name}`;
 			content.appendChild(btn_link);
 			btn_link.addEventListener('click', () => {
-				browser.goTo(resultat.url);
+				browser.goTo(resultat.url); // Aller à la page
 			});
 
 			const p_desc = document.createElement('p');

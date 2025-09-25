@@ -5,24 +5,24 @@ import { DesktopIconApp } from "./IconApp.js";
 export class FileExplorer extends WindowApp {
 	name;
 	content;
-	
+
 	constructor(name, computerElement, content = "") {
 		super(`Edition - ${name}`, computerElement, new DesktopIconApp('assets/file.png', name));
 		this.name = name;
 		this.setContent(content);
 	}
-	
+
 	// Lire le contenu du fichier
 	getContent() {
 		return this.content;
 	}
-	
+
 	// Modifier le contenu du fichier
 	setContent(newContent) {
 		this.content = newContent;
 	}
-	
-	displayView(){
+
+	displayView() {
 		let textArea = this.innerFrame.querySelector('textarea');
 		if (!textArea) {
 			textArea = document.createElement('textarea');
@@ -43,7 +43,7 @@ export class FileExplorer extends WindowApp {
 			this.setContent(content);
 		});
 	}
-	
+
 	open() {
 		this._openBase();
 		this.displayView();

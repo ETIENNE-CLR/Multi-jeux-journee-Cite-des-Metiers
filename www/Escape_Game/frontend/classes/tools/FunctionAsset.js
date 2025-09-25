@@ -44,7 +44,7 @@ export class FunctionAsset {
      * @param {HTMLElement} element 
      * @param {JSON} jsonStyle 
      */
-    static applyStyle(element, jsonStyle){
+    static applyStyle(element, jsonStyle) {
         Object.assign(element.style, jsonStyle);
     }
 }

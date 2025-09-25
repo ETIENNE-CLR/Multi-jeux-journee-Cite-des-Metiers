@@ -40,6 +40,9 @@ export class Computer {
 					new FileExplorer("test.md", this, "## Ceci est un test !")
 				]),
 				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")
+			]),
+			new FolderExplorer("Téléchargements", [
+				new FileExplorer("jsp.txt", this, "coucou")
 			])
 		];
 		this.#explorer = new Explorer(explorerTree, this);

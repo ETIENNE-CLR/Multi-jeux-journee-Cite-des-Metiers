@@ -76,6 +76,10 @@ export class Browser extends WindowApp {
 		});
 	}
 
+	/**
+	 * Méthode qui permet de désactiver les boutons à gauche de la barre URL
+	 * En fonction de cas
+	 */
 	updateViewButtons() {
 		let icons = this.innerFrame.querySelectorAll('#header-browser .bi');
 		if (icons) {
@@ -89,10 +93,15 @@ export class Browser extends WindowApp {
 		}
 	}
 
+	/**
+	 * Méthode qui permet d'aller vers une autre page
+	 * @param {String} search Vers où on va aller sur le navigateur
+	 * @param {Boolean} updateHistory Si on doit mettre à jour l'historique
+	 */
 	goTo(search, updateHistory = true) {
 		search = search.trim().toLowerCase()
 		this.#inpt_url.value = search;
-		
+
 		// Récupérer le corps
 		let corps = this.innerFrame.querySelector('#corps-browser');
 		if (!corps) {
@@ -110,7 +119,7 @@ export class Browser extends WindowApp {
 			return;
 		}
 
-		// Effectuer la recherche
+		// Effectuer la recherche - l'utilisateur a entré une URL valide
 		let websiteFound = this.#urls.find(x => x.url == search);
 
 		// Afficher le resultat
@@ -139,8 +148,8 @@ export class Browser extends WindowApp {
 		}
 		this.updateViewButtons();
 	}
-	
-	open(){
+
+	open() {
 		this._openBase();
 		this.goTo("home.com", false);
 	}

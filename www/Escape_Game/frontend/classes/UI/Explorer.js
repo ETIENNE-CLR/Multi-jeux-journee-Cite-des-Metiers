@@ -45,6 +45,9 @@ export class Explorer extends WindowApp {
 		this.viewPath(this.ActualPath);
 	}
 
+	/**
+	 * Fonction qui nous permet d'afficher l'interieur d'un chemin dans le corps de la fenetre
+	 */
 	viewPath() {
 		const container = document.createElement('div');
 		const headerApp = document.createElement('div');
@@ -165,8 +168,12 @@ export class Explorer extends WindowApp {
 		this.#mainBody.innerHTML = '';
 		this.#mainBody.appendChild(container);
 	}
-	
-	// Fonction pour récupérer le bon dossier ou fichier en fonction du chemin
+
+	/**
+	 * Fonction pour récupérer tous les dossiers et tous les fichiers
+	 * qui sont présents dans le chemin
+	 * @returns {Array} Tableau contenant des dossiers et/ou des fichiers
+	 */
 	getContentFromPath() {
 		if (this.actualPath === "/") {
 			return this.tree;
