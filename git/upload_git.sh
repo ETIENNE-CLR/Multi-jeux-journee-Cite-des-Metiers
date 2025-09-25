@@ -61,13 +61,13 @@ fi
 # fi
 
 # Faire le push
-git push
+# git push
 # GIT_SSH_COMMAND="ssh -i ~/.ssh/$cleSSH" git push -u origin $brancheName
-# # git push origin $brancheName
-# if [ $? -eq 0 ]; then
-#     messageSortie="GitHub mis à jour"
-#     DisplayMessage "$messageSortie"
-# else
-#     messageSortie="Le push n'a pas marché"
-#     DisplayMessage "$messageSortie"
-# fi
+# git push origin $brancheName
+if [ $? -eq 0 ]; then
+    messageSortie="GitHub mis à jour"
+    DisplayMessage "$messageSortie"
+else
+    messageSortie="Le push n'a pas marché"
+    DisplayMessage "$messageSortie"
+fi
