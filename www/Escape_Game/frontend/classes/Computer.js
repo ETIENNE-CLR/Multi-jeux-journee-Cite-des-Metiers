@@ -39,33 +39,6 @@ export class Computer {
 				new FolderExplorer("Nouveau dossier", [
 					new FileExplorer("test.md", this, "## Ceci est un test !")
 				]),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
-				new FileExplorer("Mes secrets", this, "J'aime les pieds ^^"),
 				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")
 			])
 		];
