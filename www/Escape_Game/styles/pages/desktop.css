@@ -44,3 +44,10 @@
     color: whitesmoke;
     text-shadow: 2px 2px 4px black;
 }
+
+
+.desktop-app img,
+.desktop-app span {
+    pointer-events: none;
+    -webkit-user-drag: none;
+}

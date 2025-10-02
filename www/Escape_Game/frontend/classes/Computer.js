@@ -2,6 +2,7 @@ import { FileExplorer } from "./Others/FileExplorer.js";
 import { FolderExplorer } from "./Others/FolderExplorer.js";
 import { DesktopIconApp } from "./Others/IconApp.js";
 import { Website } from "./Others/Website.js";
+import { DragDrop } from "./tools/DragDrop.js";
 import { FunctionAsset } from "./Tools/FunctionAsset.js";
 import { SiteMaker } from "./Tools/SiteMaker.js";
 import { Browser } from "./UI/Browser.js";
@@ -230,8 +231,8 @@ export class Computer {
 
 			for (let col = 0; col < desktop_app_positions[row].length; col++) {
 				const colElem = desktop_app_positions[row][col];
-				const td = document.createElement('td');
-				FunctionAsset.applyStyle(td, {
+				const cell = document.createElement('td');
+				FunctionAsset.applyStyle(cell, {
 					boxSizing: 'border-box',
 					width: `${ICON_SIZE}px`,
 					height: `${ICON_SIZE}px`,
@@ -239,9 +240,16 @@ export class Computer {
 					padding: '0',
 				});
 				if (colElem) {
-					td.appendChild(colElem);
+					// Ajouter le drag sur les applications bureau
+					colElem.id = "desktop-icon-" + Math.random().toString(36).substr(2, 9);
+					colElem.draggable = true;
+					colElem.addEventListener('dragstart', DragDrop.dragstartHandler);
+					cell.appendChild(colElem);
 				}
-				tr.appendChild(td);
+				tr.appendChild(cell);
+				// Ajout du drop sur les autres emplacements
+				cell.addEventListener('dragover', DragDrop.dragoverHandler);
+				cell.addEventListener('drop', DragDrop.dropHandler);
 			}
 			table.appendChild(tr);
 		}
