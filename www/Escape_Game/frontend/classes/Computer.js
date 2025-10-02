@@ -10,6 +10,7 @@ import { Explorer } from "./UI/Explorer.js";
 import { WindowApp } from "./UI/WindowApp.js";
 
 export class Computer {
+	#iconPosition;
 	username;
 	screen;
 	#motDePasse;
@@ -55,6 +56,14 @@ export class Computer {
 			new Website("Not found", "not-found", SiteMaker.notFound()),
 		]);
 		this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
+
+		this.#iconPosition = [
+			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
+			[this.#terminal.desktopIconApp.element, null, null, null, null, null, null, null, null],
+			[this.#browser.desktopIconApp.element, null, null, null, null, null, null, null, null],
+			[null, null, null, null, null, null, null, null, null],
+			[null, null, null, null, null, null, null, null, null]
+		];
 
 		// Gestionnaire d'événement lié à l'ouverture du login
 		this.#openLogInHandler = this.#openLogIn.bind(this);
@@ -214,23 +223,15 @@ export class Computer {
 	}
 
 	openDesktop() {
-		let desktop_app_positions = [
-			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
-			[this.#terminal.desktopIconApp.element, null, null, null, null, null, null, null, null],
-			[this.#browser.desktopIconApp.element, null, null, null, null, null, null, null, null],
-			[null, null, null, null, null, null, null, null, null],
-			[null, null, null, null, null, null, null, null, null]
-		];
-
-		const ICON_SIZE = Math.floor(this.screen.clientWidth / desktop_app_positions[0].length);
+		const ICON_SIZE = Math.floor(this.screen.clientWidth / this.#iconPosition[0].length);
 
 		const table = document.createElement('table');
 		table.id = 'desktop';
-		for (let row = 0; row < desktop_app_positions.length; row++) {
+		for (let row = 0; row < this.#iconPosition.length; row++) {
 			const tr = document.createElement('tr');
 
-			for (let col = 0; col < desktop_app_positions[row].length; col++) {
-				const colElem = desktop_app_positions[row][col];
+			for (let col = 0; col < this.#iconPosition[row].length; col++) {
+				const colElem = this.#iconPosition[row][col];
 				const cell = document.createElement('td');
 				FunctionAsset.applyStyle(cell, {
 					boxSizing: 'border-box',
@@ -248,7 +249,10 @@ export class Computer {
 				}
 				tr.appendChild(cell);
 				// Ajout du drop sur les autres emplacements
-				cell.addEventListener('dragover', DragDrop.dragoverHandler);
+				cell.addEventListener('dragover', (e) => {
+					DragDrop.dragstartHandler(e);
+					saveIconPosition();
+				});
 				cell.addEventListener('drop', DragDrop.dropHandler);
 			}
 			table.appendChild(tr);
