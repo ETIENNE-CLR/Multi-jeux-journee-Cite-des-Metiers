@@ -7,6 +7,7 @@ import { FunctionAsset } from "./Tools/FunctionAsset.js";
 import { SiteMaker } from "./Tools/SiteMaker.js";
 import { Browser } from "./UI/Browser.js";
 import { Explorer } from "./UI/Explorer.js";
+import { Terminal } from "./UI/Terminal.js";
 import { WindowApp } from "./UI/WindowApp.js";
 
 export class Computer {
@@ -55,7 +56,7 @@ export class Computer {
 			new Website("Ma compagnie", "ma-compagnie.com", SiteMaker.company()),
 			new Website("Not found", "not-found", SiteMaker.notFound()),
 		]);
-		this.#terminal = new WindowApp('Terminal de commande', this, new DesktopIconApp('assets/terminal.png', 'Terminal'));
+		this.#terminal = new Terminal('/', this);
 
 		this.#iconPosition = [
 			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
@@ -74,7 +75,7 @@ export class Computer {
 		this.screen.style.backgroundImage = 'url("assets/wallpaper_lock.jpg")';
 
 		// Afficher la date et l'heure
-		this.addToScreen(this.#createDateTimeContainer());
+		this.#addToScreen(this.#createDateTimeContainer());
 
 		// Activer l'interaction
 		this.screen.addEventListener('click', this.#openLogInHandler);
@@ -82,7 +83,7 @@ export class Computer {
 
 	#createDateTimeContainer() {
 		const dateTimeCont = document.createElement('div');
-		this.addToScreen(dateTimeCont);
+		this.#addToScreen(dateTimeCont);
 		FunctionAsset.applyStyle(dateTimeCont, {
 			left: '0',
 			top: '68%',
@@ -129,7 +130,7 @@ export class Computer {
 		this.screen.style.backgroundBlendMode = 'luminosity';
 
 		// Afficher l'écran de login
-		this.addToScreen(this.#createLoginContainer());
+		this.#addToScreen(this.#createLoginContainer());
 	}
 
 	#createLoginContainer() {
@@ -199,7 +200,7 @@ export class Computer {
 		});
 	}
 
-	addToScreen(elem) {
+	#addToScreen(elem) {
 		this.screen.appendChild(elem);
 	}
 
@@ -215,7 +216,7 @@ export class Computer {
 		this.openDesktop();
 	}
 
-	addAppClickListener(app, openFunction) {
+	#addAppClickListener(app, openFunction) {
 		app.addEventListener('click', () => {
 			app.removeEventListener('click', openFunction);
 			openFunction.call(this);
@@ -251,12 +252,12 @@ export class Computer {
 				// Ajout du drop sur les autres emplacements
 				cell.addEventListener('dragover', (e) => {
 					DragDrop.dragstartHandler(e);
-					saveIconPosition();
+					// saveIconPosition();
 				});
 				cell.addEventListener('drop', DragDrop.dropHandler);
 			}
 			table.appendChild(tr);
 		}
-		this.addToScreen(table);
+		this.#addToScreen(table);
 	}
 }

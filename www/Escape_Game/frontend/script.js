@@ -4,5 +4,5 @@ import { Computer } from "./classes/Computer.js";
 document.addEventListener('DOMContentLoaded', () => {
 	// Init de l'ordi
 	let myOrdi = new Computer('screen', 'ESCAPE GAME', 'jsp');
-	myOrdi.start();
+	myOrdi.open();
 }, false);

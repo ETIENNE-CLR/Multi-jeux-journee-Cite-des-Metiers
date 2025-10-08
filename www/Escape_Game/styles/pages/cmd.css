@@ -1,0 +1,14 @@
+#area_cmd {
+    color: white;
+    font-family: monospace;
+    letter-spacing: 0px;
+    white-space: pre;
+}
+
+.head .user {
+    color: rgb(22 198 12);
+}
+
+.head .pwd {
+    color: rgb(59 120 255);
+}
