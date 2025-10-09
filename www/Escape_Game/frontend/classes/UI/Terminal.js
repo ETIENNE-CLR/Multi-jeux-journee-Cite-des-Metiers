@@ -18,7 +18,7 @@ export class Terminal extends WindowApp {
         // Commandes valides
         this.#commandName = [
             'cd', 'mkdir', 'pwd', 'ls',
-            'rm', 'copy', 'mv', 'cat',
+            'rm', 'cp', 'mv', 'cat',
             'touch', 'echo', 'sudo'
         ];
 
@@ -143,23 +143,32 @@ export class Terminal extends WindowApp {
             if (e.key !== 'Enter' && e.key !== 'Tab') { return }
             e.preventDefault();
 
+            // Découpage de la commande
+            let returnText = '';
+            let command = input.innerText.trim()
+            let commandArray = command.split(' ');
+            let commandName = commandArray[0] ?? command;
+            let destination = commandArray[1] ?? '';
+            let sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd));
+
             // Tab
-            if (e.key !== 'Tab') {
-                // 
-            }
+            if (e.key === 'Tab') {
+                if (destination === '') { return }
+                if (['mkdir', 'pwd', 'touch'].includes(commandName)) { return }
+                let rightDir = sortedContent.find(e => e instanceof FolderExplorer && e.name.startsWith(destination))
+                if (rightDir !== null) {
+                    input.innerText += rightDir.name.substring(destination.length) + '/'
+                }
+
+                // Sortie
+                return;
+            }    
 
             // Enter
             // Création du resultat
             const cmd = getCMD();
             const commandReturn = document.createElement('div');
             commandReturn.classList.add('line', 'return');
-
-            // Découpage de la commande
-            let returnText = '';
-            let command = input.innerText.trim()
-            let commandArray = command.split(' ');
-            let commandName = commandArray[0];
-            let destination = commandArray[1];
 
             // Test 1 - valid command name
             if (command === '') {
@@ -170,9 +179,9 @@ export class Terminal extends WindowApp {
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
-                let sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd));
                 switch (commandName) {
                     case 'cd':
+                        destination = destination.replace('/', '');
                         let rightDir = sortedContent.find(e => e instanceof FolderExplorer && e.name == destination)
                         if (rightDir != null) {
                             this.#pwd += rightDir.name + '/';
@@ -187,6 +196,9 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'ls':
+                        if (destination != '') {
+                            sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd + destination));
+                        }
                         for (let i = 0; i < sortedContent.length; i++) {
                             const el = sortedContent[i];
                             let isFolder = (el instanceof FolderExplorer)
