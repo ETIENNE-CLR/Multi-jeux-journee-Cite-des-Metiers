@@ -1,8 +1,12 @@
 #area_cmd {
     color: white;
-    font-family: monospace;
+    /* font-family: monospace; */
     letter-spacing: 0px;
-    white-space: pre;
+    /* white-space: pre; */
+}
+
+.head {
+    display: inline-block;
 }
 
 .head .user {
@@ -11,4 +15,31 @@
 
 .head .pwd {
     color: rgb(59 120 255);
+}
+
+.line .input {
+    border: 1px solid #ffffff30;
+    display: inline-block;
+}
+
+.line .input:active {
+    border: none;
+}
+
+#area_cmd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    white-space: pre-wrap;
+}
+
+.line {
+    display: block;
+}
+
+.head[contenteditable="false"] {
+    user-select: none;
+}
+
+.input {
+    outline: none;
+    min-width: 1px;
 }

@@ -18,7 +18,7 @@ export class Terminal extends WindowApp {
         // Textarea
         const area = document.createElement('div');
         area.id = 'area_cmd';
-        area.contentEditable = true;
+        area.contentEditable = "false";
         Object.assign(area.style, {
             width: '-webkit-fill-available',
             height: this.innerFrame.style.minHeight,
@@ -27,13 +27,13 @@ export class Terminal extends WindowApp {
         });
         this.innerFrame.appendChild(area);
     }
-    
-    open(){
+
+    open() {
         this._openBase();
-        this.#initNewCommandLine();
+        if (this.innerFrame.querySelector('div').innerHTML.trim() === '') { this.#initNewCommandLine() }
     }
 
-    #initNewCommandLine() {
+    async #initNewCommandLine() {
         function placeCaretAtEnd(el) {
             const range = document.createRange();
             const sel = window.getSelection();
@@ -58,33 +58,66 @@ export class Terminal extends WindowApp {
             return area.querySelector('.line:last-child .input');
         }
 
+        // Insertion dans la ligne
         const area = document.getElementById('area_cmd');
+        area.addEventListener('beforeinput', (e) => {
+            if (e.inputType === 'deleteContentBackward') {
+                const inp = currentInput(area);
+                if (inp && isCaretAtStart(inp)) {
+                    e.preventDefault(); // bloque le backspace sur le prompt
+                }
+            }
+        });
+        area.addEventListener('keydown', (e) => {
+            const inp = currentInput(area);
+            if (!inp) return;
+            const sel = window.getSelection();
+            if (!sel.rangeCount || !inp.contains(sel.anchorNode)) {
+                // On recentre le focus dans l’input
+                placeCaretAtEnd(inp);
+                // Laisse passer les flèches, sinon bloque
+                if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            }
+        });
 
         const line = document.createElement('div');
         line.className = 'line';
+        area.appendChild(line);
 
         const head = document.createElement('span');
         head.className = 'head';
         head.contentEditable = 'false';
-        head.textContent = `${this.computerElement.username.replace(' ', '_')}@EscapeGameNumeric:~$ `; // note l’espace
         line.appendChild(head);
 
-        // 1ere partie
+        // Head de la commande
         const user = document.createElement('span');
         user.classList.add('user');
         user.innerText = `${this.computerElement.username.replace(' ', '_')}@EscapeGameNumeric`;
         head.appendChild(user);
 
-        // Mid
         head.appendChild(document.createTextNode(':'));
 
-        // 2e partie
         const uiPWD = document.createElement('span');
         uiPWD.classList.add('pwd');
         uiPWD.innerText = '~';
         head.appendChild(uiPWD);
-
-        // End
         head.appendChild(document.createTextNode('$\u00A0'));
+
+        // champ pour faire la commande
+        const input = document.createElement('span');
+        input.className = 'input';
+        input.contentEditable = 'true';
+        input.spellcheck = false;
+        line.appendChild(input);
+        placeCaretAtEnd(input);
+        input.addEventListener('focusout', () => {
+            if (this.innerFrame.clientWidth !== 0) { input.focus() }
+        });
+
+        await FunctionAsset.sleep(0.001); // Temps d'attente pour laisser head s'afficher (depuis la POV du user -> aucun temps d'attente)
+        console.log(line.clientWidth, head, head.clientWidth);
+        input.style.width = `${line.clientWidth - head.clientWidth - 3}px`;
     }
 }
