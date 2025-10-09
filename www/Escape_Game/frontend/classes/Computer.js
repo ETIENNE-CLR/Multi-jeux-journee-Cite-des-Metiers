@@ -39,7 +39,7 @@ export class Computer {
 		// Initialisation des applications fictives
 		this.#explorer = new Explorer([
 			new FolderExplorer("Documents", [
-				new FolderExplorer("Nouveau dossier", [
+				new FolderExplorer("Nouveau_dossier", [
 					new FileExplorer("test.md", this, "## Ceci est un test !")
 				]),
 				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")

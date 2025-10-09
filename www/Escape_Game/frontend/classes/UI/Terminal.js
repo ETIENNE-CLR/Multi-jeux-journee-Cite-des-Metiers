@@ -149,20 +149,20 @@ export class Terminal extends WindowApp {
             let commandArray = command.split(' ');
             let commandName = commandArray[0] ?? command;
             let destination = commandArray[1] ?? '';
-            let sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd));
+            let sortedContent = () => { return this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd)) };
 
             // Tab
             if (e.key === 'Tab') {
                 if (destination === '') { return }
                 if (['mkdir', 'pwd', 'touch'].includes(commandName)) { return }
-                let rightDir = sortedContent.find(e => e instanceof FolderExplorer && e.name.startsWith(destination))
+                let rightDir = sortedContent().find(e => e instanceof FolderExplorer && e.name.startsWith(destination))
                 if (rightDir !== null) {
                     input.innerText += rightDir.name.substring(destination.length) + '/'
                 }
 
                 // Sortie
                 return;
-            }    
+            }
 
             // Enter
             // Création du resultat
@@ -182,7 +182,22 @@ export class Terminal extends WindowApp {
                 switch (commandName) {
                     case 'cd':
                         destination = destination.replace('/', '');
-                        let rightDir = sortedContent.find(e => e instanceof FolderExplorer && e.name == destination)
+
+                        if (destination === '..') {
+                            let newPwd = [];
+                            let pwdArray = this.Pwd.split('/')
+                            pwdArray.forEach(e => { if (e !== '') { newPwd.push(e) } });
+                            newPwd.pop();
+                            this.#pwd = newPwd.join('/');
+                            destination = '';
+                        }
+
+                        // Recup
+                        let sCtn = sortedContent();
+                        let rightDir = (destination !== '')
+                            ? sCtn.find(e => e instanceof FolderExplorer && e.name == destination)
+                            : sCtn.find(e => e instanceof FolderExplorer);
+
                         if (rightDir != null) {
                             this.#pwd += rightDir.name + '/';
                         } else {
@@ -196,11 +211,9 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'ls':
-                        if (destination != '') {
-                            sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd + destination));
-                        }
-                        for (let i = 0; i < sortedContent.length; i++) {
-                            const el = sortedContent[i];
+                        let content = sortedContent();
+                        for (let i = 0; i < content.length; i++) {
+                            const el = content[i];
                             let isFolder = (el instanceof FolderExplorer)
                             let txt = el.name + (el instanceof FolderExplorer ? '/' : '');
                             if (isFolder) {
