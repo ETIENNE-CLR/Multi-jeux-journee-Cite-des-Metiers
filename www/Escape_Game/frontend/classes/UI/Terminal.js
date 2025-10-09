@@ -34,12 +34,40 @@ export class Terminal extends WindowApp {
     }
 
     #initNewCommandLine() {
+        function placeCaretAtEnd(el) {
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
+        function isCaretAtStart(el) {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return false;
+            const range = sel.getRangeAt(0);
+            if (!el.contains(range.startContainer)) return false;
+            const probe = range.cloneRange();
+            probe.selectNodeContents(el);
+            probe.setEnd(range.startContainer, range.startOffset);
+            return probe.toString().length === 0;
+        }
+
+        function currentInput(area) {
+            return area.querySelector('.line:last-child .input');
+        }
+
         const area = document.getElementById('area_cmd');
 
+        const line = document.createElement('div');
+        line.className = 'line';
+
         const head = document.createElement('span');
-        head.classList.add('head');
-        head.contentEditable = "false";
-        area.appendChild(head);
+        head.className = 'head';
+        head.contentEditable = 'false';
+        head.textContent = `${this.computerElement.username.replace(' ', '_')}@EscapeGameNumeric:~$ `; // note l’espace
+        line.appendChild(head);
 
         // 1ere partie
         const user = document.createElement('span');
