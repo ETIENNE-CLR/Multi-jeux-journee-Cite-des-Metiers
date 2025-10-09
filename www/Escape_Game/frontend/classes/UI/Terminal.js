@@ -1,3 +1,4 @@
+import { FolderExplorer } from "../Others/FolderExplorer.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "./WindowApp.js";
@@ -5,11 +6,14 @@ import { WindowApp } from "./WindowApp.js";
 export class Terminal extends WindowApp {
     #pwd;
     #commandName;
+    #explorer;
+
     get Pwd() { return this.#pwd }
 
-    constructor(pwd, computerElement) {
+    constructor(pwd, explorer, computerElement) {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
         this.#pwd = pwd;
+        this.#explorer = explorer;
 
         // Commandes valides
         this.#commandName = [
@@ -123,7 +127,7 @@ export class Terminal extends WindowApp {
 
         const uiPWD = document.createElement('span');
         uiPWD.classList.add('pwd');
-        uiPWD.innerText = '~';
+        uiPWD.innerText = this.Pwd.replace('/', '~');
         head.appendChild(uiPWD);
         head.appendChild(document.createTextNode('$\u00A0'));
 
@@ -136,9 +140,15 @@ export class Terminal extends WindowApp {
         line.appendChild(input);
         placeCaretAtEnd(input);
         input.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter') { return }
+            if (e.key !== 'Enter' && e.key !== 'Tab') { return }
             e.preventDefault();
 
+            // Tab
+            if (e.key !== 'Tab') {
+                // 
+            }
+
+            // Enter
             // Création du resultat
             const cmd = getCMD();
             const commandReturn = document.createElement('div');
@@ -147,7 +157,9 @@ export class Terminal extends WindowApp {
             // Découpage de la commande
             let returnText = '';
             let command = input.innerText.trim()
-            let commandName = command.split(' ')[0];
+            let commandArray = command.split(' ');
+            let commandName = commandArray[0];
+            let destination = commandArray[1];
 
             // Test 1 - valid command name
             if (command === '') {
@@ -158,13 +170,34 @@ export class Terminal extends WindowApp {
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
+                let sortedContent = this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd));
                 switch (commandName) {
                     case 'cd':
-                        returnText = "cd";
+                        let rightDir = sortedContent.find(e => e instanceof FolderExplorer && e.name == destination)
+                        if (rightDir != null) {
+                            this.#pwd += rightDir.name + '/';
+                        } else {
+                            commandReturn.classList.add('error');
+                            returnText = `${destination}: directory not found`;
+                        }
                         break;
 
                     case 'pwd':
                         returnText = this.Pwd;
+                        break;
+
+                    case 'ls':
+                        for (let i = 0; i < sortedContent.length; i++) {
+                            const el = sortedContent[i];
+                            let isFolder = (el instanceof FolderExplorer)
+                            let txt = el.name + (el instanceof FolderExplorer ? '/' : '');
+                            if (isFolder) {
+                                returnText += `<span class="folder">${txt}</span>`;
+                            } else {
+                                returnText += txt;
+                            }
+                            returnText += '\t';
+                        }
                         break;
 
                     default:
@@ -173,7 +206,7 @@ export class Terminal extends WindowApp {
             }
 
             // Affichage return
-            commandReturn.innerText = returnText;
+            commandReturn.innerHTML = returnText;
             cmd.appendChild(commandReturn);
             this.#initNewCommandLine();
 

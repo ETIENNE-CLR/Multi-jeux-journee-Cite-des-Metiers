@@ -30,7 +30,8 @@
     color: rgb(22 198 12);
 }
 
-#area_cmd .line .head .pwd {
+#area_cmd .line .head .pwd,
+#area_cmd .line.return .folder {
     color: rgb(59 120 255);
 }
 

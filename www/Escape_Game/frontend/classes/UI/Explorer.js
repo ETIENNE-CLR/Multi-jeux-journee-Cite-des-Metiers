@@ -5,20 +5,21 @@ import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
 
 export class Explorer extends WindowApp {
-	tree;
-	actualPath;
+	#tree;
+	#actualPath;
 	#mainBody;
 
-	get ActualPath() { return this.actualPath }
+	get Tree() { return this.#tree }
+	get ActualPath() { return this.#actualPath }
 	set ActualPath(value) {
-		this.actualPath = value;
+		this.#actualPath = value;
 		this.viewPath();
 	}
 
 	constructor(tree, computerElement) {
 		super('Explorateur de fichiers', computerElement, new DesktopIconApp('assets/folder.png', 'Fichiers'))
-		this.tree = tree;
-		this.actualPath = '/';
+		this.#tree = tree;
+		this.#actualPath = '/';
 
 		// Créer l'explorateur de fichiers
 		FunctionAsset.applyStyle(this.innerFrame, {
@@ -64,7 +65,7 @@ export class Explorer extends WindowApp {
 			border: '1px solid grey'
 		});
 		btn_back.addEventListener('click', () => {
-			let temp = stringPathToArray(this.actualPath);
+			let temp = stringPathToArray(this.#actualPath);
 			let newActualPath = '/';
 			for (let pkj = 0; pkj < temp.length - 1; pkj++) {
 				newActualPath += `${temp[pkj]}/`;
@@ -105,14 +106,14 @@ export class Explorer extends WindowApp {
 
 		// Récupérer toutes les enfants actuels
 		let children = this.getContentFromPath();
-		let directorys = [];
+		let directories = [];
 		let files = [];
 
 		// Génération des tableaux
 		Array.from(children).forEach(child => {
 			switch (child.constructor) {
 				case FolderExplorer:
-					directorys.push(child);
+					directories.push(child);
 					break;
 
 				case FileExplorer:
@@ -136,7 +137,7 @@ export class Explorer extends WindowApp {
 		};
 
 		// Créer les dossiers enfants s'il y en a
-		Array.from(directorys).forEach(dir => {
+		Array.from(directories).forEach(dir => {
 			// Création du conteneur de l'icone
 			const iconCon = document.createElement('div');
 			FunctionAsset.applyStyle(iconCon, iconContainerStyle);
@@ -174,14 +175,15 @@ export class Explorer extends WindowApp {
 	 * qui sont présents dans le chemin
 	 * @returns {Array} Tableau contenant des dossiers et/ou des fichiers
 	 */
-	getContentFromPath() {
-		if (this.actualPath === "/") {
-			return this.tree;
+	getContentFromPath(path = null) {
+		let pathTmp = (path == null) ? this.ActualPath : path;
+		if (pathTmp === "/") {
+			return this.#tree;
 		}
 
 		// Chercher dans les enfants
-		let actualPathArray = this.actualPath.split('/').filter(Boolean);
-		let currentContent = this.tree;
+		let actualPathArray = pathTmp.split('/').filter(Boolean);
+		let currentContent = this.#tree;
 		let content = null;
 
 		for (let segment of actualPathArray) {
@@ -203,4 +205,17 @@ export class Explorer extends WindowApp {
 		}
 		return content;
 	}
+
+	sortPath(content) {
+		let directories = content
+			.filter(e => e instanceof FolderExplorer)
+			.sort((a, b) => a.name.localeCompare(b.name));
+
+		let files = content
+			.filter(e => e instanceof FileExplorer)
+			.sort((a, b) => a.name.localeCompare(b.name));
+
+		return [...directories, ...files];
+	}
+
 }

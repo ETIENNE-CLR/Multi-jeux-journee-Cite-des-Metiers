@@ -37,7 +37,7 @@ export class Computer {
 		this.openedWindows = [];
 
 		// Initialisation des applications fictives
-		let explorerTree = [
+		this.#explorer = new Explorer([
 			new FolderExplorer("Documents", [
 				new FolderExplorer("Nouveau dossier", [
 					new FileExplorer("test.md", this, "## Ceci est un test !")
@@ -47,8 +47,7 @@ export class Computer {
 			new FolderExplorer("Téléchargements", [
 				new FileExplorer("jsp.txt", this, "coucou")
 			])
-		];
-		this.#explorer = new Explorer(explorerTree, this);
+		], this);
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
 			new Website("News", "news.com", SiteMaker.news()),
@@ -56,7 +55,7 @@ export class Computer {
 			new Website("Ma compagnie", "ma-compagnie.com", SiteMaker.company()),
 			new Website("Not found", "not-found", SiteMaker.notFound()),
 		]);
-		this.#terminal = new Terminal('/', this);
+		this.#terminal = new Terminal('/', this.#explorer, this);
 
 		this.#iconPosition = [
 			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
