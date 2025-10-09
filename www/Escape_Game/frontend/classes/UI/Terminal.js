@@ -4,11 +4,19 @@ import { WindowApp } from "./WindowApp.js";
 
 export class Terminal extends WindowApp {
     #pwd;
+    #commandName;
     get Pwd() { return this.#pwd }
 
     constructor(pwd, computerElement) {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
         this.#pwd = pwd;
+
+        // Commandes valides
+        this.#commandName = [
+            'cd', 'mkdir', 'pwd', 'ls',
+            'rm', 'copy', 'mv', 'cat',
+            'touch', 'echo', 'sudo'
+        ];
 
         // Couleur de fond
         Object.assign(this.innerFrame.style, {
@@ -19,12 +27,7 @@ export class Terminal extends WindowApp {
         const area = document.createElement('div');
         area.id = 'area_cmd';
         area.contentEditable = "false";
-        Object.assign(area.style, {
-            width: '-webkit-fill-available',
-            height: this.innerFrame.style.minHeight,
-            resize: 'none',
-            backgroundColor: 'transparent'
-        });
+        area.style.height = this.innerFrame.style.minHeight
         this.innerFrame.appendChild(area);
     }
 
@@ -58,8 +61,27 @@ export class Terminal extends WindowApp {
             return area.querySelector('.line:last-child .input');
         }
 
+        function getCMD() {
+            return document.getElementById('area_cmd');
+        }
+
+        function updateInputEventFocusManager() {
+            let allInput = getCMD().querySelectorAll('.input');
+            for (let i = 0; i < allInput.length; i++) {
+                if (i === (allInput.length - 1)) {
+                    // Le plus récent
+                    allInput[i].addEventListener('focusout', focusFnct);
+                    allInput[i].focus();
+                } else {
+                    // Le plus vieux
+                    allInput[i].removeEventListener('focusout', focusFnct);
+                    allInput[i].blur();
+                }
+            }
+        }
+
         // Insertion dans la ligne
-        const area = document.getElementById('area_cmd');
+        const area = getCMD();
         area.addEventListener('beforeinput', (e) => {
             if (e.inputType === 'deleteContentBackward') {
                 const inp = currentInput(area);
@@ -106,18 +128,65 @@ export class Terminal extends WindowApp {
         head.appendChild(document.createTextNode('$\u00A0'));
 
         // champ pour faire la commande
+        let focusFnct = () => { if (this.innerFrame.clientWidth !== 0) { input.focus() } }
         const input = document.createElement('span');
         input.className = 'input';
         input.contentEditable = 'true';
         input.spellcheck = false;
         line.appendChild(input);
         placeCaretAtEnd(input);
-        input.addEventListener('focusout', () => {
-            if (this.innerFrame.clientWidth !== 0) { input.focus() }
+        input.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') { return }
+            e.preventDefault();
+
+            // Création du resultat
+            const cmd = getCMD();
+            const commandReturn = document.createElement('div');
+            commandReturn.classList.add('line', 'return');
+
+            // Découpage de la commande
+            let returnText = '';
+            let command = input.innerText.trim()
+            let commandName = command.split(' ')[0];
+
+            // Test 1 - valid command name
+            if (command === '') {
+                this.#initNewCommandLine()
+                return
+            } else if (!this.isCommandOperatorValid(commandName)) {
+                commandReturn.classList.add('error');
+                returnText = `${commandName}: command not found`;
+            } else {
+                // Commande valide
+                switch (commandName) {
+                    case 'cd':
+                        returnText = "cd";
+                        break;
+
+                    case 'pwd':
+                        returnText = this.Pwd;
+                        break;
+
+                    default:
+                        throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
+                }
+            }
+
+            // Affichage return
+            commandReturn.innerText = returnText;
+            cmd.appendChild(commandReturn);
+            this.#initNewCommandLine();
+
+            // Gestion des nouveaux input
+            updateInputEventFocusManager();
         });
 
         await FunctionAsset.sleep(0.001); // Temps d'attente pour laisser head s'afficher (depuis la POV du user -> aucun temps d'attente)
-        console.log(line.clientWidth, head, head.clientWidth);
         input.style.width = `${line.clientWidth - head.clientWidth - 3}px`;
+        updateInputEventFocusManager();
+    }
+
+    isCommandOperatorValid(str) {
+        return this.#commandName.includes(str);
     }
 }
