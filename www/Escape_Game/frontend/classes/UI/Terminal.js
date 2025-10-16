@@ -223,7 +223,9 @@ export class Terminal extends WindowApp {
                             returnText = `ls: too many arguments`;
                             break;
                         }
-                        returnText = this.#ls(this.#normalizePwd(params[0] ?? ''));
+                        let dest = params[0] ?? ''
+                        let preparedPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
+                        returnText = this.#ls(preparedPwd);
                         break;
 
                     default:
