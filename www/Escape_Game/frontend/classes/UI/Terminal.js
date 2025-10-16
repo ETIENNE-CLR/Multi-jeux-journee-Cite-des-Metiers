@@ -9,6 +9,7 @@ export class Terminal extends WindowApp {
     #explorer;
 
     get Pwd() { return this.#pwd }
+    get ValideCommand() { return this.#commandName }
 
     constructor(pwd, explorer, computerElement) {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
@@ -19,11 +20,11 @@ export class Terminal extends WindowApp {
         this.#commandName = [
             'cd', 'mkdir', 'pwd', 'ls',
             'rm', 'cp', 'mv', 'cat',
-            'touch', 'echo', 'sudo'
+            'touch', 'echo', 'whoami'
         ];
 
         // Couleur de fond
-        Object.assign(this.innerFrame.style, {
+        Object.assign(this.innerFrame.style, { 
             backgroundColor: 'rgb(12 12 12)'
         });
 
@@ -143,29 +144,35 @@ export class Terminal extends WindowApp {
             if (e.key !== 'Enter' && e.key !== 'Tab') { return }
             e.preventDefault();
 
-            // Découpage de la commande
-            let returnText = '';
+            // Découpage de la commande - NE PREND PAS EN COMPTE SUDO POUR L'INSTANT
+            let preparedChar = '_';
             let command = input.innerText.trim()
-            let commandArray = command.split(' ');
-            let commandName = commandArray[0] ?? command;
-            let destination = commandArray[1] ?? '';
-            let sortedContent = () => { return this.#explorer.sortPath(this.#explorer.getContentFromPath(this.Pwd)) };
+            let preparedCommand = command.replace(' ', preparedChar);
 
+            let commandArray = preparedCommand.split(preparedChar);
+            let commandName = commandArray[0] ?? '';
+            
+            let paramsStr = commandArray[1] ?? '';
+            let params = paramsStr.split(' ');
+            
             // Tab
             if (e.key === 'Tab') {
-                if (destination === '') { return }
-                if (['mkdir', 'pwd', 'touch'].includes(commandName)) { return }
-                let rightDir = sortedContent().find(e => e instanceof FolderExplorer && e.name.startsWith(destination))
+                if (params === '') { return }
+                if (['mkdir', 'pwd', 'touch', 'echo', 'whoami'].includes(commandName)) { return }
+                //  verifier le ls dans les params
+                let lastParam = params[params.length - 1];
+                let rightDir = this.#getSortedContent(this.#getPwdWithPointPoint(`${this.Pwd}`)).find(e => e instanceof FolderExplorer && e.name.startsWith(lastParam))
                 if (rightDir !== null) {
-                    input.innerText += rightDir.name.substring(destination.length) + '/'
+                    input.innerText += rightDir.name.substring(params.length) + '/'
                 }
-
+                
                 // Sortie
                 return;
             }
-
-            // Enter
+            
+            // Enter - Execution de la commande
             // Création du resultat
+            let returnText = '';
             const cmd = getCMD();
             const commandReturn = document.createElement('div');
             commandReturn.classList.add('line', 'return');
@@ -181,28 +188,28 @@ export class Terminal extends WindowApp {
                 // Commande valide
                 switch (commandName) {
                     case 'cd':
-                        destination = destination.replace('/', '');
+                        params = params.replace('/', '');
 
-                        if (destination === '..') {
+                        if (params === '..') { 
                             let newPwd = [];
                             let pwdArray = this.Pwd.split('/')
                             pwdArray.forEach(e => { if (e !== '') { newPwd.push(e) } });
                             newPwd.pop();
                             this.#pwd = newPwd.join('/');
-                            destination = '';
+                            params = '';
                         }
 
                         // Recup
                         let sCtn = sortedContent();
-                        let rightDir = (destination !== '')
-                            ? sCtn.find(e => e instanceof FolderExplorer && e.name == destination)
+                        let rightDir = (params !== '')
+                            ? sCtn.find(e => e instanceof FolderExplorer && e.name == params)
                             : sCtn.find(e => e instanceof FolderExplorer);
 
                         if (rightDir != null) {
                             this.#pwd += rightDir.name + '/';
                         } else {
                             commandReturn.classList.add('error');
-                            returnText = `${destination}: directory not found`;
+                            returnText = `${params}: directory not found`;
                         }
                         break;
 
@@ -240,11 +247,21 @@ export class Terminal extends WindowApp {
         });
 
         await FunctionAsset.sleep(0.001); // Temps d'attente pour laisser head s'afficher (depuis la POV du user -> aucun temps d'attente)
-        input.style.width = `${line.clientWidth - head.clientWidth - 3}px`;
+        input.style.minWidth = `${line.clientWidth - head.clientWidth - 3}px`;
         updateInputEventFocusManager();
     }
 
     isCommandOperatorValid(str) {
         return this.#commandName.includes(str);
+    }
+
+    #getPwdWithPointPoint(strPwdWhithPointPoint) {
+        let newPwd = [];
+        let pwdArray = strPwdWhithPointPoint.split('/')
+        return this.Pwd;
+    }
+
+    #getSortedContent(pwd = this.Pwd) {
+        return this.#explorer.sortPath(this.#explorer.getContentFromPath(pwd))
     }
 }
