@@ -161,7 +161,7 @@ export class Terminal extends WindowApp {
                 if (['mkdir', 'pwd', 'touch', 'echo', 'whoami'].includes(commandName)) { return }
                 //  verifier le ls dans les params
                 let lastParam = params[params.length - 1];
-                let rightDir = this.#getSortedContent(this.#getPwdWithPointPoint(`${this.Pwd}`)).find(e => e instanceof FolderExplorer && e.name.startsWith(lastParam))
+                let rightDir = this.#getSortedContent(this.#normalizePwd(`${this.Pwd}`)).find(e => e instanceof FolderExplorer && e.name.startsWith(lastParam))
                 if (rightDir !== null) {
                     input.innerText += rightDir.name.substring(params.length) + '/'
                 }
@@ -218,7 +218,12 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'ls':
-                        returnText = this.#ls(this.Pwd);
+                        if (params.length > 1) {
+                            commandReturn.classList.add('error');
+                            returnText = `ls: too many arguments`;
+                            break;
+                        }
+                        returnText = this.#ls(this.#normalizePwd(params[0] ?? ''));
                         break;
 
                     default:
@@ -244,10 +249,37 @@ export class Terminal extends WindowApp {
         return this.#commandName.includes(str);
     }
 
-    #getPwdWithPointPoint(strPwdWhithPointPoint) {
-        let newPwd = [];
-        let pwdArray = strPwdWhithPointPoint.split('/')
-        return this.Pwd;
+    #normalizePwd(nouveauPwd) {
+        let finalPwdStr = this.Pwd;        
+        let pwdArray = (this.Pwd.length > 1 ? this.Pwd.substring(1, this.Pwd.length - 1) : '').split('/'); // enlever les / de début et fin + split par /
+        
+        // Préparation du nouveau pwd au bon format (chemin relatif, supprimer le / de fin, split)
+        nouveauPwd = nouveauPwd.replace(this.Pwd, ''); // chemin relatif depuis le pwd
+        nouveauPwd = (nouveauPwd[nouveauPwd.length - 1] === '/') ? nouveauPwd = nouveauPwd.substring(0, nouveauPwd.length - 1) : nouveauPwd; // enlever le / de fin (s'il y en a un)
+        nouveauPwd = nouveauPwd.split('/'); // split par /
+
+        // un argument a été passé
+        nouveauPwd.forEach(e => {
+            if (e === '' || e === '.') {
+                // Rien
+            } else if (e === '..') {
+                pwdArray.pop();
+            } else {
+                pwdArray.push(e);
+            }
+        });
+
+        // Reconstruction du pwd
+        pwdArray = pwdArray.join('/');
+        if (pwdArray !== '') {
+            pwdArray = '/' + pwdArray + '/';
+        } else {
+            pwdArray = '/';
+        }
+        finalPwdStr = pwdArray;
+
+        console.log(finalPwdStr);
+        return finalPwdStr;
     }
 
     #getSortedContent(pwd = this.Pwd) {
