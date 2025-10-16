@@ -128,7 +128,7 @@ export class Terminal extends WindowApp {
 
         const uiPWD = document.createElement('span');
         uiPWD.classList.add('pwd');
-        uiPWD.innerText = this.Pwd.replace('/', '~');
+        uiPWD.innerText = this.Pwd;
         head.appendChild(uiPWD);
         head.appendChild(document.createTextNode('$\u00A0'));
 

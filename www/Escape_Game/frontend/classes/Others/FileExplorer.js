@@ -1,25 +1,18 @@
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
+import { ChmodConstructor, parseChmod } from "./ChModConstructor.js";
 import { DesktopIconApp } from "./IconApp.js";
 
 export class FileExplorer extends WindowApp {
 	name;
 	content;
+	chmod;
 
-	constructor(name, computerElement, content = "") {
+	constructor(name, computerElement, content = "", chmod = ChmodConstructor(true, true, false)) {
 		super(`Edition - ${name}`, computerElement, new DesktopIconApp('assets/file.png', name));
 		this.name = name;
-		this.setContent(content);
-	}
-
-	// Lire le contenu du fichier
-	getContent() {
-		return this.content;
-	}
-
-	// Modifier le contenu du fichier
-	setContent(newContent) {
-		this.content = newContent;
+		this.content =content;
+		this.chmod = chmod;
 	}
 
 	displayView() {
@@ -37,14 +30,22 @@ export class FileExplorer extends WindowApp {
 			this.innerFrame.appendChild(textArea);
 			this.innerFrame.style.height = '400px';
 		}
-		textArea.value = this.getContent();
+		textArea.value = this.content;
 		textArea.addEventListener('change', () => {
-			let content = textArea.value;
-			this.setContent(content);
+			if (!parseChmod(this.chmod).write) {
+				alert("Vous n'avez pas la permission d'écrire dans ce fichier.");
+				textArea.value = this.content;
+				return;
+			}
+			this.content = textArea.value;
 		});
 	}
 
 	open() {
+		if (!parseChmod(this.chmod).read) {
+			alert("Vous n'avez pas la permission de lire ce fichier.");
+			return;
+		}
 		this._openBase();
 		this.displayView();
 	}

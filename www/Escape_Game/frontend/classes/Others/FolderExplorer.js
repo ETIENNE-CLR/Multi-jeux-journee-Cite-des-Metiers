@@ -1,10 +1,14 @@
+import { ChmodConstructor } from "./ChModConstructor.js";
+
 export class FolderExplorer {
 	name;
 	children;
+	chmod;
 	
-	constructor(name, children = []) {
+	constructor(name, children = [], chmod = ChmodConstructor(true, true, false)) {
 		this.name = name;
 		this.children = children;
+		this.chmod = chmod;
 	}
 
 	// Ajouter un enfant (dossier ou fichier)

@@ -1,3 +1,4 @@
+import { ChmodConstructor } from "./Others/ChModConstructor.js";
 import { FileExplorer } from "./Others/FileExplorer.js";
 import { FolderExplorer } from "./Others/FolderExplorer.js";
 import { DesktopIconApp } from "./Others/IconApp.js";
@@ -42,7 +43,7 @@ export class Computer {
 				new FolderExplorer("Nouveau_dossier", [
 					new FileExplorer("test.md", this, "## Ceci est un test !")
 				]),
-				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")
+				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles", ChmodConstructor(true, true, false))
 			]),
 			new FolderExplorer("Téléchargements", [
 				new FileExplorer("jsp.txt", this, "coucou")
