@@ -24,7 +24,7 @@ export class Terminal extends WindowApp {
         ];
 
         // Couleur de fond
-        Object.assign(this.innerFrame.style, { 
+        Object.assign(this.innerFrame.style, {
             backgroundColor: 'rgb(12 12 12)'
         });
 
@@ -151,10 +151,10 @@ export class Terminal extends WindowApp {
 
             let commandArray = preparedCommand.split(preparedChar);
             let commandName = commandArray[0] ?? '';
-            
+
             let paramsStr = commandArray[1] ?? '';
             let params = paramsStr.split(' ');
-            
+
             // Tab
             if (e.key === 'Tab') {
                 if (params === '') { return }
@@ -165,11 +165,11 @@ export class Terminal extends WindowApp {
                 if (rightDir !== null) {
                     input.innerText += rightDir.name.substring(params.length) + '/'
                 }
-                
+
                 // Sortie
                 return;
             }
-            
+
             // Enter - Execution de la commande
             // Création du resultat
             let returnText = '';
@@ -190,7 +190,7 @@ export class Terminal extends WindowApp {
                     case 'cd':
                         params = params.replace('/', '');
 
-                        if (params === '..') { 
+                        if (params === '..') {
                             let newPwd = [];
                             let pwdArray = this.Pwd.split('/')
                             pwdArray.forEach(e => { if (e !== '') { newPwd.push(e) } });
@@ -200,7 +200,7 @@ export class Terminal extends WindowApp {
                         }
 
                         // Recup
-                        let sCtn = sortedContent();
+                        let sCtn = this.#getSortedContent();
                         let rightDir = (params !== '')
                             ? sCtn.find(e => e instanceof FolderExplorer && e.name == params)
                             : sCtn.find(e => e instanceof FolderExplorer);
@@ -218,18 +218,7 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'ls':
-                        let content = sortedContent();
-                        for (let i = 0; i < content.length; i++) {
-                            const el = content[i];
-                            let isFolder = (el instanceof FolderExplorer)
-                            let txt = el.name + (el instanceof FolderExplorer ? '/' : '');
-                            if (isFolder) {
-                                returnText += `<span class="folder">${txt}</span>`;
-                            } else {
-                                returnText += txt;
-                            }
-                            returnText += '\t';
-                        }
+                        returnText = this.#ls(this.Pwd);
                         break;
 
                     default:
@@ -263,5 +252,19 @@ export class Terminal extends WindowApp {
 
     #getSortedContent(pwd = this.Pwd) {
         return this.#explorer.sortPath(this.#explorer.getContentFromPath(pwd))
+    }
+
+    #ls(pwd) {
+        let returnText = '';
+        let content = this.#getSortedContent(pwd);
+        for (let i = 0; i < content.length; i++) {
+            const el = content[i];
+            let isFolder = (el instanceof FolderExplorer)
+            let txt = el.name + (isFolder ? '/' : '');
+
+            returnText += (isFolder) ? `<span class="folder">${txt}</span>` : txt;
+            returnText += '\t';
+        }
+        return returnText;
     }
 }
