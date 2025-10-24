@@ -186,31 +186,16 @@ export class Terminal extends WindowApp {
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
+                let dest = paramsStr ?? ''
+                let preparedPwdArguments = (dest[0] === '/') ? dest : (this.Pwd + dest)
                 switch (commandName) {
                     case 'cd':
-                        params = params.replace('/', '');
-
-                        if (params === '..') {
-                            let newPwd = [];
-                            let pwdArray = this.Pwd.split('/')
-                            pwdArray.forEach(e => { if (e !== '') { newPwd.push(e) } });
-                            newPwd.pop();
-                            this.#pwd = newPwd.join('/');
-                            params = '';
-                        }
-
-                        // Recup
-                        let sCtn = this.#getSortedContent();
-                        let rightDir = (params !== '')
-                            ? sCtn.find(e => e instanceof FolderExplorer && e.name == params)
-                            : sCtn.find(e => e instanceof FolderExplorer);
-
-                        if (rightDir != null) {
-                            this.#pwd += rightDir.name + '/';
-                        } else {
+                        if (params.length > 1) {
                             commandReturn.classList.add('error');
-                            returnText = `${params}: directory not found`;
+                            returnText = `${commandName}: too many arguments`;
+                            break;
                         }
+                        this.#pwd = this.#normalizePwd(preparedPwdArguments);
                         break;
 
                     case 'pwd':
@@ -220,12 +205,10 @@ export class Terminal extends WindowApp {
                     case 'ls':
                         if (params.length > 1) {
                             commandReturn.classList.add('error');
-                            returnText = `ls: too many arguments`;
+                            returnText = `${commandName}: too many arguments`;
                             break;
                         }
-                        let dest = paramsStr ?? ''
-                        let preparedPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
-                        returnText = this.#ls(this.#normalizePwd(preparedPwd));
+                        returnText = this.#ls(this.#normalizePwd(preparedPwdArguments));
                         break;
 
                     default:
@@ -252,39 +235,32 @@ export class Terminal extends WindowApp {
     }
 
     #normalizePwd(nouveauPwd) {
+        if (!this.Pwd) { throw new Error("Le PWD n'est pas valide !") }
         let finalPwdStr = '';
         let formattedPwd = `${this.Pwd}`;
-        if (formattedPwd[0] == '/') {
-            formattedPwd = formattedPwd.substring(1);
-        }
-        if (formattedPwd[formattedPwd.length - 1] == '/') {
-            formattedPwd = formattedPwd.substring(0, formattedPwd.length - 1);
-        }
-        let formattedPwdArray = formattedPwd.split('/');
-        
-        // Préparation du nouveau pwd
-        if (nouveauPwd.startsWith(this.Pwd)) {
+
+        // Nettoyage des / de début et de fin
+        if (formattedPwd.startsWith('/')) formattedPwd = formattedPwd.substring(1);
+        if (formattedPwd.endsWith('/')) formattedPwd = formattedPwd.slice(0, -1);
+        let formattedPwdArray = formattedPwd ? formattedPwd.split('/') : [];
+
+        // Nettoyage du nouveau chemin
+        if (this.Pwd !== '/' && nouveauPwd.startsWith(this.Pwd)) {
             nouveauPwd = nouveauPwd.replace(this.Pwd, '');
         }
-        nouveauPwd = nouveauPwd.split('/');
+        nouveauPwd = nouveauPwd.replace(/\/+/g, '/').split('/');
 
-        // un argument a été passé
-        nouveauPwd.forEach(e => {
-            if (e === '' || e === '.') {
-                // Rien
-            } else if (e === '..') {
-                formattedPwdArray.pop();
-            } else {
-                formattedPwdArray.push(e);
-            }
-        });
+        // Parcours
+        for (const e of nouveauPwd) {
+            if (!e || e === '.') continue;
+            if (e === '..') formattedPwdArray.pop();
+            else formattedPwdArray.push(e);
+        }
 
-        // Reconstruction du pwd
-        finalPwdStr = formattedPwdArray.join('/');
-        if (finalPwdStr !== '') {
-            finalPwdStr = '/' + finalPwdStr + '/';
-        } else {
-            finalPwdStr = '/';
+        // Reconstruction
+        finalPwdStr = '/' + formattedPwdArray.join('/');
+        if (finalPwdStr.length > 1 && finalPwdStr.endsWith('/')) {
+            finalPwdStr = finalPwdStr.slice(0, -1);
         }
         return finalPwdStr;
     }
