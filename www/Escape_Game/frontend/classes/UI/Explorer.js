@@ -1,5 +1,5 @@
-import { FileExplorer } from "../Others/FileExplorer.js";
-import { FolderExplorer } from "../Others/FolderExplorer.js";
+import { File } from "../Others/File.js";
+import { Directory } from "../Others/Directory.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
@@ -112,11 +112,11 @@ export class Explorer extends WindowApp {
 		// Génération des tableaux
 		Array.from(children).forEach(child => {
 			switch (child.constructor) {
-				case FolderExplorer:
+				case Directory:
 					directories.push(child);
 					break;
 
-				case FileExplorer:
+				case File:
 					files.push(child);
 					break;
 
@@ -191,10 +191,10 @@ export class Explorer extends WindowApp {
 			content = currentContent.find(child => child.name === segment);
 
 			// On regarde ses enfants
-			if (content instanceof FolderExplorer) {
+			if (content instanceof Directory) {
 				currentContent = content.getChildren();
 				content = currentContent;
-			} else if (content instanceof FileExplorer) {
+			} else if (content instanceof File) {
 				// C'est un fichier
 				break;
 			} else {
@@ -208,11 +208,11 @@ export class Explorer extends WindowApp {
 
 	sortPath(content) {
 		let directories = content
-			.filter(e => e instanceof FolderExplorer)
+			.filter(e => e instanceof Directory)
 			.sort((a, b) => a.name.localeCompare(b.name));
 
 		let files = content
-			.filter(e => e instanceof FileExplorer)
+			.filter(e => e instanceof File)
 			.sort((a, b) => a.name.localeCompare(b.name));
 
 		return [...directories, ...files];

@@ -1,4 +1,5 @@
-import { FolderExplorer } from "../Others/FolderExplorer.js";
+import { ChmodConstructor, parseChmod } from "../Others/ChModConstructor.js";
+import { Directory } from "../Others/Directory.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "./WindowApp.js";
@@ -7,6 +8,7 @@ export class Terminal extends WindowApp {
     #pwd;
     #commandName;
     #explorer;
+    #tree;
 
     get Pwd() { return this.#pwd }
     get ValideCommand() { return this.#commandName }
@@ -15,6 +17,7 @@ export class Terminal extends WindowApp {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
         this.#pwd = pwd;
         this.#explorer = explorer;
+        this.#tree = this.#explorer.Tree;
 
         // Commandes valides
         this.#commandName = [
@@ -161,7 +164,7 @@ export class Terminal extends WindowApp {
                 if (['mkdir', 'pwd', 'touch', 'echo', 'whoami'].includes(commandName)) { return }
                 //  verifier le ls dans les params
                 let lastParam = params[params.length - 1];
-                let rightDir = this.#getSortedContent(this.#normalizePwd(`${this.Pwd}`)).find(e => e instanceof FolderExplorer && e.name.startsWith(lastParam))
+                let rightDir = this.#getSortedContent(this.#normalizePwd(`${this.Pwd}`)).find(e => e instanceof Directory && e.name.startsWith(lastParam))
                 if (rightDir !== null) {
                     input.innerText += rightDir.name.substring(params.length) + '/'
                 }
@@ -187,7 +190,7 @@ export class Terminal extends WindowApp {
             } else {
                 // Commande valide
                 let dest = paramsStr ?? ''
-                let preparedPwdArguments = (dest[0] === '/') ? dest : (this.Pwd + dest)
+                let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
                 switch (commandName) {
                     case 'cd':
                         if (params.length > 1) {
@@ -195,11 +198,65 @@ export class Terminal extends WindowApp {
                             returnText = `${commandName}: too many arguments`;
                             break;
                         }
-                        this.#pwd = this.#normalizePwd(preparedPwdArguments);
+
+                        let norPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd);
+                        if (!this.#getSortedContent(norPwd)) {
+                            commandReturn.classList.add('error');
+                            returnText = `${paramsStr}: directory not found`;
+                            break;
+                        }
+                        this.#pwd = norPwd;
                         break;
 
                     case 'pwd':
                         returnText = this.Pwd;
+                        break;
+
+                    case 'whoami':
+                        returnText = this.computerElement.username.replace(' ', '_');
+                        break;
+
+                    case 'mkdir':
+                        function g(value) {
+                            if (value instanceof Directory) {
+                                return value.children
+                            } else {
+                                return value;
+                            }
+                        }
+                        let actualDir = this.#tree;
+                        const pwdArray = this.Pwd.split('/').filter(Boolean);
+
+                        // navigation dans l'arborescence
+                        for (const e of pwdArray) {
+                            const found = g(actualDir).find(c => c.name === e && c instanceof Directory);
+                            if (!found) throw new Error(`Dossier "${e}" introuvable.`);
+                            actualDir = found;
+                        }
+
+                        // création des nouveaux dossiers
+                        for (const dirName of params) {
+                            if (this.Pwd !== '/' && !parseChmod(actualDir.chmod).write) {
+                                returnText += `<span class="error">mkdir: cannot create directory '${dirName}': Permission denied</span>\n`;
+                                break;
+                            }
+                            if (g(actualDir).find(c => c.name === dirName)) {
+                                returnText += `<span class="error">mkdir: cannot create directory '${dirName}': File exists</span>\n`;
+                                break;
+                            }
+
+                            // Création
+                            if (this.Pwd === '/') {
+                                actualDir.push(new Directory(dirName, [], ChmodConstructor(true, true, true)));
+                            } else {
+                                actualDir.children.push(new Directory(dirName, [], ChmodConstructor(true, true, true)));
+                            }
+                            returnText += `${dirName} created\n`;
+
+                        };
+                        if (!returnText.includes('error')) {
+                            returnText = '';
+                        }
                         break;
 
                     case 'ls':
@@ -208,7 +265,7 @@ export class Terminal extends WindowApp {
                             returnText = `${commandName}: too many arguments`;
                             break;
                         }
-                        returnText = this.#ls(this.#normalizePwd(preparedPwdArguments));
+                        returnText = this.#ls(this.#normalizePwd(preparedPwdArguments_relatifPwd));
                         break;
 
                     default:
@@ -266,7 +323,11 @@ export class Terminal extends WindowApp {
     }
 
     #getSortedContent(pwd = this.Pwd) {
-        return this.#explorer.sortPath(this.#explorer.getContentFromPath(pwd))
+        let content = this.#explorer.getContentFromPath(pwd);
+        if (!content) {
+            return false;
+        }
+        return this.#explorer.sortPath(content);
     }
 
     #ls(pwd) {
@@ -274,11 +335,14 @@ export class Terminal extends WindowApp {
         let content = this.#getSortedContent(pwd);
         for (let i = 0; i < content.length; i++) {
             const el = content[i];
-            let isFolder = (el instanceof FolderExplorer)
+            let isFolder = (el instanceof Directory)
             let txt = el.name + (isFolder ? '/' : '');
 
-            returnText += (isFolder) ? `<span class="folder">${txt}</span>` : txt;
-            returnText += '\t';
+            if (isFolder) {
+                returnText += `<span class="folder">${txt}\t</span>`;
+            } else {
+                returnText += `${txt}\t`;
+            }
         }
         return returnText;
     }

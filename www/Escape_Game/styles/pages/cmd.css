@@ -52,6 +52,12 @@
 }
 
 /* Sortie du terminal */
-#area_cmd .line.return.error {
+#area_cmd .line.return.error,
+#area_cmd .line.return .error {
     color: red;
+}
+
+.folder {
+    white-space: pre;
+    tab-size: 4;
 }

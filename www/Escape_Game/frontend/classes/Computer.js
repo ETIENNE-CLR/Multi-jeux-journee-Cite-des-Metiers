@@ -1,6 +1,6 @@
 import { ChmodConstructor } from "./Others/ChModConstructor.js";
-import { FileExplorer } from "./Others/FileExplorer.js";
-import { FolderExplorer } from "./Others/FolderExplorer.js";
+import { File } from "./Others/File.js";
+import { Directory } from "./Others/Directory.js";
 import { DesktopIconApp } from "./Others/IconApp.js";
 import { Website } from "./Others/Website.js";
 import { DragDrop } from "./tools/DragDrop.js";
@@ -39,14 +39,14 @@ export class Computer {
 
 		// Initialisation des applications fictives
 		this.#explorer = new Explorer([
-			new FolderExplorer("Documents", [
-				new FolderExplorer("Nouveau_dossier", [
-					new FileExplorer("test.md", this, "## Ceci est un test !")
+			new Directory("Documents", [
+				new Directory("Nouveau_dossier", [
+					new File("test.md", this, "## Ceci est un test !")
 				]),
-				new FileExplorer("lien utiles.txt", this, "contenu de lien utiles")
+				new File("lien utiles.txt", this, "contenu de lien utiles")
 			]),
-			new FolderExplorer("Téléchargements", [
-				new FileExplorer("jsp.txt", this, "coucou")
+			new Directory("Téléchargements", [
+				new File("jsp.txt", this, "coucou")
 			])
 		], this);
 		this.#browser = new Browser(this, [
