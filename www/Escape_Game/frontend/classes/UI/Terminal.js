@@ -80,6 +80,14 @@ export class Terminal extends WindowApp {
                     // Le plus récent
                     allInput[i].addEventListener('focusout', focusFnct);
                     allInput[i].focus();
+
+                    // Déplace le curseur à la fin du texte
+                    const range = document.createRange();
+                    range.selectNodeContents(allInput[i]);
+                    range.collapse(false); // false => fin du contenu
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
                 } else {
                     // Le plus vieux
                     allInput[i].removeEventListener('focusout', focusFnct);
@@ -201,8 +209,8 @@ export class Terminal extends WindowApp {
                     this.#initNewCommandLine();
                     let inputs = area.querySelectorAll('span.input')
                     inputs[inputs.length - 1].innerText = command;
-                    updateInputEventFocusManager();
                 }
+                updateInputEventFocusManager();
                 return;
             }
 
