@@ -198,7 +198,7 @@ export class Terminal extends WindowApp {
                     returnLine.classList.add('line', 'return');
                     returnLine.innerHTML = '';
                     rightDirs.forEach(dir => {
-                        returnLine.innerHTML += `${dir.name}/\t`;
+                        returnLine.innerHTML += `<span class="enum">${dir.name}/\t</span>`;
                     });
                     area.appendChild(returnLine);
                     this.#initNewCommandLine();
@@ -376,7 +376,7 @@ export class Terminal extends WindowApp {
             let txt = el.name + (isFolder ? '/' : '');
 
             if (isFolder) {
-                returnText += `<span class="folder">${txt}\t</span>`;
+                returnText += `<span class="enum folder">${txt}\t</span>`;
             } else {
                 returnText += `${txt}\t`;
             }
