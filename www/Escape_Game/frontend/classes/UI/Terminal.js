@@ -410,14 +410,10 @@ export class Terminal extends WindowApp {
         let content = this.#getSortedContent(pwd);
         for (let i = 0; i < content.length; i++) {
             const el = content[i];
+            if (!parseChmod(el.chmod).read) continue;
             let isFolder = (el instanceof Directory)
             let txt = el.name + (isFolder ? '/' : '');
-
-            if (isFolder) {
-                returnText += `<span class="enum folder">${txt}\t</span>`;
-            } else {
-                returnText += `${txt}\t`;
-            }
+            returnText += (isFolder) ? `<span class="enum folder">${txt}\t</span>` : `${txt}\t`;
         }
         return returnText;
     }

@@ -50,7 +50,7 @@ export class Computer {
 			]),
 			new Directory(`Téléchargements`, [
 				new File(`jsp.txt`, this, `coucou`),
-				new Directory('securised', [], ChmodConstructor(true, false, false))
+				new Directory('securised', [], ChmodConstructor(false, false, false))
 			])
 		];
 		this.#terminal = new Terminal(this);

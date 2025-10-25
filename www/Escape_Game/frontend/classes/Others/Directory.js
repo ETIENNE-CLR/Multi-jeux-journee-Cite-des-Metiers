@@ -1,4 +1,4 @@
-import { ChmodConstructor } from "./ChmodConstructor.js";
+import { ChmodConstructor } from "./ChModConstructor.js";
 
 export class Directory {
 	name;
