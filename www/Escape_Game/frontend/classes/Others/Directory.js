@@ -1,11 +1,11 @@
-import { ChmodConstructor } from "./ChModConstructor.js";
+import { ChmodConstructor } from "./ChmodConstructor.js";
 
 export class Directory {
 	name;
 	children;
 	chmod;
 	
-	constructor(name, children = [], chmod = ChmodConstructor(true, true, false)) {
+	constructor(name, children = [], chmod = ChmodConstructor(true, true, true)) {
 		this.name = name;
 		this.children = children;
 		this.chmod = chmod;

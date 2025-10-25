@@ -42,14 +42,15 @@ export class Computer {
 
 		// Initialisation des applications fictives
 		this.#tree = [
-			new Directory("Documents", [
-				new Directory("Nouveau_dossier", [
-					new File("test.md", this, "## Ceci est un test !")
+			new Directory(`Documents`, [
+				new Directory(`Nouveau_dossier`, [
+					new File(`test.md`, this, `## Ceci est un test !`)
 				]),
-				new File("lien utiles.txt", this, "contenu de lien utiles")
+				new File(`liens_utiles.txt`, this, `[voici un lien utile]`)
 			]),
-			new Directory("Téléchargements", [
-				new File("jsp.txt", this, "coucou")
+			new Directory(`Téléchargements`, [
+				new File(`jsp.txt`, this, `coucou`),
+				new Directory('securised', [], ChmodConstructor(true, false, false))
 			])
 		];
 		this.#terminal = new Terminal(this);

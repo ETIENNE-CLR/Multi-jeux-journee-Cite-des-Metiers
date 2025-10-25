@@ -1,5 +1,6 @@
 import { ChmodConstructor, parseChmod } from "../Others/ChModConstructor.js";
 import { Directory } from "../Others/Directory.js";
+import { File } from "../Others/File.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "./WindowApp.js";
@@ -167,7 +168,7 @@ export class Terminal extends WindowApp {
                 let lastParam = paramsWithoutLastParams.pop();
                 let tmpPwd = this.#normalizePwd(this.Pwd + paramsWithoutLastParams.join('/')); // ici la fonction de normalisation prend en charge le ../ du paramètre mais il faut gérer si le paramètre c'est directement à partir de /
                 let actualContent = this.#getSortedContent(tmpPwd);
-                let rightDirs = actualContent.filter(e => e instanceof Directory && e.name.startsWith(lastParam));
+                let rightDirs = actualContent.filter(e => e.name.startsWith(lastParam) && ((commandName === 'cat' && e instanceof File) || (commandName !== 'cat' && e instanceof Directory)));
 
                 // Resultats de la recherche
                 if (rightDirs.length < 1) {
@@ -177,7 +178,8 @@ export class Terminal extends WindowApp {
                 if (rightDirs.length === 1) {
                     // Il a trouvé
                     nbTabClicked = 0;
-                    input.innerText += rightDirs[0].name.substring(lastParam.length) + '/';
+                    let el = rightDirs[0];
+                    input.innerText += el.name.substring(lastParam.length) + (el instanceof Directory ? '/' : '');
                 }
                 if (rightDirs.length > 1) {
                     // Il en a trouvé plusieurs
@@ -223,13 +225,29 @@ export class Terminal extends WindowApp {
                             break;
                         }
 
+                        // Récupérer l'emplacement
                         let norPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd);
                         if (!this.#getSortedContent(norPwd)) {
                             commandReturn.classList.add('error');
                             returnText = `${paramsStr}: directory not found`;
                             break;
                         }
-                        this.#pwd = norPwd;
+
+                        // Voir les permissions
+                        this.#pwd = '/';
+                        let iHaveThePerms = true;
+                        let pwdSplitted = norPwd.split('/');
+                        let innerDir = this.#getSortedContent();
+                        pwdSplitted.forEach(dirname => {
+                            if (!iHaveThePerms) { return }
+                            if (dirname === '') { return }
+                            innerDir = g(innerDir).find(c => c instanceof Directory && c.name === dirname);
+                            if (parseChmod(innerDir.chmod).execute) {
+                                this.#pwd += dirname;
+                            } else {
+                                returnText += `<span class="line return error">cd: ${innerDir.name}/: Permission denied</span>`;
+                            }
+                        });
                         break;
 
                     case 'pwd':
@@ -292,6 +310,26 @@ export class Terminal extends WindowApp {
                         returnText = this.#ls(this.#normalizePwd(preparedPwdArguments_relatifPwd));
                         break;
 
+                    case 'cat':
+                        if (params.length < 1) {
+                            commandReturn.classList.add('error');
+                            returnText = `${commandName}: need an argument`;
+                            break;
+                        }
+                        let children = this.#getSortedContent();
+                        params.forEach(p => {
+                            let file = children.find(c => c.name === p);
+                            if (!file) {
+                                returnText += `${commandName}: ${p}: No such file or directory`;
+                            } else if (!parseChmod(file.chmod).read) {
+                                returnText += `${commandName}: ${p}: Permission denied`;
+                            } else {
+                                returnText += file.content
+                            }
+                            returnText += `\n`;
+                        });
+                        break;
+
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
@@ -352,6 +390,9 @@ export class Terminal extends WindowApp {
         finalPwdStr = '/' + formattedPwdArray.join('/');
         if (finalPwdStr.length > 1 && finalPwdStr.endsWith('/')) {
             finalPwdStr = finalPwdStr.slice(0, -1);
+        }
+        if (!finalPwdStr.endsWith('/')) {
+            finalPwdStr += '/';
         }
         return finalPwdStr;
     }
