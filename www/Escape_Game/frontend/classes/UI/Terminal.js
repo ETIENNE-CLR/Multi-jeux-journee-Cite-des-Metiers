@@ -65,8 +65,8 @@ export class Terminal extends WindowApp {
             return probe.toString().length === 0;
         }
 
-        function currentInput(area) {
-            return area.querySelector('.line:last-child .input');
+        function currentInput() {
+            return getCMD().querySelector('.line:last-child .input');
         }
 
         function getCMD() {
@@ -80,14 +80,7 @@ export class Terminal extends WindowApp {
                     // Le plus récent
                     allInput[i].addEventListener('focusout', focusFnct);
                     allInput[i].focus();
-
-                    // Déplace le curseur à la fin du texte
-                    const range = document.createRange();
-                    range.selectNodeContents(allInput[i]);
-                    range.collapse(false); // false => fin du contenu
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    placeCaretAtEnd(allInput[i]);
                 } else {
                     // Le plus vieux
                     allInput[i].removeEventListener('focusout', focusFnct);
@@ -98,16 +91,17 @@ export class Terminal extends WindowApp {
 
         // Insertion dans la ligne
         const area = getCMD();
-        area.addEventListener('beforeinput', (e) => {
-            if (e.inputType === 'deleteContentBackward') {
-                const inp = currentInput(area);
-                if (inp && isCaretAtStart(inp)) {
-                    e.preventDefault(); // bloque le backspace sur le prompt
-                }
-            }
-        });
+        // area.addEventListener('beforeinput', (e) => {
+        //     if (e.inputType === 'deleteContentBackward') {
+        //         const inp = currentInput();
+        //         if (inp && isCaretAtStart(inp)) {
+        //             e.preventDefault();
+        //         }
+        //     }
+        // });
         area.addEventListener('keydown', (e) => {
-            const inp = currentInput(area);
+            // Empêcher que le user puisse modifier les autres commandes plus vieilles
+            const inp = currentInput();
             if (!inp) return;
             const sel = window.getSelection();
             if (!sel.rangeCount || !inp.contains(sel.anchorNode)) {
@@ -120,6 +114,7 @@ export class Terminal extends WindowApp {
             }
         });
 
+        // Création de la ligne
         const line = document.createElement('div');
         line.className = 'line';
         area.appendChild(line);
@@ -207,8 +202,7 @@ export class Terminal extends WindowApp {
                     });
                     area.appendChild(returnLine);
                     this.#initNewCommandLine();
-                    let inputs = area.querySelectorAll('span.input')
-                    inputs[inputs.length - 1].innerText = command;
+                    currentInput(area).innerText = command;
                 }
                 updateInputEventFocusManager();
                 return;
