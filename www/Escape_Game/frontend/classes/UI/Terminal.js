@@ -143,6 +143,8 @@ export class Terminal extends WindowApp {
         input.spellcheck = false;
         line.appendChild(input);
         placeCaretAtEnd(input);
+
+        let nbTabClicked = 0;
         input.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter' && e.key !== 'Tab') { return }
             e.preventDefault();
@@ -158,29 +160,59 @@ export class Terminal extends WindowApp {
             let paramsStr = commandArray[1] ?? '';
             let params = paramsStr.split(' ');
 
+            // Chemin realtif absolue
+            let dest = paramsStr ?? ''
+            let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
+
             // Tab
             if (e.key === 'Tab') {
-                if (params === '') { return }
+                if (params.length > 1) { return }
                 if (['mkdir', 'pwd', 'touch', 'echo', 'whoami'].includes(commandName)) { return }
-                //  verifier le ls dans les params
-                let lastParam = params[params.length - 1];
-                let rightDir = this.#getSortedContent(this.#normalizePwd(`${this.Pwd}`)).find(e => e instanceof Directory && e.name.startsWith(lastParam))
-                if (rightDir !== null) {
-                    input.innerText += rightDir.name.substring(params.length) + '/'
-                }
+                let paramsWithoutLastParams = paramsStr.split('/');
+                let lastParam = paramsWithoutLastParams.pop();
+                let tmpPwd = this.#normalizePwd(this.Pwd + paramsWithoutLastParams.join('/')); // ici la fonction de normalisation prend en charge le ../ du paramètre mais il faut gérer si le paramètre c'est directement à partir de /
+                let actualContent = this.#getSortedContent(tmpPwd);
+                let rightDirs = actualContent.filter(e => e instanceof Directory && e.name.startsWith(lastParam));
 
-                // Sortie
+                // Resultats de la recherche
+                if (rightDirs.length < 1) {
+                    // Il n'y en a pas
+                    return;
+                }
+                if (rightDirs.length === 1) {
+                    // Il a trouvé
+                    nbTabClicked = 0;
+                    input.innerText += rightDirs[0].name.substring(lastParam.length) + '/';
+                }
+                if (rightDirs.length > 1) {
+                    // Il en a trouvé plusieurs
+                    nbTabClicked++;
+                }
+                
+                // Affichage des resultats en fonction du nombre de tab cliqué
+                if (nbTabClicked > 1) {
+                    const returnLine = document.createElement('div');
+                    returnLine.classList.add('line', 'return');
+                    returnLine.innerHTML = '';
+                    rightDirs.forEach(dir => {
+                        returnLine.innerHTML += `${dir.name}/\t`;
+                    });
+                    area.appendChild(returnLine);
+                    this.#initNewCommandLine();
+                    let inputs = area.querySelectorAll('span.input')
+                    inputs[inputs.length - 1].innerText = command;
+                    updateInputEventFocusManager();
+                }
                 return;
             }
 
             // Enter - Execution de la commande
             // Création du resultat
             let returnText = '';
-            const cmd = getCMD();
             const commandReturn = document.createElement('div');
             commandReturn.classList.add('line', 'return');
 
-            // Test 1 - valid command name
+            // valid command name
             if (command === '') {
                 this.#initNewCommandLine()
                 return
@@ -189,8 +221,6 @@ export class Terminal extends WindowApp {
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
-                let dest = paramsStr ?? ''
-                let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
                 switch (commandName) {
                     case 'cd':
                         if (params.length > 1) {
@@ -275,7 +305,7 @@ export class Terminal extends WindowApp {
 
             // Affichage return
             commandReturn.innerHTML = returnText;
-            cmd.appendChild(commandReturn);
+            area.appendChild(commandReturn);
             this.#initNewCommandLine();
 
             // Gestion des nouveaux input
@@ -291,6 +321,11 @@ export class Terminal extends WindowApp {
         return this.#commandName.includes(str);
     }
 
+    /**
+     * Méthode pour normaliser le Pwd
+     * @param {String} nouveauPwd Nouveau PWD (chemin absolue qu'on va venir coller un chemin relatif juste après l'absolu)
+     * @returns {String} Le PWD absolue qui marche
+     */
     #normalizePwd(nouveauPwd) {
         if (!this.Pwd) { throw new Error("Le PWD n'est pas valide !") }
         let finalPwdStr = '';
