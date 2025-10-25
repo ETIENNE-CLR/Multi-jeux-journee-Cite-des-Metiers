@@ -8,23 +8,22 @@ export class Explorer extends WindowApp {
 	#tree;
 	#actualPath;
 	#mainBody;
+	#computer;
 
-	get Tree() { return this.#tree }
+	get Tree() { return this.#computer.Tree }
 	get ActualPath() { return this.#actualPath }
 	set ActualPath(value) {
 		this.#actualPath = value;
 		this.viewPath();
 	}
 
-	constructor(tree, computerElement) {
+	constructor(computerElement) {
 		super('Explorateur de fichiers', computerElement, new DesktopIconApp('assets/folder.png', 'Fichiers'))
-		this.#tree = tree;
+		this.#computer = computerElement;
 		this.#actualPath = '/';
 
 		// Créer l'explorateur de fichiers
-		FunctionAsset.applyStyle(this.innerFrame, {
-			display: 'flex'
-		});
+		this.innerFrame.style.display = 'flex';
 
 		// Côté gauche
 		const aside = document.createElement('div');
@@ -105,7 +104,7 @@ export class Explorer extends WindowApp {
 		});
 
 		// Récupérer toutes les enfants actuels
-		let children = this.getContentFromPath();
+		let children = this.#computer.getContentFromPath(this.ActualPath);
 		let directories = [];
 		let files = [];
 
@@ -169,53 +168,4 @@ export class Explorer extends WindowApp {
 		this.#mainBody.innerHTML = '';
 		this.#mainBody.appendChild(container);
 	}
-
-	/**
-	 * Fonction pour récupérer tous les dossiers et tous les fichiers
-	 * qui sont présents dans le chemin
-	 * @returns {Array} Tableau contenant des dossiers et/ou des fichiers
-	 */
-	getContentFromPath(path = null) {
-		let pathTmp = (path == null) ? this.ActualPath : path;
-		if (pathTmp === "/") {
-			return this.#tree;
-		}
-
-		// Chercher dans les enfants
-		let actualPathArray = pathTmp.split('/').filter(Boolean);
-		let currentContent = this.#tree;
-		let content = null;
-
-		for (let segment of actualPathArray) {
-			// Chercher le dossier ou fichier correspondant au segment
-			content = currentContent.find(child => child.name === segment);
-
-			// On regarde ses enfants
-			if (content instanceof Directory) {
-				currentContent = content.getChildren();
-				content = currentContent;
-			} else if (content instanceof File) {
-				// C'est un fichier
-				break;
-			} else {
-				// Chemin invalide
-				content = null;
-				break;
-			}
-		}
-		return content;
-	}
-
-	sortPath(content) {
-		let directories = content
-			.filter(e => e instanceof Directory)
-			.sort((a, b) => a.name.localeCompare(b.name));
-
-		let files = content
-			.filter(e => e instanceof File)
-			.sort((a, b) => a.name.localeCompare(b.name));
-
-		return [...directories, ...files];
-	}
-
 }

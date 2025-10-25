@@ -101,18 +101,12 @@ export class WindowApp {
 		btn_window_options.appendChild(btn_delete);
 
 		// Pour fermer l'application
-		const closeToDesktop = () => {
-			this._element.remove();
-			this.computerElement.openedWindows.splice(this.#indexOpenedWindow, 1);
-			this.#indexOpenedWindow = null;
-
-			this.computerElement.openDesktop();
-			if (this.computerElement.openedWindows.length > 0) {
-				this.computerElement.openedWindows[this.computerElement.openedWindows.length - 1].open();
-			}
-		};
-		btn_dash.addEventListener('click', closeToDesktop);
-		btn_delete.addEventListener('click', closeToDesktop);
+		btn_dash.addEventListener('click', () => {
+			this.close();
+		});
+		btn_delete.addEventListener('click', () => {
+			this.close();
+		});
 	}
 
 	#activeOpenApp() {
@@ -125,14 +119,29 @@ export class WindowApp {
 		this._openBase();
 	}
 
+	close() {
+		this._closeBase();
+	}
+
 	_openBase() {
 		if (this.#indexOpenedWindow == null) {
 			this.#indexOpenedWindow = this.computerElement.openedWindows.length;
 			this.computerElement.openedWindows[this.#indexOpenedWindow] = this;
-		}
+		}	
 
 		// ui
 		this.computerElement.clearScreen();
 		this.computerElement.screen.appendChild(this._element);
+	}
+
+	_closeBase() {
+		this._element.remove();
+		this.computerElement.openedWindows.splice(this.#indexOpenedWindow, 1);
+		this.#indexOpenedWindow = null;
+
+		this.computerElement.openDesktop();
+		if (this.computerElement.openedWindows.length > 0) {
+			this.computerElement.openedWindows[this.computerElement.openedWindows.length - 1].open();
+		}
 	}
 }

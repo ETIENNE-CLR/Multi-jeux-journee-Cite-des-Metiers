@@ -5,19 +5,18 @@ import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "./WindowApp.js";
 
 export class Terminal extends WindowApp {
-    #pwd;
-    #commandName;
-    #explorer;
-    #tree;
+    #pwd; // Chemin actuel
+    #commandName; // Les commandes valides
+    #computer; // Instance de l'ordinateur
 
     get Pwd() { return this.#pwd }
     get ValideCommand() { return this.#commandName }
+    get Tree() { return this.#computer.Tree }
 
-    constructor(pwd, explorer, computerElement) {
+    constructor(computerElement) {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
-        this.#pwd = pwd;
-        this.#explorer = explorer;
-        this.#tree = this.#explorer.Tree;
+        this.#computer = computerElement;
+        this.#pwd = '/';
 
         // Commandes valides
         this.#commandName = [
@@ -27,21 +26,14 @@ export class Terminal extends WindowApp {
         ];
 
         // Couleur de fond
-        Object.assign(this.innerFrame.style, {
-            backgroundColor: 'rgb(12 12 12)'
-        });
+        this.innerFrame.style.backgroundColor = 'rgb(12 12 12)';
 
         // Textarea
         const area = document.createElement('div');
         area.id = 'area_cmd';
-        area.contentEditable = "false";
+        area.contentEditable = 'false';
         area.style.height = this.innerFrame.style.minHeight
         this.innerFrame.appendChild(area);
-    }
-
-    open() {
-        this._openBase();
-        if (this.innerFrame.querySelector('div').innerHTML.trim() === '') { this.#initNewCommandLine() }
     }
 
     async #initNewCommandLine() {
@@ -191,7 +183,7 @@ export class Terminal extends WindowApp {
                     // Il en a trouvé plusieurs
                     nbTabClicked++;
                 }
-                
+
                 // Affichage des resultats en fonction du nombre de tab cliqué
                 if (nbTabClicked > 1) {
                     const returnLine = document.createElement('div');
@@ -256,7 +248,7 @@ export class Terminal extends WindowApp {
                                 return value;
                             }
                         }
-                        let actualDir = this.#tree;
+                        let actualDir = this.Tree;
                         const pwdArray = this.Pwd.split('/').filter(Boolean);
 
                         // navigation dans l'arborescence
@@ -303,6 +295,11 @@ export class Terminal extends WindowApp {
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
+            }
+
+            // Update tree
+            if (!this.#computer.checkUpdateTreePermissions()) {
+                throw new Error("Il y a eu une erreur de permission !");
             }
 
             // Affichage return
@@ -360,11 +357,11 @@ export class Terminal extends WindowApp {
     }
 
     #getSortedContent(pwd = this.Pwd) {
-        let content = this.#explorer.getContentFromPath(pwd);
+        let content = this.#computer.getContentFromPath(pwd);
         if (!content) {
             return false;
         }
-        return this.#explorer.sortPath(content);
+        return this.#computer.sortPath(content);
     }
 
     #ls(pwd) {
@@ -382,5 +379,10 @@ export class Terminal extends WindowApp {
             }
         }
         return returnText;
+    }
+
+    open() {
+        super._openBase();
+        if (this.innerFrame.querySelector('div').innerHTML.trim() === '') { this.#initNewCommandLine() }
     }
 }

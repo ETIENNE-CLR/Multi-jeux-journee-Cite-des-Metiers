@@ -18,11 +18,14 @@ export class Computer {
 	#motDePasse;
 	#openLogInHandler;
 	openedWindows;
+	#tree;
 
 	// applications
 	#explorer;
 	#browser;
 	#terminal;
+
+	get Tree() { return this.#tree }
 
 	/**
 	 * Init l'ordinateur
@@ -38,7 +41,7 @@ export class Computer {
 		this.openedWindows = [];
 
 		// Initialisation des applications fictives
-		this.#explorer = new Explorer([
+		this.#tree = [
 			new Directory("Documents", [
 				new Directory("Nouveau_dossier", [
 					new File("test.md", this, "## Ceci est un test !")
@@ -48,7 +51,9 @@ export class Computer {
 			new Directory("Téléchargements", [
 				new File("jsp.txt", this, "coucou")
 			])
-		], this);
+		];
+		this.#terminal = new Terminal(this);
+		this.#explorer = new Explorer(this);
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
 			new Website("News", "news.com", SiteMaker.news()),
@@ -56,7 +61,6 @@ export class Computer {
 			new Website("Ma compagnie", "ma-compagnie.com", SiteMaker.company()),
 			new Website("Not found", "not-found", SiteMaker.notFound()),
 		]);
-		this.#terminal = new Terminal('/', this.#explorer, this);
 
 		this.#iconPosition = [
 			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
@@ -259,5 +263,57 @@ export class Computer {
 			table.appendChild(tr);
 		}
 		this.#addToScreen(table);
+	}
+
+	checkUpdateTreePermissions() {
+		// console.log(`A implémenter !`);
+		return true;
+	}
+
+	/**
+	 * Fonction pour récupérer tous les dossiers et tous les fichiers
+	 * qui sont présents dans le chemin
+	 * @returns {Array} Tableau contenant des dossiers et/ou des fichiers
+	 */
+	getContentFromPath(path) {
+		if (path === "/") {
+			return this.#tree;
+		}
+
+		// Chercher dans les enfants
+		let actualPathArray = path.split('/').filter(Boolean);
+		let currentContent = this.#tree;
+		let content = null;
+
+		for (let segment of actualPathArray) {
+			// Chercher le dossier ou fichier correspondant au segment
+			content = currentContent.find(child => child.name === segment);
+
+			// On regarde ses enfants
+			if (content instanceof Directory) {
+				currentContent = content.getChildren();
+				content = currentContent;
+			} else if (content instanceof File) {
+				// C'est un fichier
+				break;
+			} else {
+				// Chemin invalide
+				content = null;
+				break;
+			}
+		}
+		return content;
+	}
+
+	sortPath(content) {
+		let directories = content
+			.filter(e => e instanceof Directory)
+			.sort((a, b) => a.name.localeCompare(b.name));
+
+		let files = content
+			.filter(e => e instanceof File)
+			.sort((a, b) => a.name.localeCompare(b.name));
+
+		return [...directories, ...files];
 	}
 }
