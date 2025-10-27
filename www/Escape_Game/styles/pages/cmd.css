@@ -17,6 +17,8 @@
 
 #area_cmd .line {
     display: inline-flex;
+    align-items: baseline;
+    /* gap: 8px; */
 }
 
 #area_cmd .line,

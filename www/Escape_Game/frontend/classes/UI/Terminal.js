@@ -1,4 +1,4 @@
-import { ChmodConstructor, parseChmod } from "../Others/ChModConstructor.js";
+import { ChmodConstructor, chmodToString, parseChmod } from "../Others/ChModConstructor.js";
 import { Directory } from "../Others/Directory.js";
 import { File } from "../Others/File.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
@@ -21,7 +21,7 @@ export class Terminal extends WindowApp {
 
         // Commandes valides
         this.#commandName = [
-            'cd', 'mkdir', 'pwd', 'ls',
+            'cd', 'mkdir', 'pwd', 'ls', 'll',
             'rm', 'cp', 'mv', 'cat',
             'touch', 'echo', 'whoami'
         ];
@@ -321,12 +321,33 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'ls':
+                    case 'll':
+                        let isLs = commandName === 'ls';
                         if (params.length > 1) {
                             commandReturn.classList.add('error');
                             returnText = `${commandName}: too many arguments`;
                             break;
                         }
-                        returnText = this.#ls(this.#normalizePwd(preparedPwdArguments_relatifPwd));
+
+                        let pwd = this.#normalizePwd(preparedPwdArguments_relatifPwd)
+                        let content = this.#getSortedContent(pwd).filter(e => (isLs) ? parseChmod(e.chmod).read : true);
+                        returnText = (isLs) ? '' : `<p class="line">total ${content.length}</p>`;
+
+                        for (const el of content) {
+                            const isFolder = el instanceof Directory;
+                            const txt = el.name + (isFolder ? '/' : '');
+                            const perms = (isFolder ? 'd' : '-') + chmodToString(el.chmod) + ' '.repeat(2);
+
+                            if (!isLs) returnText += '<p class="line">'+perms;
+                            returnText += isFolder
+                                ? `<span class="enum folder">${txt}\t</span>`
+                                : `${txt}\t`;
+                            if (!isLs) returnText += '</p>';
+                        }
+
+                        if (!isLs) {
+                            commandReturn.style.flexDirection = 'column'
+                        }
                         break;
 
                     case 'cat':
@@ -335,13 +356,13 @@ export class Terminal extends WindowApp {
                             returnText = `${commandName}: need an argument`;
                             break;
                         }
-                        let children = this.#getSortedContent();
+                        let children = this.#getSortedContent().filter(e => parseChmod(e.chmod).read);
                         params.forEach(p => {
                             let file = children.find(c => c.name === p);
                             if (!file) {
-                                returnText += `${commandName}: ${p}: No such file or directory`;
+                                returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
                             } else if (!parseChmod(file.chmod).read) {
-                                returnText += `${commandName}: ${p}: Permission denied`;
+                                returnText += `<span class="error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
                                 returnText += file.content
                             }
@@ -423,19 +444,6 @@ export class Terminal extends WindowApp {
             return false;
         }
         return this.#computer.sortPath(content);
-    }
-
-    #ls(pwd) {
-        let returnText = '';
-        let content = this.#getSortedContent(pwd);
-        for (let i = 0; i < content.length; i++) {
-            const el = content[i];
-            if (!parseChmod(el.chmod).read) continue;
-            let isFolder = (el instanceof Directory)
-            let txt = el.name + (isFolder ? '/' : '');
-            returnText += (isFolder) ? `<span class="enum folder">${txt}\t</span>` : `${txt}\t`;
-        }
-        return returnText;
     }
 
     open() {

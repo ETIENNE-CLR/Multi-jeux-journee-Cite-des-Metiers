@@ -50,7 +50,9 @@ export class Computer {
 			]),
 			new Directory(`Téléchargements`, [
 				new Directory('securised', [], ChmodConstructor(false, false, false)),
-				new Directory('tasVu', [], ChmodConstructor(true, false, true)),
+				new Directory('tasVu', [
+					new File('secret', this, `voici mes secrets`, ChmodConstructor(false, false, false))
+				], ChmodConstructor(true, false, true)),
 				new File(`jsp.txt`, this, `coucou`),
 			])
 		];
