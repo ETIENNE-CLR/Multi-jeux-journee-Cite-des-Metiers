@@ -120,7 +120,7 @@ export class Terminal extends WindowApp {
         // Head de la commande
         const user = document.createElement('span');
         user.classList.add('user');
-        user.innerText = `${this.computerElement.username.replace(' ', '_')}@EscapeGameNumeric`;
+        user.innerText = `${this.#computer.username.replace(' ', '_')}@EscapeGameNumeric`;
         head.appendChild(user);
 
         head.appendChild(document.createTextNode(':'));
@@ -268,7 +268,7 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'whoami':
-                        returnText = this.computerElement.username.replace(' ', '_');
+                        returnText = this.#computer.username.replace(' ', '_');
                         break;
 
                     case 'mkdir':
@@ -297,7 +297,7 @@ export class Terminal extends WindowApp {
                         for (const dirName of params) {
                             if (this.Pwd !== '/' && !parseChmod(parentDirectory.chmod).write) {
                                 returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': Permission denied</span>\n`;
-                                continue;
+                                break;
                             }
                             if (g(actualDir).find(c => c.name === dirName)) {
                                 returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': File exists</span>\n`;
@@ -306,15 +306,18 @@ export class Terminal extends WindowApp {
 
                             // Création
                             const emplacement = (isRacine) ? actualDir : actualDir.children;
-                            const newDir = new Directory(dirName, [], (isRacine) ? ChmodConstructor(true, true, true) : parentDirectory.chmod);
-                            emplacement.push(newDir);
+                            const chmod = (isRacine) ? ChmodConstructor(true, true, wantDir) : parentDirectory.chmod;
+                            emplacement.push(wantDir
+                                ? new Directory(dirName, [], chmod)
+                                : new File(dirName, this.#computer, '', chmod)
+                            );
                             returnText += `${dirName} created\n`;
                         };
 
                         // S'il n'y a pas eu d'erreur, on dit rien
                         if (!returnText.includes('error')) {
                             returnText = '';
-                        }                        
+                        }
                         break;
 
                     case 'ls':

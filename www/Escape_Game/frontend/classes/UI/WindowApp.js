@@ -7,7 +7,7 @@ import { FunctionAsset } from "../Tools/FunctionAsset.js";
 export class WindowApp {
 	title;
 	desktopIconApp;
-	computerElement;
+	#computerElement; // J'ai recement rendu ce champ privé, jsp si ça va faire des erreurs...
 	innerFrame;
 	_element;
 	#indexOpenedWindow;
@@ -26,7 +26,7 @@ export class WindowApp {
 	 */
 	constructor(title, computerElement, iconApp = null) {
 		this.title = title;
-		this.computerElement = computerElement;
+		this.#computerElement = computerElement;
 		this.desktopIconApp = iconApp;
 		this.#indexOpenedWindow = null;
 		this.innerFrame = document.createElement('div');
@@ -125,23 +125,23 @@ export class WindowApp {
 
 	_openBase() {
 		if (this.#indexOpenedWindow == null) {
-			this.#indexOpenedWindow = this.computerElement.openedWindows.length;
-			this.computerElement.openedWindows[this.#indexOpenedWindow] = this;
+			this.#indexOpenedWindow = this.#computerElement.openedWindows.length;
+			this.#computerElement.openedWindows[this.#indexOpenedWindow] = this;
 		}	
 
 		// ui
-		this.computerElement.clearScreen();
-		this.computerElement.screen.appendChild(this._element);
+		this.#computerElement.clearScreen();
+		this.#computerElement.screen.appendChild(this._element);
 	}
 
 	_closeBase() {
 		this._element.remove();
-		this.computerElement.openedWindows.splice(this.#indexOpenedWindow, 1);
+		this.#computerElement.openedWindows.splice(this.#indexOpenedWindow, 1);
 		this.#indexOpenedWindow = null;
 
-		this.computerElement.openDesktop();
-		if (this.computerElement.openedWindows.length > 0) {
-			this.computerElement.openedWindows[this.computerElement.openedWindows.length - 1].open();
+		this.#computerElement.openDesktop();
+		if (this.#computerElement.openedWindows.length > 0) {
+			this.#computerElement.openedWindows[this.#computerElement.openedWindows.length - 1].open();
 		}
 	}
 }
