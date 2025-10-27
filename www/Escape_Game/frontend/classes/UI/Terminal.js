@@ -154,21 +154,27 @@ export class Terminal extends WindowApp {
             let commandName = commandArray[0] ?? '';
 
             let paramsStr = commandArray[1] ?? '';
-            let params = paramsStr.split(' ');
+            let params = paramsStr.split(' ').filter(Boolean);
 
             // Chemin realtif absolue
             let dest = paramsStr ?? ''
-            let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + dest)
+            let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
 
             // Tab
             if (e.key === 'Tab') {
-                if (params.length > 1) { return }
-                if (['mkdir', 'pwd', 'touch', 'echo', 'whoami'].includes(commandName)) { return }
+                const excludedCommands = ['mkdir', 'pwd', 'touch', 'echo', 'whoami'];
+                if (params.length > 1 || excludedCommands.includes(commandName)) return;
+
                 let paramsWithoutLastParams = paramsStr.split('/');
                 let lastParam = paramsWithoutLastParams.pop();
+
                 let tmpPwd = this.#normalizePwd(this.Pwd + paramsWithoutLastParams.join('/')); // ici la fonction de normalisation prend en charge le ../ du paramètre mais il faut gérer si le paramètre c'est directement à partir de /
                 let actualContent = this.#getSortedContent(tmpPwd);
-                let rightDirs = actualContent.filter(e => e.name.startsWith(lastParam) && ((commandName === 'cat' && e instanceof File) || (commandName !== 'cat' && e instanceof Directory)));
+                const rightDirs = actualContent.filter(item => {
+                    const isCorrectType = (commandName === 'cat' && item instanceof File) || (commandName !== 'cat' && item instanceof Directory);
+                    const correctPerms = (item instanceof File && parseChmod(item.chmod).read) || (item instanceof Directory && parseChmod(item.chmod).execute);
+                    return item.name.startsWith(lastParam) && isCorrectType && correctPerms;
+                });
 
                 // Resultats de la recherche
                 if (rightDirs.length < 1) {
@@ -217,6 +223,13 @@ export class Terminal extends WindowApp {
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
+                function g(value) {
+                    if (value instanceof Directory) {
+                        return value.children
+                    } else {
+                        return value;
+                    }
+                }
                 switch (commandName) {
                     case 'cd':
                         if (params.length > 1) {
@@ -243,7 +256,7 @@ export class Terminal extends WindowApp {
                             if (dirname === '') { return }
                             innerDir = g(innerDir).find(c => c instanceof Directory && c.name === dirname);
                             if (parseChmod(innerDir.chmod).execute) {
-                                this.#pwd += dirname;
+                                this.#pwd += dirname + '/';
                             } else {
                                 returnText += `<span class="line return error">cd: ${innerDir.name}/: Permission denied</span>`;
                             }
@@ -259,13 +272,12 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'mkdir':
-                        function g(value) {
-                            if (value instanceof Directory) {
-                                return value.children
-                            } else {
-                                return value;
-                            }
+                        if (params.length < 1) {
+                            commandReturn.classList.add('error');
+                            returnText = `${commandName}: missing operand`;
+                            break;
                         }
+
                         let actualDir = this.Tree;
                         const pwdArray = this.Pwd.split('/').filter(Boolean);
 
@@ -277,28 +289,30 @@ export class Terminal extends WindowApp {
                         }
 
                         // création des nouveaux dossiers
+                        let isRacine = (this.Pwd === '/');
+                        let pwdSplitted2 = this.Pwd.split('/').filter(Boolean);
+                        let parentDirectory = this.#getSortedContent(this.#normalizePwd(this.Pwd + '../')).find(d => d instanceof Directory && d.name === pwdSplitted2[pwdSplitted2.length - 1])
                         for (const dirName of params) {
-                            if (this.Pwd !== '/' && !parseChmod(actualDir.chmod).write) {
+                            if (this.Pwd !== '/' && !parseChmod(parentDirectory.chmod).write) {
                                 returnText += `<span class="error">mkdir: cannot create directory '${dirName}': Permission denied</span>\n`;
-                                break;
+                                continue;
                             }
                             if (g(actualDir).find(c => c.name === dirName)) {
                                 returnText += `<span class="error">mkdir: cannot create directory '${dirName}': File exists</span>\n`;
-                                break;
+                                continue;
                             }
 
                             // Création
-                            if (this.Pwd === '/') {
-                                actualDir.push(new Directory(dirName, [], ChmodConstructor(true, true, true)));
-                            } else {
-                                actualDir.children.push(new Directory(dirName, [], ChmodConstructor(true, true, true)));
-                            }
+                            const emplacement = (isRacine) ? actualDir : actualDir.children;
+                            const newDir = new Directory(dirName, [], (isRacine) ? ChmodConstructor(true, true, true) : parentDirectory.chmod);
+                            emplacement.push(newDir);
                             returnText += `${dirName} created\n`;
-
                         };
+
+                        // S'il n'y a pas eu d'erreur, on dit rien
                         if (!returnText.includes('error')) {
                             returnText = '';
-                        }
+                        }                        
                         break;
 
                     case 'ls':
@@ -330,6 +344,23 @@ export class Terminal extends WindowApp {
                         });
                         break;
 
+                    case 'touch':
+                        if (params.length < 1) {
+                            commandReturn.classList.add('error');
+                            returnText = `${commandName}: need an argument`;
+                            break;
+                        }
+
+                        let actualDirectory = this.#getSortedContent();
+                        if (this.#pwd !== '/' || !parseChmod(actualDirectory).write) {
+                            commandReturn.classList.add('error');
+                            returnText = `${commandName}: ${actualDir.name}: Permission denied`;
+                            break;
+                        }
+
+                        // g(actualDirectory).push(new File());
+                        break;
+
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
@@ -352,6 +383,9 @@ export class Terminal extends WindowApp {
         await FunctionAsset.sleep(0.001); // Temps d'attente pour laisser head s'afficher (depuis la POV du user -> aucun temps d'attente)
         input.style.minWidth = `${line.clientWidth - head.clientWidth - 3}px`;
         updateInputEventFocusManager();
+        area.scrollTo({
+            top: area.scrollHeight
+        });
     }
 
     isCommandOperatorValid(str) {
