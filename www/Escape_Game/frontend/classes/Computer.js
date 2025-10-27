@@ -49,8 +49,9 @@ export class Computer {
 				new File(`liens_utiles.txt`, this, `[voici un lien utile]`)
 			]),
 			new Directory(`Téléchargements`, [
+				new Directory('securised', [], ChmodConstructor(false, false, false)),
+				new Directory('tasVu', [], ChmodConstructor(true, false, true)),
 				new File(`jsp.txt`, this, `coucou`),
-				new Directory('securised', [], ChmodConstructor(false, false, false))
 			])
 		];
 		this.#terminal = new Terminal(this);

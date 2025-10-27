@@ -272,6 +272,8 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'mkdir':
+                    case 'touch':
+                        let wantDir = commandName === 'mkdir';
                         if (params.length < 1) {
                             commandReturn.classList.add('error');
                             returnText = `${commandName}: missing operand`;
@@ -294,11 +296,11 @@ export class Terminal extends WindowApp {
                         let parentDirectory = this.#getSortedContent(this.#normalizePwd(this.Pwd + '../')).find(d => d instanceof Directory && d.name === pwdSplitted2[pwdSplitted2.length - 1])
                         for (const dirName of params) {
                             if (this.Pwd !== '/' && !parseChmod(parentDirectory.chmod).write) {
-                                returnText += `<span class="error">mkdir: cannot create directory '${dirName}': Permission denied</span>\n`;
+                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': Permission denied</span>\n`;
                                 continue;
                             }
                             if (g(actualDir).find(c => c.name === dirName)) {
-                                returnText += `<span class="error">mkdir: cannot create directory '${dirName}': File exists</span>\n`;
+                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': File exists</span>\n`;
                                 continue;
                             }
 
@@ -344,23 +346,6 @@ export class Terminal extends WindowApp {
                         });
                         break;
 
-                    case 'touch':
-                        if (params.length < 1) {
-                            commandReturn.classList.add('error');
-                            returnText = `${commandName}: need an argument`;
-                            break;
-                        }
-
-                        let actualDirectory = this.#getSortedContent();
-                        if (this.#pwd !== '/' || !parseChmod(actualDirectory).write) {
-                            commandReturn.classList.add('error');
-                            returnText = `${commandName}: ${actualDir.name}: Permission denied`;
-                            break;
-                        }
-
-                        // g(actualDirectory).push(new File());
-                        break;
-
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
@@ -375,8 +360,6 @@ export class Terminal extends WindowApp {
             commandReturn.innerHTML = returnText;
             area.appendChild(commandReturn);
             this.#initNewCommandLine();
-
-            // Gestion des nouveaux input
             updateInputEventFocusManager();
         });
 
