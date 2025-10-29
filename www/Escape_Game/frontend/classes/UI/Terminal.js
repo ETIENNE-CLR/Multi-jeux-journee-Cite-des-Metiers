@@ -25,6 +25,7 @@ export class Terminal extends WindowApp {
             'rm', 'cp', 'mv', 'cat', 'chmod',
             'touch', 'echo', 'whoami'
         ];
+        console.log(this.#commandName);
 
         // Couleur de fond
         this.innerFrame.style.backgroundColor = 'rgb(12 12 12)';
@@ -146,22 +147,22 @@ export class Terminal extends WindowApp {
             e.preventDefault();
 
             // Découpage de la commande - NE PREND PAS EN COMPTE SUDO POUR L'INSTANT
-            let preparedSpecialChar = '§';
-            let command = input.innerText.trim()
-            let preparedCommand = command.replace(' ', preparedSpecialChar);
+            const preparedSpecialChar = '§';
+            const command = input.innerText.trim()
+            const preparedCommand = command.replace(' ', preparedSpecialChar);
 
-            let commandArray = preparedCommand.split(preparedSpecialChar);
-            let commandName = commandArray[0] ?? '';
+            const commandArray = preparedCommand.split(preparedSpecialChar);
+            const commandName = commandArray[0] ?? '';
 
-            let commandSecondPart = commandArray[1] ?? '';
-            let p = commandSecondPart.split(' ').filter(Boolean)
-            let params = p.filter(p => !(p[0].startsWith('-')));
-            let args = p.filter(p => p[0].startsWith('-'));
-            let paramsStr = params.join(' ') ?? '';
+            const commandSecondPartStr = commandArray[1] ?? '';
+            const commandSecondPart = commandSecondPartStr.split(' ').filter(Boolean)
+            const params = commandSecondPart.filter(p => !(p[0].startsWith('-')) && isNaN(p));
+            const args = commandSecondPart.filter(p => p[0].startsWith('-'));
+            const paramsStr = params.join(' ') ?? '';
 
             // Chemin relatif absolue
-            let dest = paramsStr ?? ''
-            let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
+            const dest = paramsStr ?? ''
+            const preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
 
             // Tab
             if (e.key === 'Tab') {
@@ -413,7 +414,7 @@ export class Terminal extends WindowApp {
                                     let currentDir = this.Tree;
                                     let finalPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd).split('/').filter(Boolean);
                                     finalPwd.pop();
-                                    
+
                                     // Navigation dans l'arborescence pour la syncronisation
                                     for (const path of finalPwd) {
                                         const found = g(currentDir).find(c => c.name === path && c instanceof Directory);
@@ -442,10 +443,27 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'chmod':
-                        if (params.length < 2) {
+                        if (commandSecondPart.length < 2) {
                             returnText = `<span class="error">${commandName}: missing operand</span>`;
                             break;
                         }
+
+                        let newChmod = commandSecondPart[0];
+                        if (isNaN(newChmod)) {
+                            returnText = `<span class="error">${commandName}: invalid mode: '${newChmod}'</span>`;
+                            break;
+                        }
+                        
+                        // /!\ prend pas en compte les chemins spécifiés
+                        let cnt = this.#computer.getContentFromPath(this.Pwd);
+                        params.forEach(p => {
+                            if (p.endsWith('/')) p = p.slice(0, -1);
+                            let file = cnt.find(e => e.name === p);
+                            if (!file) {
+                                returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
+                            }
+                            file.chmod = newChmod;
+                        });
                         break;
 
                     default:
