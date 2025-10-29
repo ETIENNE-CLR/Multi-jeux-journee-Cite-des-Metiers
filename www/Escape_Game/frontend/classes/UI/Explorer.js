@@ -5,7 +5,6 @@ import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
 
 export class Explorer extends WindowApp {
-	#tree;
 	#actualPath;
 	#mainBody;
 	#computer;

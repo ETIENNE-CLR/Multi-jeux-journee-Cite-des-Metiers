@@ -162,7 +162,7 @@ export class Terminal extends WindowApp {
 
             // Tab
             if (e.key === 'Tab') {
-                const excludedCommands = ['pwd', 'touch', 'echo', 'whoami'];
+                const excludedCommands = ['pwd', 'echo', 'whoami'];
                 if (params.length > 1 || excludedCommands.includes(commandName)) return;
 
                 let paramsWithoutLastParams = paramsStr.split('/');
@@ -173,31 +173,30 @@ export class Terminal extends WindowApp {
                     ? this.Pwd  // pour chemin relatif
                     : '';       // pour chemin absolu
                 path += paramsWithoutLastParams.join('/');
-                path = path === '' ? '/' : path;
+                path = (path === '') ? '/' : path;
 
                 // Récupération du contenu
                 let tmpPwd = this.#normalizePwd(path);
                 let actualContent = this.#getSortedContent(tmpPwd);
-                const rightDirs = actualContent.filter(item => {
+                const searchResults = actualContent.filter(item => {
                     let isCorrectType = true;
-                    isCorrectType = (commandName === 'cd') ? item instanceof Directory : isCorrectType;
-                    // isCorrectType = (commandName === 'cat') ? item instanceof File : isCorrectType;
+                    isCorrectType = (commandName === 'cd' || commandName === 'touch' || commandName === 'ls' || commandName === 'll') ? item instanceof Directory : isCorrectType;
                     const correctPerms = (item instanceof File && parseChmod(item.chmod).read) || (item instanceof Directory && parseChmod(item.chmod).execute);
                     return item.name.startsWith(lastParam) && isCorrectType && correctPerms;
                 });
 
                 // Resultats de la recherche
-                if (rightDirs.length < 1) {
+                if (searchResults.length < 1) {
                     // Il n'y en a pas
                     return;
                 }
-                if (rightDirs.length === 1) {
+                if (searchResults.length === 1) {
                     // Il a trouvé
                     nbTabClicked = 0;
-                    let el = rightDirs[0];
+                    let el = searchResults[0];
                     input.innerText += el.name.substring(lastParam.length) + (el instanceof Directory ? '/' : '');
                 }
-                if (rightDirs.length > 1) {
+                if (searchResults.length > 1) {
                     // Il en a trouvé plusieurs
                     nbTabClicked++;
                 }
@@ -207,8 +206,8 @@ export class Terminal extends WindowApp {
                     const returnLine = document.createElement('div');
                     returnLine.classList.add('line', 'return');
                     returnLine.innerHTML = '';
-                    rightDirs.forEach(dir => {
-                        returnLine.innerHTML += `<span class="enum">${dir.name}/\t</span>`;
+                    searchResults.forEach(el => {
+                        returnLine.innerHTML += `<span class="enum">${el.name}${el instanceof Directory ? '/' : ''}\t</span>`;
                     });
                     area.appendChild(returnLine);
                     this.#initNewCommandLine();
@@ -229,8 +228,7 @@ export class Terminal extends WindowApp {
                 this.#initNewCommandLine()
                 return
             } else if (!this.isCommandOperatorValid(commandName)) {
-                commandReturn.classList.add('error'); // <-- CA VA PAS ICI
-                returnText = `${commandName}: command not found`;
+                returnText = `<span class="error">${commandName}: command not found</span>`;
             } else {
                 // Commande valide
                 function g(value) {
@@ -278,9 +276,17 @@ export class Terminal extends WindowApp {
 
                     case 'pwd':
                         returnText = this.Pwd;
+                        if (params.length > 0) {
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
+                            break;
+                        }
                         break;
 
                     case 'whoami':
+                        if (params.length > 0) {
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
+                            break;
+                        }
                         returnText = this.#computer.username.replace(' ', '_');
                         break;
 
@@ -329,7 +335,8 @@ export class Terminal extends WindowApp {
                             }
 
                             // création effective
-                            const chmod = (isRacine) ? ChmodConstructor(true, true, wantDir) : parentDirectory.chmod;
+                            const parentChmodParsed = (isRacine) ? null : parseChmod(parentDir.chmod);
+                            const chmod = (isRacine) ? ChmodConstructor(true, true, wantDir) : ChmodConstructor(parentChmodParsed.read, parentChmodParsed.write, wantDir);
                             const emplacement = g(parentDir);
                             emplacement.push(wantDir
                                 ? new Directory(dirName, [], chmod)
@@ -346,8 +353,7 @@ export class Terminal extends WindowApp {
                     case 'll':
                         let isLs = commandName === 'ls';
                         if (params.length > 1) {
-                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
-                            returnText = `${commandName}: too many arguments`;
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
                             break;
                         }
 
@@ -373,13 +379,15 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'cat':
+                    // case 'rm':
                         if (params.length < 1) {
-                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
-                            returnText = `${commandName}: need an argument`;
+                            returnText = `<span class="error">${commandName}: need an argument</span>`;
                             break;
                         }
                         let children = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd));
-                        let parent = this.#computer.getContentFromPath(this.Pwd);
+                        let parent = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd + '../'));
+                        console.log(parent);
+
                         if (Array.isArray(children)) {
                             children = children.filter(e => parseChmod(e.chmod).read);
                         }
@@ -400,6 +408,10 @@ export class Terminal extends WindowApp {
                             }
                             returnText += `\n`;
                         });
+                        break;
+
+                    case 'rm2':
+
                         break;
 
                     default:
