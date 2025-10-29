@@ -234,17 +234,20 @@ export class Terminal extends WindowApp {
                 }
                 switch (commandName) {
                     case 'cd':
+                        if (params.length < 1) {
+                            this.#pwd = '/';
+                            break;
+                        }
+
                         if (params.length > 1) {
-                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
-                            returnText = `${commandName}: too many arguments`;
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
                             break;
                         }
 
                         // Récupérer l'emplacement
                         let norPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd);
                         if (!this.#getSortedContent(norPwd)) {
-                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
-                            returnText = `${paramsStr}: directory not found`;
+                            returnText = `<span class="error">${paramsStr}: directory not found</span>`;
                             break;
                         }
 
@@ -426,38 +429,34 @@ export class Terminal extends WindowApp {
      * @returns {String} Le PWD absolue qui marche
      */
     #normalizePwd(nouveauPwd) {
-        if (!this.Pwd) { throw new Error("Le PWD n'est pas valide !") }
-        let finalPwdStr = '';
-        let formattedPwd = `${this.Pwd}`;
+        if (!this.Pwd) throw new Error("Le PWD n'est pas valide !");
 
-        // Nettoyage des / de début et de fin
-        if (formattedPwd.startsWith('/')) formattedPwd = formattedPwd.substring(1);
-        if (formattedPwd.endsWith('/')) formattedPwd = formattedPwd.slice(0, -1);
-        let formattedPwdArray = formattedPwd ? formattedPwd.split('/') : [];
+        // Si le nouveau chemin est absolu, on part de la racine
+        let baseParts = nouveauPwd.startsWith('/')
+            ? []
+            : this.Pwd.split('/').filter(Boolean);
 
-        // Nettoyage du nouveau chemin
-        if (this.Pwd !== '/' && nouveauPwd.startsWith(this.Pwd)) {
-            nouveauPwd = nouveauPwd.replace(this.Pwd, '');
-        }
-        nouveauPwd = nouveauPwd.replace(/\/+/g, '/').split('/');
+        // Découpe et nettoie le chemin
+        let newParts = nouveauPwd.split('/').filter(Boolean);
 
-        // Parcours
-        for (const e of nouveauPwd) {
-            if (!e || e === '.') continue;
-            if (e === '..') formattedPwdArray.pop();
-            else formattedPwdArray.push(e);
+        // Combine les deux
+        let finalParts = [...baseParts];
+        for (const part of newParts) {
+            if (part === '.' || part === '') continue;
+            if (part === '..') {
+                finalParts.pop();
+            } else {
+                finalParts.push(part);
+            }
         }
 
-        // Reconstruction
-        finalPwdStr = '/' + formattedPwdArray.join('/');
-        if (finalPwdStr.length > 1 && finalPwdStr.endsWith('/')) {
-            finalPwdStr = finalPwdStr.slice(0, -1);
-        }
-        if (!finalPwdStr.endsWith('/')) {
-            finalPwdStr += '/';
-        }
-        return finalPwdStr;
+        // Reconstruit le chemin final
+        let result = '/' + finalParts.join('/');
+        if (!result.endsWith('/')) result += '/';
+        if (result === '//') result = '/';
+        return result;
     }
+
 
     #getSortedContent(pwd = this.Pwd) {
         let content = this.#computer.getContentFromPath(pwd);
