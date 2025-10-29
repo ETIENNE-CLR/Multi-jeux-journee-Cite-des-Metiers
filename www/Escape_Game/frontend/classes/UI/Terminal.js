@@ -153,8 +153,11 @@ export class Terminal extends WindowApp {
             let commandArray = preparedCommand.split(preparedSpecialChar);
             let commandName = commandArray[0] ?? '';
 
-            let paramsStr = commandArray[1] ?? '';
-            let params = paramsStr.split(' ').filter(Boolean);
+            let commandSecondPart = commandArray[1] ?? '';
+            let p = commandSecondPart.split(' ').filter(Boolean)
+            let params = p.filter(p => !(p[0].startsWith('-')));
+            let args = p.filter(p => p[0].startsWith('-'));
+            let paramsStr = params.join(' ') ?? '';
 
             // Chemin relatif absolue
             let dest = paramsStr ?? ''
@@ -309,7 +312,7 @@ export class Terminal extends WindowApp {
                             const basePath = isAbsolute ? [] : this.Pwd.split('/').filter(Boolean);
                             const allParts = [...basePath, ...pathParts];
 
-                            // navigation dans l’arborescence
+                            // navigation dans l'arborescence
                             for (const part of allParts) {
                                 const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
                                 if (!found) {
@@ -379,14 +382,14 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'cat':
-                    // case 'rm':
+                    case 'rm':
+                        let wantRm = (commandName === 'rm');
                         if (params.length < 1) {
                             returnText = `<span class="error">${commandName}: need an argument</span>`;
                             break;
                         }
                         let children = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd));
                         let parent = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd + '../'));
-                        console.log(parent);
 
                         if (Array.isArray(children)) {
                             children = children.filter(e => parseChmod(e.chmod).read);
@@ -399,12 +402,40 @@ export class Terminal extends WindowApp {
 
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
-                            } else if (!(file instanceof File)) {
+                            } else if ((!wantRm && !(file instanceof File)) || (wantRm && !args.includes('-d'))) {
                                 returnText += `<span class="error">${commandName}: ${p}: Is not a file</span>`;
-                            } else if (!parseChmod(file.chmod).read) {
+                            } else if ((!wantRm && !parseChmod(file.chmod).read) || (wantRm && !parseChmod(file.chmod).write)) {
                                 returnText += `<span class="error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
-                                returnText += file.content
+                                // Tous les tests sont passés
+                                if (wantRm) {
+                                    // Navigation dans l'arborescence pour la syncronisation
+                                    let currentDir = this.Tree;
+                                    let finalPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd).split('/').filter(Boolean);
+                                    if (args.includes('-d')) {
+                                        finalPwd.pop();
+                                    }
+                                    for (const path of finalPwd) {
+                                        const found = g(currentDir).find(c => c.name === path && c instanceof Directory);
+                                        if (!found) {
+                                            throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
+                                        }
+                                        currentDir = found;
+                                    }
+
+                                    // Suppression de l'élement
+                                    let el = g(currentDir).find(e => {
+                                        const typeCondition = (args.includes('-d')) ? e instanceof Directory : e instanceof File;
+                                        return e.name === pFormatted && typeCondition;
+                                    });
+                                    const children = g(currentDir);
+                                    const index = children.indexOf(el);
+                                    if (index !== -1) {
+                                        children.splice(index, 1);
+                                    }
+                                } else {
+                                    returnText += file.content
+                                }
                             }
                             returnText += `\n`;
                         });
@@ -417,11 +448,6 @@ export class Terminal extends WindowApp {
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
-            }
-
-            // Update tree
-            if (!this.#computer.checkUpdateTreePermissions()) {
-                throw new Error("Il y a eu une erreur de permission !");
             }
 
             // Affichage return

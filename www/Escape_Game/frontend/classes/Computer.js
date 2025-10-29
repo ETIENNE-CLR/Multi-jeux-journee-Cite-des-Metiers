@@ -269,11 +269,6 @@ export class Computer {
 		this.#addToScreen(table);
 	}
 
-	checkUpdateTreePermissions() {
-		// console.log(`A implémenter !`);
-		return true;
-	}
-
 	/**
 	 * Fonction pour récupérer tous les dossiers et tous les fichiers
 	 * qui sont présents dans le chemin
