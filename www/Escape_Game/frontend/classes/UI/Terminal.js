@@ -162,7 +162,7 @@ export class Terminal extends WindowApp {
 
             // Tab
             if (e.key === 'Tab') {
-                const excludedCommands = ['mkdir', 'pwd', 'touch', 'echo', 'whoami'];
+                const excludedCommands = ['pwd', 'touch', 'echo', 'whoami'];
                 if (params.length > 1 || excludedCommands.includes(commandName)) return;
 
                 let paramsWithoutLastParams = paramsStr.split('/');
@@ -221,7 +221,7 @@ export class Terminal extends WindowApp {
                 this.#initNewCommandLine()
                 return
             } else if (!this.isCommandOperatorValid(commandName)) {
-                commandReturn.classList.add('error');
+                commandReturn.classList.add('error'); // <-- CA VA PAS ICI
                 returnText = `${commandName}: command not found`;
             } else {
                 // Commande valide
@@ -235,7 +235,7 @@ export class Terminal extends WindowApp {
                 switch (commandName) {
                     case 'cd':
                         if (params.length > 1) {
-                            commandReturn.classList.add('error');
+                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
                             returnText = `${commandName}: too many arguments`;
                             break;
                         }
@@ -243,7 +243,7 @@ export class Terminal extends WindowApp {
                         // Récupérer l'emplacement
                         let norPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd);
                         if (!this.#getSortedContent(norPwd)) {
-                            commandReturn.classList.add('error');
+                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
                             returnText = `${paramsStr}: directory not found`;
                             break;
                         }
@@ -277,56 +277,65 @@ export class Terminal extends WindowApp {
                     case 'touch':
                         let wantDir = commandName === 'mkdir';
                         if (params.length < 1) {
-                            commandReturn.classList.add('error');
-                            returnText = `${commandName}: missing operand`;
+                            returnText = `<span class="error">${commandName}: missing operand</span>`;
                             break;
                         }
 
-                        let actualDir = this.Tree;
-                        const pwdArray = this.Pwd.split('/').filter(Boolean);
+                        // Parcourir tous les paramètres
+                        for (const fullPath of params) {
+                            const pathParts = fullPath.split('/').filter(Boolean);
+                            const dirName = pathParts.pop();
+                            let currentDir = this.Tree;
 
-                        // navigation dans l'arborescence
-                        for (const e of pwdArray) {
-                            const found = g(actualDir).find(c => c.name === e && c instanceof Directory);
-                            if (!found) throw new Error(`Dossier "${e}" introuvable.`);
-                            actualDir = found;
-                        }
+                            // si le chemin est absolu
+                            const isAbsolute = fullPath.startsWith('/');
+                            const basePath = isAbsolute ? [] : this.Pwd.split('/').filter(Boolean);
+                            const allParts = [...basePath, ...pathParts];
 
-                        // création des nouveaux dossiers
-                        let isRacine = (this.Pwd === '/');
-                        let pwdSplitted2 = this.Pwd.split('/').filter(Boolean);
-                        let parentDirectory = this.#getSortedContent(this.#normalizePwd(this.Pwd + '../')).find(d => d instanceof Directory && d.name === pwdSplitted2[pwdSplitted2.length - 1])
-                        for (const dirName of params) {
-                            if (this.Pwd !== '/' && !parseChmod(parentDirectory.chmod).write) {
-                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': Permission denied</span>\n`;
-                                break;
+                            // navigation dans l’arborescence
+                            for (const part of allParts) {
+                                const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
+                                if (!found) {
+                                    returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': No such file or directory</span>\n`;
+                                    currentDir = null;
+                                    break;
+                                }
+                                currentDir = found;
                             }
-                            if (g(actualDir).find(c => c.name === dirName)) {
-                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${dirName}': File exists</span>\n`;
+                            if (!currentDir) continue;
+
+                            // test de création
+                            const isRacine = (this.Pwd === '/')
+                            const parentDir = currentDir;
+                            const parentWritable = isRacine ? true : parseChmod(parentDir.chmod).write;
+                            if (!parentWritable) {
+                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': Permission denied</span>\n`;
+                                continue;
+                            }
+                            if (g(parentDir).find(c => c.name === dirName)) {
+                                returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': File already exists</span>\n`;
                                 continue;
                             }
 
-                            // Création
-                            const emplacement = (isRacine) ? actualDir : actualDir.children;
+                            // création effective
                             const chmod = (isRacine) ? ChmodConstructor(true, true, wantDir) : parentDirectory.chmod;
+                            const emplacement = g(parentDir);
                             emplacement.push(wantDir
                                 ? new Directory(dirName, [], chmod)
                                 : new File(dirName, this.#computer, '', chmod)
                             );
-                            returnText += `${dirName} created\n`;
+                            returnText += `${fullPath} created\n`;
                         };
 
                         // S'il n'y a pas eu d'erreur, on dit rien
-                        if (!returnText.includes('error')) {
-                            returnText = '';
-                        }
+                        returnText = (!returnText.includes('error')) ? '' : returnText;
                         break;
 
                     case 'ls':
                     case 'll':
                         let isLs = commandName === 'ls';
                         if (params.length > 1) {
-                            commandReturn.classList.add('error');
+                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
                             returnText = `${commandName}: too many arguments`;
                             break;
                         }
@@ -340,7 +349,7 @@ export class Terminal extends WindowApp {
                             const txt = el.name + (isFolder ? '/' : '');
                             const perms = (isFolder ? 'd' : '-') + chmodToString(el.chmod) + ' '.repeat(2);
 
-                            if (!isLs) returnText += '<p class="line">'+perms;
+                            if (!isLs) returnText += '<p class="line">' + perms;
                             returnText += isFolder
                                 ? `<span class="enum folder">${txt}\t</span>`
                                 : `${txt}\t`;
@@ -354,7 +363,7 @@ export class Terminal extends WindowApp {
 
                     case 'cat':
                         if (params.length < 1) {
-                            commandReturn.classList.add('error');
+                            commandReturn.classList.add('error'); // <-- CA VA PAS ICI
                             returnText = `${commandName}: need an argument`;
                             break;
                         }
@@ -368,7 +377,7 @@ export class Terminal extends WindowApp {
                             let file = !Array.isArray(children)
                                 ? children
                                 : (children.find(c => c.name === pFormatted) ?? g(parent).find(c => c.name === pFormatted));
-                                
+
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
                             } else if (!(file instanceof File)) {
