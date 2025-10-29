@@ -171,7 +171,9 @@ export class Terminal extends WindowApp {
                 let tmpPwd = this.#normalizePwd(this.Pwd + paramsWithoutLastParams.join('/')); // ici la fonction de normalisation prend en charge le ../ du paramètre mais il faut gérer si le paramètre c'est directement à partir de /
                 let actualContent = this.#getSortedContent(tmpPwd);
                 const rightDirs = actualContent.filter(item => {
-                    const isCorrectType = (commandName === 'cat' && item instanceof File) || (commandName !== 'cat' && item instanceof Directory);
+                    let isCorrectType = true;
+                    isCorrectType = (commandName === 'cd') ? item instanceof Directory : isCorrectType;
+                    // isCorrectType = (commandName === 'cat') ? item instanceof File : isCorrectType;
                     const correctPerms = (item instanceof File && parseChmod(item.chmod).read) || (item instanceof Directory && parseChmod(item.chmod).execute);
                     return item.name.startsWith(lastParam) && isCorrectType && correctPerms;
                 });
@@ -356,11 +358,21 @@ export class Terminal extends WindowApp {
                             returnText = `${commandName}: need an argument`;
                             break;
                         }
-                        let children = this.#getSortedContent().filter(e => parseChmod(e.chmod).read);
+                        let children = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd));
+                        let parent = this.#computer.getContentFromPath(this.Pwd);
+                        if (Array.isArray(children)) {
+                            children = children.filter(e => parseChmod(e.chmod).read);
+                        }
                         params.forEach(p => {
-                            let file = children.find(c => c.name === p);
+                            let pFormatted = p.split('/').filter(Boolean).pop();
+                            let file = !Array.isArray(children)
+                                ? children
+                                : (children.find(c => c.name === pFormatted) ?? g(parent).find(c => c.name === pFormatted));
+                                
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
+                            } else if (!(file instanceof File)) {
+                                returnText += `<span class="error">${commandName}: ${p}: Is not a file</span>`;
                             } else if (!parseChmod(file.chmod).read) {
                                 returnText += `<span class="error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
