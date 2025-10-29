@@ -22,7 +22,7 @@ export class Terminal extends WindowApp {
         // Commandes valides
         this.#commandName = [
             'cd', 'mkdir', 'pwd', 'ls', 'll',
-            'rm', 'cp', 'mv', 'cat',
+            'rm', 'cp', 'mv', 'cat', 'chmod',
             'touch', 'echo', 'whoami'
         ];
 
@@ -402,19 +402,19 @@ export class Terminal extends WindowApp {
 
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
-                            } else if ((!wantRm && !(file instanceof File)) || (wantRm && !args.includes('-d'))) {
+                            } else if (!wantRm && !(file instanceof File)) {
                                 returnText += `<span class="error">${commandName}: ${p}: Is not a file</span>`;
                             } else if ((!wantRm && !parseChmod(file.chmod).read) || (wantRm && !parseChmod(file.chmod).write)) {
                                 returnText += `<span class="error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
                                 // Tous les tests sont passés
                                 if (wantRm) {
-                                    // Navigation dans l'arborescence pour la syncronisation
+                                    // Init navigation
                                     let currentDir = this.Tree;
                                     let finalPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd).split('/').filter(Boolean);
-                                    if (args.includes('-d')) {
-                                        finalPwd.pop();
-                                    }
+                                    finalPwd.pop();
+                                    
+                                    // Navigation dans l'arborescence pour la syncronisation
                                     for (const path of finalPwd) {
                                         const found = g(currentDir).find(c => c.name === path && c instanceof Directory);
                                         if (!found) {
@@ -441,8 +441,11 @@ export class Terminal extends WindowApp {
                         });
                         break;
 
-                    case 'rm2':
-
+                    case 'chmod':
+                        if (params.length < 2) {
+                            returnText = `<span class="error">${commandName}: missing operand</span>`;
+                            break;
+                        }
                         break;
 
                     default:
