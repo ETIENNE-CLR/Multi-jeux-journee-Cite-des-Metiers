@@ -156,7 +156,7 @@ export class Terminal extends WindowApp {
             let paramsStr = commandArray[1] ?? '';
             let params = paramsStr.split(' ').filter(Boolean);
 
-            // Chemin realtif absolue
+            // Chemin relatif absolue
             let dest = paramsStr ?? ''
             let preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
 
@@ -168,7 +168,15 @@ export class Terminal extends WindowApp {
                 let paramsWithoutLastParams = paramsStr.split('/');
                 let lastParam = paramsWithoutLastParams.pop();
 
-                let tmpPwd = this.#normalizePwd(this.Pwd + paramsWithoutLastParams.join('/')); // ici la fonction de normalisation prend en charge le ../ du paramètre mais il faut gérer si le paramètre c'est directement à partir de /
+                // Récupération du bon chemin
+                let path = (paramsStr[0] !== '/')
+                    ? this.Pwd  // pour chemin relatif
+                    : '';       // pour chemin absolu
+                path += paramsWithoutLastParams.join('/');
+                path = path === '' ? '/' : path;
+
+                // Récupération du contenu
+                let tmpPwd = this.#normalizePwd(path);
                 let actualContent = this.#getSortedContent(tmpPwd);
                 const rightDirs = actualContent.filter(item => {
                     let isCorrectType = true;
