@@ -530,18 +530,22 @@ export class Terminal extends WindowApp {
 
                         // Init
                         let currentDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'));
-                        let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '')));
-                        if (currentDir === destinaDir) {
-                            // Rename locale
-                            let file = currentDir.find(c => c.name === currFile);
-                            if (!file) {
-                                returnText = `<span class="error">${commandName}: no such file or directory</span>`;
-                                break;
-                            }
-                            file.name = destFile;
-                        } else {
-                            // Rename + deplacement
+                        let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')));
+
+                        // Recup fichier ou dossier
+                        let file = currentDir.find(c => c.name === currFile);
+                        if (!file) {
+                            returnText = `<span class="error">${commandName}: no such file or directory</span>`;
+                            break;
                         }
+
+                        // move
+                        if (currentDir !== destinaDir) {
+                            g(destinaDir).push(file);
+                        }
+
+                        // rename
+                        file.name = destFile;
                         break;
 
                     default:
