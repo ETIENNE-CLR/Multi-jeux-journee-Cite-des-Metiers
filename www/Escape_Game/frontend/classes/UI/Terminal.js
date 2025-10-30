@@ -525,11 +525,24 @@ export class Terminal extends WindowApp {
                             break;
                         }
 
-                        let baseFile = params[0];
+                        let currFile = params[0];
                         let destFile = params[1];
 
                         // Init
-                        let currentDir = getParentElementFromTree(this.#normalizePwd(preparedPwdArguments_relatifPwd));
+                        let currentDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'));
+                        let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '')));
+                        console.log(currentDir)
+                        console.log(destinaDir);
+
+                        if (currentDir === destinaDir) {
+                            // Rename locale
+                            let file = currentDir.find(c => c.name === currFile);
+                            if (!file) {
+                                returnText = `<span class="error">${commandName}: no such file or directory</span>`;
+                                break;
+                            }
+                            file.name = destFile;
+                        }
                         break;
 
                     default:
