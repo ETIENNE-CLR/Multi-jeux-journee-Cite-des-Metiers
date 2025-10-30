@@ -9,10 +9,12 @@ export class Terminal extends WindowApp {
     #pwd; // Chemin actuel
     #commandName; // Les commandes valides
     #computer; // Instance de l'ordinateur
+    #history;
 
     get Pwd() { return this.#pwd }
     get ValideCommand() { return this.#commandName }
     get Tree() { return this.#computer.Tree }
+    get History() { return this.#history }
 
     constructor(computerElement) {
         super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
@@ -23,9 +25,9 @@ export class Terminal extends WindowApp {
         this.#commandName = [
             'cd', 'mkdir', 'pwd', 'ls', 'll',
             'rm', 'cp', 'mv', 'cat', 'chmod',
-            'touch', 'echo', 'whoami'
+            'touch', 'echo', 'whoami', 'history'
         ];
-        console.log(this.#commandName);
+        this.#history = [];
 
         // Couleur de fond
         this.innerFrame.style.backgroundColor = 'rgb(12 12 12)';
@@ -142,8 +144,15 @@ export class Terminal extends WindowApp {
         placeCaretAtEnd(input);
 
         let nbTabClicked = 0;
+        let indexHistory = -1;
         input.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter' && e.key !== 'Tab') { return }
+            const VALID_KEYS = {
+                tab: 'Tab',
+                enter: 'Enter',
+                arrowUp: 'ArrowUp',
+                arrowDown: 'ArrowDown'
+            };
+            if (!Object.values(VALID_KEYS).includes(e.key)) return;
             e.preventDefault();
 
             // Découpage de la commande - NE PREND PAS EN COMPTE SUDO POUR L'INSTANT
@@ -165,7 +174,7 @@ export class Terminal extends WindowApp {
             const preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
 
             // Tab
-            if (e.key === 'Tab') {
+            if (e.key === VALID_KEYS.tab) {
                 const excludedCommands = ['pwd', 'echo', 'whoami'];
                 if (params.length > 1 || excludedCommands.includes(commandName)) return;
 
@@ -218,6 +227,24 @@ export class Terminal extends WindowApp {
                     currentInput(area).innerText = command;
                 }
                 updateInputEventFocusManager();
+                return;
+            }
+
+            // Historique
+            if (e.key === VALID_KEYS.arrowUp || e.key === VALID_KEYS.arrowDown) {
+                if (this.#history.length === 0) return;
+
+                if (e.key === VALID_KEYS.arrowUp) {
+                    if (indexHistory < this.#history.length - 1) indexHistory++;
+                } else {
+                    if (indexHistory > -1) indexHistory--;
+                }
+
+                const commandToFill = (indexHistory === -1)
+                    ? ''
+                    : this.#history[indexHistory];
+
+                input.innerText = commandToFill;
                 return;
             }
 
@@ -300,6 +327,17 @@ export class Terminal extends WindowApp {
                             break;
                         }
                         returnText = this.#computer.username.replace(' ', '_');
+                        break;
+
+                    case 'history':
+                        if (params.length > 0) {
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
+                            break;
+                        }
+                        returnText = '';
+                        this.#history.reverse().forEach(c => {
+                            returnText += c + '\n';
+                        });
                         break;
 
                     case 'mkdir':
@@ -477,13 +515,12 @@ export class Terminal extends WindowApp {
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
-            }
 
-            // Affichage return
-            commandReturn.innerHTML = returnText;
-            area.appendChild(commandReturn);
-            this.#initNewCommandLine();
-            updateInputEventFocusManager();
+                // Ajoute la commande au tout début du tableau history
+                this.#history.unshift(command);
+                indexHistory = -1;
+            }
+            endCommandLineReturn();
         });
 
         await FunctionAsset.sleep(0.001); // Temps d'attente pour laisser head s'afficher (depuis la POV du user -> aucun temps d'attente)
