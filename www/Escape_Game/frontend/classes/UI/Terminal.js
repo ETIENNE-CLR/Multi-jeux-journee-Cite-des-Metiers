@@ -533,7 +533,7 @@ export class Terminal extends WindowApp {
                         let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')));
 
                         // Recup fichier ou dossier
-                        let file = currentDir.find(c => c.name === currFile);
+                        let file = g(currentDir).find(c => c.name === currFile);
                         if (!file) {
                             returnText = `<span class="error">${commandName}: no such file or directory</span>`;
                             break;
@@ -542,10 +542,22 @@ export class Terminal extends WindowApp {
                         // move
                         if (currentDir !== destinaDir) {
                             g(destinaDir).push(file);
+
+                            if (commandName === 'mv') {
+                                // Suppression de l'autre fichier
+                                const children = g(currentDir);
+                                const index = children.indexOf(file);
+                                if (index !== -1) {
+                                    children.splice(index, 1);
+                                }
+                            }
                         }
 
                         // rename
-                        file.name = destFile;
+                        let newName = destFile.split('/').pop();
+                        if (newName.trim() !== '') {
+                            file.name = newName
+                        }
                         break;
 
                     default:
