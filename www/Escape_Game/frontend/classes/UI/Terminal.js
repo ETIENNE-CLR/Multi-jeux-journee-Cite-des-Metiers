@@ -176,9 +176,9 @@ export class Terminal extends WindowApp {
             // Tab
             if (e.key === VALID_KEYS.tab) {
                 const excludedCommands = ['pwd', 'echo', 'whoami'];
-                if (params.length > 1 || excludedCommands.includes(commandName)) return;
+                if (excludedCommands.includes(commandName)) return;
 
-                let paramsWithoutLastParams = paramsStr.split('/');
+                let paramsWithoutLastParams = params[params.length - 1].split('/');
                 let lastParam = paramsWithoutLastParams.pop();
 
                 // Récupération du bon chemin
@@ -396,7 +396,11 @@ export class Terminal extends WindowApp {
                         };
 
                         // S'il n'y a pas eu d'erreur, on dit rien
-                        returnText = (!returnText.includes('error')) ? '' : returnText;
+                        if (returnText.includes('error')) {
+                            commandReturn.style.display = 'block';
+                        } else {
+                            returnText = '';
+                        }
                         break;
 
                     case 'ls':
@@ -435,24 +439,26 @@ export class Terminal extends WindowApp {
                             returnText = `<span class="error">${commandName}: need an argument</span>`;
                             break;
                         }
-                        let children = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd));
-                        let parent = this.#computer.getContentFromPath(this.#normalizePwd(preparedPwdArguments_relatifPwd + '../'));
-
-                        if (Array.isArray(children)) {
-                            children = children.filter(e => parseChmod(e.chmod).read);
-                        }
                         params.forEach(p => {
+                            let pathToFile = this.Pwd + p;
+                            let children = this.#computer.getContentFromPath(this.#normalizePwd(pathToFile));
+                            let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
+    
+                            if (Array.isArray(children)) {
+                                children = children.filter(e => parseChmod(e.chmod).read);
+                            }
+
                             let pFormatted = p.split('/').filter(Boolean).pop();
                             let file = !Array.isArray(children)
                                 ? children
                                 : (children.find(c => c.name === pFormatted) ?? g(parent).find(c => c.name === pFormatted));
 
                             if (!file) {
-                                returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
+                                returnText += `<span class="line error">${commandName}: ${p}: No such file or directory</span>`;
                             } else if (!wantRm && !(file instanceof File)) {
-                                returnText += `<span class="error">${commandName}: ${p}: Is not a file</span>`;
+                                returnText += `<span class="line error">${commandName}: ${p}: Is not a file</span>`;
                             } else if ((!wantRm && !parseChmod(file.chmod).read) || (wantRm && !parseChmod(file.chmod).write)) {
-                                returnText += `<span class="error">${commandName}: ${p}: Permission denied</span>`;
+                                returnText += `<span class="line error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
                                 // Tous les tests sont passés
                                 if (wantRm) {
@@ -485,6 +491,7 @@ export class Terminal extends WindowApp {
                                 }
                             }
                             returnText += `\n`;
+                            commandReturn.style.flexDirection = 'column'
                         });
                         break;
 
@@ -500,11 +507,14 @@ export class Terminal extends WindowApp {
                             break;
                         }
 
-                        // /!\ prend pas en compte les chemins spécifiés
-                        let cnt = this.#computer.getContentFromPath(this.Pwd);
+                        // Parcourir les paramètres
                         params.forEach(p => {
                             if (p.endsWith('/')) p = p.slice(0, -1);
-                            let file = cnt.find(e => e.name === p);
+                            let pathToFile = this.Pwd + p;
+                            let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
+                            let pFormatted = p.split('/').filter(Boolean).pop();
+
+                            let file = g(parent).find(e => e.name === pFormatted);
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
                             }
