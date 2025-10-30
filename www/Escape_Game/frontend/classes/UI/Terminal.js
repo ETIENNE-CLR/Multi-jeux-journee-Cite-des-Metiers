@@ -227,9 +227,17 @@ export class Terminal extends WindowApp {
             const commandReturn = document.createElement('div');
             commandReturn.classList.add('line', 'return');
 
+            let endCommandLineReturn = () => {
+                commandReturn.innerHTML = returnText;
+                getCMD().appendChild(commandReturn);
+                this.#initNewCommandLine();
+                updateInputEventFocusManager();
+                return;
+            }
+
             // valid command name
             if (command === '') {
-                this.#initNewCommandLine()
+                endCommandLineReturn();
                 return
             } else if (!this.isCommandOperatorValid(commandName)) {
                 returnText = `<span class="error">${commandName}: command not found</span>`;
@@ -453,7 +461,7 @@ export class Terminal extends WindowApp {
                             returnText = `<span class="error">${commandName}: invalid mode: '${newChmod}'</span>`;
                             break;
                         }
-                        
+
                         // /!\ prend pas en compte les chemins spécifiés
                         let cnt = this.#computer.getContentFromPath(this.Pwd);
                         params.forEach(p => {
