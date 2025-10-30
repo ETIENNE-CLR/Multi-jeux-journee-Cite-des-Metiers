@@ -270,6 +270,27 @@ export class Terminal extends WindowApp {
                 returnText = `<span class="error">${commandName}: command not found</span>`;
             } else {
                 // Commande valide
+                let getParentElementFromTree = (pwd) => {
+                    let currentDir = this.Tree;
+                    const pathParts = pwd.split('/').filter(Boolean);
+                    pathParts.pop();
+
+                    // si le chemin est absolu
+                    const isAbsolute = pwd.startsWith('/');
+                    const basePath = isAbsolute ? [] : this.Pwd.split('/').filter(Boolean);
+                    const allParts = [...basePath, ...pathParts];
+
+                    // Navigation dans l'arborescence pour la syncronisation
+                    for (const part of allParts) {
+                        const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
+                        if (!found) {
+                            throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
+                        }
+                        currentDir = found;
+                    }
+                    return currentDir;
+                }
+
                 function g(value) {
                     if (value instanceof Directory) {
                         return value.children
@@ -352,26 +373,9 @@ export class Terminal extends WindowApp {
                         for (const fullPath of params) {
                             const pathParts = fullPath.split('/').filter(Boolean);
                             const dirName = pathParts.pop();
-                            let currentDir = this.Tree;
+                            let currentDir = getParentElementFromTree(fullPath);
 
-                            // si le chemin est absolu
-                            const isAbsolute = fullPath.startsWith('/');
-                            const basePath = isAbsolute ? [] : this.Pwd.split('/').filter(Boolean);
-                            const allParts = [...basePath, ...pathParts];
-
-                            // navigation dans l'arborescence
-                            for (const part of allParts) {
-                                const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
-                                if (!found) {
-                                    returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': No such file or directory</span>\n`;
-                                    currentDir = null;
-                                    break;
-                                }
-                                currentDir = found;
-                            }
-                            if (!currentDir) continue;
-
-                            // test de création
+                            // tests
                             const isRacine = (this.Pwd === '/')
                             const parentDir = currentDir;
                             const parentWritable = isRacine ? true : parseChmod(parentDir.chmod).write;
@@ -443,7 +447,7 @@ export class Terminal extends WindowApp {
                             let pathToFile = this.Pwd + p;
                             let children = this.#computer.getContentFromPath(this.#normalizePwd(pathToFile));
                             let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
-    
+
                             if (Array.isArray(children)) {
                                 children = children.filter(e => parseChmod(e.chmod).read);
                             }
@@ -462,19 +466,8 @@ export class Terminal extends WindowApp {
                             } else {
                                 // Tous les tests sont passés
                                 if (wantRm) {
-                                    // Init navigation
-                                    let currentDir = this.Tree;
-                                    let finalPwd = this.#normalizePwd(preparedPwdArguments_relatifPwd).split('/').filter(Boolean);
-                                    finalPwd.pop();
-
-                                    // Navigation dans l'arborescence pour la syncronisation
-                                    for (const path of finalPwd) {
-                                        const found = g(currentDir).find(c => c.name === path && c instanceof Directory);
-                                        if (!found) {
-                                            throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
-                                        }
-                                        currentDir = found;
-                                    }
+                                    // Init
+                                    let currentDir = getParentElementFromTree(this.#normalizePwd(preparedPwdArguments_relatifPwd));
 
                                     // Suppression de l'élement
                                     let el = g(currentDir).find(e => {
@@ -520,6 +513,23 @@ export class Terminal extends WindowApp {
                             }
                             file.chmod = newChmod;
                         });
+                        break;
+
+                    case 'mv':
+                        if (params.length < 2) {
+                            returnText = `<span class="error">${commandName}: missing operand</span>`;
+                            break;
+                        }
+                        if (params.length > 2) {
+                            returnText = `<span class="error">${commandName}: too many arguments</span>`;
+                            break;
+                        }
+
+                        let baseFile = params[0];
+                        let destFile = params[1];
+
+                        // Init
+                        let currentDir = getParentElementFromTree(this.#normalizePwd(preparedPwdArguments_relatifPwd));
                         break;
 
                     default:
