@@ -270,7 +270,7 @@ export class Terminal extends WindowApp {
                 returnText = `<span class="error">${commandName}: command not found</span>`;
             } else {
                 // Commande valide
-                let getParentElementFromTree = (pwd) => {
+                let getParentElementFromTree = (pwd, strict = true) => {
                     let currentDir = this.Tree;
                     const pathParts = pwd.split('/').filter(Boolean);
                     pathParts.pop();
@@ -284,9 +284,9 @@ export class Terminal extends WindowApp {
                     for (const part of allParts) {
                         const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
                         if (!found) {
-                            throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
-                        }
-                        currentDir = found;
+                            if (strict) throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
+                            else return false;
+                        } else currentDir = found;
                     }
                     return currentDir;
                 }
@@ -516,6 +516,7 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'mv':
+                    case 'cp':
                         if (params.length < 2) {
                             returnText = `<span class="error">${commandName}: missing operand</span>`;
                             break;
@@ -525,28 +526,36 @@ export class Terminal extends WindowApp {
                             break;
                         }
 
+                        // Init
                         let currFile = params[0];
                         let destFile = params[1];
+                        let isMv = (commandName === 'mv');
 
-                        // Init
-                        let currentDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'));
-                        let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')));
+                        let currentDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'), false);
+                        let destinaDir = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')), false);
+
+                        if (!currentDir || !destinaDir) {
+                            returnText = `<span class="error">${commandName}: cannot stat '${(!destinaDir) ? destFile : currFile}': No such file or directory</span>`;
+                            break;
+                        }
 
                         // Recup fichier ou dossier
-                        let file = g(currentDir).find(c => c.name === currFile);
-                        if (!file) {
+                        let copyFile = undefined;
+                        let originFile = g(currentDir).find(c => c.name === currFile);
+                        if (!originFile) {
                             returnText = `<span class="error">${commandName}: no such file or directory</span>`;
                             break;
                         }
 
                         // move
-                        if (currentDir !== destinaDir) {
-                            g(destinaDir).push(file);
+                        if (currentDir !== destinaDir || !isMv) {
+                            g(destinaDir).push(originFile);
+                            copyFile = g(destinaDir).find(e => e.name === originFile.name && (!isMv && e !== originFile));
 
-                            if (commandName === 'mv') {
+                            if (isMv) {
                                 // Suppression de l'autre fichier
                                 const children = g(currentDir);
-                                const index = children.indexOf(file);
+                                const index = children.indexOf(originFile);
                                 if (index !== -1) {
                                     children.splice(index, 1);
                                 }
@@ -556,7 +565,7 @@ export class Terminal extends WindowApp {
                         // rename
                         let newName = destFile.split('/').pop();
                         if (newName.trim() !== '') {
-                            file.name = newName
+                            ((isMv) ? originFile : copyFile).name = newName
                         }
                         break;
 
