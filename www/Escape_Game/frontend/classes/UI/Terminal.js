@@ -1,4 +1,4 @@
-import { ChmodConstructor, chmodToString, parseChmod } from "../Others/ChModConstructor.js";
+import { ChmodConstructor, chmodToString, parseChmod } from "../Others/ChmodConstructor.js";
 import { Directory } from "../Others/Directory.js";
 import { File } from "../Others/File.js";
 import { DesktopIconApp } from "../Others/IconApp.js";
@@ -537,6 +537,16 @@ export class Terminal extends WindowApp {
                         if (!currentDir || !destinaDir) {
                             returnText = `<span class="error">${commandName}: cannot stat '${(!destinaDir) ? destFile : currFile}': No such file or directory</span>`;
                             break;
+                        }
+
+                        // Permissions
+                        const testPermsSrc = (this.Pwd === '/') ? false : (!parseChmod(currentDir.chmod).read);
+                        const testPermsDest = (this.Pwd === '/') ? false : (!parseChmod(destinaDir.chmod).write);
+
+                        const testPermsDir = (!parseChmod(destinaDir.chmod).write || !parseChmod(destinaDir.chmod).execute)
+                        const testPermsFile = (!isMv && originFile instanceof File && !parseChmod(originFile.chmod).read)
+                        if (testPermsSrc || testPermsDest) {
+                            returnText = `<span class="error">${commandName}: ${dstArg}: Permission denied</span>`;
                         }
 
                         // Recup fichier ou dossier

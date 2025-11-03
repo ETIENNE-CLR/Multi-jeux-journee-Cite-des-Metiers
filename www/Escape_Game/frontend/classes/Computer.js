@@ -1,4 +1,4 @@
-import { ChmodConstructor } from "./Others/ChModConstructor.js";
+import { ChmodConstructor } from "./Others/ChmodConstructor.js";
 import { File } from "./Others/File.js";
 import { Directory } from "./Others/Directory.js";
 import { DesktopIconApp } from "./Others/IconApp.js";
