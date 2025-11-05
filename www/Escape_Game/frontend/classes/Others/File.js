@@ -1,6 +1,6 @@
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
-import { ChmodConstructor, parseChmod } from "./ChModConstructor.js";
+import { ChmodConstructor, parseChmod } from "./ChmodConstructor.js";
 import { IconApp } from "./IconApp.js";
 
 export class File extends WindowApp {

@@ -3,7 +3,7 @@ import { Directory } from "../Others/Directory.js";
 import { IconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
-import { parseChmod } from "../Others/ChModConstructor.js";
+import { parseChmod } from "../Others/ChmodConstructor.js";
 
 export class Explorer extends WindowApp {
 	#actualPath;
