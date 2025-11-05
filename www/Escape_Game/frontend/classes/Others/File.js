@@ -1,17 +1,23 @@
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
 import { ChmodConstructor, parseChmod } from "./ChModConstructor.js";
-import { DesktopIconApp } from "./IconApp.js";
+import { IconApp } from "./IconApp.js";
 
 export class File extends WindowApp {
 	name;
 	content;
 	chmod;
 
+	set Name(value) {
+		this.name = value;
+		this.Title = value;
+		this.desktopIconApp.Title = value;
+	}
+
 	constructor(name, computerElement, content = "", chmod = ChmodConstructor(true, true, false)) {
-		super(`Edition - ${name}`, computerElement, new DesktopIconApp('assets/file.png', name));
+		super(`Edition - ${name}`, computerElement, new IconApp('assets/file.png', name));
 		this.name = name;
-		this.content =content;
+		this.content = content;
 		this.chmod = chmod;
 	}
 

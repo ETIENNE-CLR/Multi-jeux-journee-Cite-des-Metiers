@@ -1,7 +1,7 @@
 import { ChmodConstructor, chmodToString, parseChmod } from "../Others/ChModConstructor.js";
 import { Directory } from "../Others/Directory.js";
 import { File } from "../Others/File.js";
-import { DesktopIconApp } from "../Others/IconApp.js";
+import { IconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "./WindowApp.js";
 
@@ -17,7 +17,7 @@ export class Terminal extends WindowApp {
     get History() { return this.#history }
 
     constructor(computerElement) {
-        super('Terminal de commande', computerElement, new DesktopIconApp('assets/terminal.png', 'Terminal'))
+        super('Terminal de commande', computerElement, new IconApp('assets/terminal.png', 'Terminal'))
         this.#computer = computerElement;
         this.#pwd = '/';
 
@@ -158,6 +158,7 @@ export class Terminal extends WindowApp {
             // Découpage de la commande - NE PREND PAS EN COMPTE SUDO POUR L'INSTANT
             const preparedSpecialChar = '§';
             const command = input.innerText.trim()
+            if (command === '') return;
             const preparedCommand = command.replace(' ', preparedSpecialChar);
 
             const commandArray = preparedCommand.split(preparedSpecialChar);
@@ -175,9 +176,7 @@ export class Terminal extends WindowApp {
 
             // Tab
             if (e.key === VALID_KEYS.tab) {
-                const excludedCommands = ['pwd', 'echo', 'whoami'];
-                if (excludedCommands.includes(commandName)) return;
-
+                if (['pwd', 'echo', 'whoami'].includes(commandName)) return;
                 let paramsWithoutLastParams = params[params.length - 1].split('/');
                 let lastParam = paramsWithoutLastParams.pop();
 
@@ -516,7 +515,6 @@ export class Terminal extends WindowApp {
                         break;
 
                     case 'mv':
-                    case 'cp':
                         if (params.length < 2) {
                             returnText = `<span class="error">${commandName}: missing operand</span>`;
                             break;
@@ -565,8 +563,14 @@ export class Terminal extends WindowApp {
                         // rename
                         let newName = destFile.split('/').pop();
                         if (newName.trim() !== '') {
-                            ((isMv) ? originFile : copyFile).name = newName
+                            ((isMv) ? originFile : copyFile).Name = newName;
                         }
+
+                        // // Syncronisation
+                        // let currentDirForSync = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'), false);
+                        // let destinaDirForSync = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')), false);
+                        // currentDirForSync = currentDir;
+                        // destinaDirForSync = destinaDir;
                         break;
 
                     default:

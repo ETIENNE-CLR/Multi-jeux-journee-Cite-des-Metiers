@@ -2,10 +2,15 @@
  * Classe DesktopIconApp
  * Cette classe représente une application avec une icône et un titre, comme celles que l'on trouve sur un bureau virtuel.
  */
-export class DesktopIconApp {
+export class IconApp {
     #img;
     #title;
     element;
+
+    set Title(value) {
+        if (!value || value.trim() === '') return;
+        this.#title.innerText = value;
+    }
 
     /**
      * Constructeur de la classe DesktopIconApp.

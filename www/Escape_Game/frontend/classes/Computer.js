@@ -1,7 +1,6 @@
 import { ChmodConstructor } from "./Others/ChModConstructor.js";
 import { File } from "./Others/File.js";
 import { Directory } from "./Others/Directory.js";
-import { DesktopIconApp } from "./Others/IconApp.js";
 import { Website } from "./Others/Website.js";
 import { DragDrop } from "./tools/DragDrop.js";
 import { FunctionAsset } from "./Tools/FunctionAsset.js";

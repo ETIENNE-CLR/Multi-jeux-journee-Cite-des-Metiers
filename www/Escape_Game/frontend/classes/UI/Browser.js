@@ -1,4 +1,4 @@
-import { DesktopIconApp } from "../Others/IconApp.js";
+import { IconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { SiteMaker } from "../Tools/SiteMaker.js";
 import { WindowApp } from "../UI/WindowApp.js";
@@ -12,7 +12,7 @@ export class Browser extends WindowApp {
 	get URLs() { return this.#urls }
 
 	constructor(computerElement, urls = []) {
-		super('Navigateur internet', computerElement, new DesktopIconApp('assets/browser.png', 'Navigateur'))
+		super('Navigateur internet', computerElement, new IconApp('assets/browser.png', 'Navigateur'))
 		this.#urls = urls;
 		this.currentUrl = "";
 		this.#history = [];

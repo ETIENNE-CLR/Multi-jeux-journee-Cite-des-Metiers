@@ -1,8 +1,9 @@
 import { File } from "../Others/File.js";
 import { Directory } from "../Others/Directory.js";
-import { DesktopIconApp } from "../Others/IconApp.js";
+import { IconApp } from "../Others/IconApp.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
+import { parseChmod } from "../Others/ChModConstructor.js";
 
 export class Explorer extends WindowApp {
 	#actualPath;
@@ -17,7 +18,7 @@ export class Explorer extends WindowApp {
 	}
 
 	constructor(computerElement) {
-		super('Explorateur de fichiers', computerElement, new DesktopIconApp('assets/folder.png', 'Fichiers'))
+		super('Explorateur de fichiers', computerElement, new IconApp('assets/folder.png', 'Fichiers'))
 		this.#computer = computerElement;
 		this.#actualPath = '/';
 
@@ -109,18 +110,19 @@ export class Explorer extends WindowApp {
 
 		// Génération des tableaux
 		Array.from(children).forEach(child => {
-			switch (child.constructor) {
-				case Directory:
-					directories.push(child);
-					break;
+			if (parseChmod(child.chmod).read) {
+				switch (child.constructor) {
+					case Directory:
+						directories.push(child);
+						break;
 
-				case File:
-					files.push(child);
-					break;
+					case File:
+						files.push(child);
+						break;
 
-				default:
-					console.error("Ce n'est pas un fichier ni un dossier !");
-					break;
+					default:
+						throw new Error("Ce n'est pas un fichier ni un dossier !");
+				}
 			}
 		});
 
@@ -142,7 +144,7 @@ export class Explorer extends WindowApp {
 			divFileContainer.appendChild(iconCon);
 
 			// Création de l'icone
-			let icon = new DesktopIconApp('assets/folder.png', dir.name);
+			let icon = new IconApp('assets/folder.png', dir.name);
 			FunctionAsset.applyStyle(icon.element.querySelector('span'), iconTextStyle);
 			iconCon.appendChild(icon.element);
 			icon.element.addEventListener('click', () => {
