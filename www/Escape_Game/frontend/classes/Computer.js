@@ -42,17 +42,7 @@ export class Computer {
 		// Initialisation des applications fictives
 		this.#tree = [
 			new Directory(`Documents`, [
-				new Directory(`Nouveau_dossier`, [
-					new File(`test.md`, this, `## Ceci est un test !`)
-				]),
-				new File(`liens_utiles.txt`, this, `[voici un lien utile]`)
-			]),
-			new Directory(`Téléchargements`, [
-				new Directory('securised', [], ChmodConstructor(false, false, false)),
-				new Directory('tasVu', [
-					new File('secret', this, `voici mes secrets`, ChmodConstructor(false, false, false))
-				], ChmodConstructor(true, false, true)),
-				new File(`jsp.txt`, this, `coucou`),
+				new File(`mdp_crypte`, this, `01001100 01100101 00100000 01101101 01101111 01110100 00100000 01100100 01100101 00100000 01110000 01100001 01110011 01110011 01100101 00100000 01110000 01101111 01110101 01110010 00100000 01101100 01100101 00100000 01100100 01101111 01110011 01110011 01101001 01100101 01110010 00100000 00111010 00100000 01010011 01110101 01110000 01100101 01110010`)
 			])
 		];
 		this.#terminal = new Terminal(this);
