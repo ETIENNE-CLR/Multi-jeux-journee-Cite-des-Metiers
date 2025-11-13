@@ -13,8 +13,7 @@ export class WindowApp {
 	#indexOpenedWindow;
 
 	set Title(value) {
-		this.title = `Edition - ${value}`;
-		this._element.querySelector('span').innerText = this.title;
+		this._element.querySelector('span').innerText = value;
 	}
 
 	/**

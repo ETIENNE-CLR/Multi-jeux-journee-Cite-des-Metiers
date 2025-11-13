@@ -8,17 +8,25 @@ export class File extends WindowApp {
 	content;
 	chmod;
 
+	set Title(value) {
+		let perm = parseChmod(this.chmod).write ? 'Edition' : 'Lecture';
+		this.title = `${perm} - ${value}`;
+		this._element.querySelector('span').innerText = this.title;
+	}
+
 	set Name(value) {
 		this.name = value;
 		this.Title = value;
 		this.desktopIconApp.Title = value;
+		this.WindowApp
 	}
 
-	constructor(name, computerElement, content = "", chmod = ChmodConstructor(true, true, false)) {
-		super(`Edition - ${name}`, computerElement, new IconApp('assets/file.png', name));
+	constructor(name, computerElement, content = "", chmod = ChmodConstructor(true, true, false), littleName = null) {
+		super(`Edition - ${name}`, computerElement, new IconApp('assets/file.png', (!littleName ? name : littleName)));
 		this.name = name;
 		this.content = content;
 		this.chmod = chmod;
+		this.Title = name;
 	}
 
 	displayView() {

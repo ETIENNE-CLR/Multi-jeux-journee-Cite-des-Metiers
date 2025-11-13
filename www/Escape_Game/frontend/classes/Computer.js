@@ -8,8 +8,22 @@ import { SiteMaker } from "./Tools/SiteMaker.js";
 import { Browser } from "./UI/Browser.js";
 import { Explorer } from "./UI/Explorer.js";
 import { Terminal } from "./UI/Terminal.js";
-import { WindowApp } from "./UI/WindowApp.js";
 import { Binary } from "./UI/Binary.js";
+import { ZipFile } from "./UI/ZipFile.js";
+
+let texteObjectif = `
+[NOTE TROUVÉE SUR LE BUREAU]
+
+J'ai pu récupérer le mot de passe du fichier zip de x.
+Mais il est illisible, j'ai besoin que tu m'aides à déchiffrer.
+
+Si tu as besoin d'aide, tu peux toujours chercher dans le navigateur.
+
+Il faut récupérer le contenu du dossier zippé de x sinon...
+c'est la fin du monde
+
+— Un utilisateur inconnu
+`;
 
 export class Computer {
 	#iconPosition;
@@ -19,6 +33,9 @@ export class Computer {
 	#openLogInHandler;
 	openedWindows;
 	#tree;
+
+	#zipfile;
+	#file;
 
 	// applications
 	#explorer;
@@ -50,6 +67,9 @@ export class Computer {
 		this.#terminal = new Terminal(this);
 		this.#explorer = new Explorer(this);
 		this.#binary = new Binary(this);
+		this.#zipfile = new ZipFile('dossier zip', this);
+		this.#file = new File(`Objectif de l'escape game`, this, texteObjectif, ChmodConstructor(true, false, false), 'Objectif');
+
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
 			new Website("News", "news.com", SiteMaker.news()),
@@ -59,12 +79,13 @@ export class Computer {
 		]);
 
 		this.#iconPosition = [
-			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
+			[this.#explorer.desktopIconApp.element, null, null, null, null, this.#file.desktopIconApp.element, this.#zipfile.desktopIconApp.element, null, null],
 			[this.#terminal.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[this.#browser.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[this.#binary.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[null, null, null, null, null, null, null, null, null]
 		];
+		this.#file.desktopIconApp.element.querySelector('img').style.backgroundColor = '#fff';
 
 		// Gestionnaire d'événement lié à l'ouverture du login
 		this.#openLogInHandler = this.#openLogIn.bind(this);
