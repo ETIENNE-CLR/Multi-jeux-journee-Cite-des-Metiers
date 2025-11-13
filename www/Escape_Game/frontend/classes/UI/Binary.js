@@ -98,9 +98,6 @@ export class Binary extends WindowApp {
 
         // Fonction de convertion
         btnConvert.addEventListener('click', () => {
-            const isBinEmpty = binArea.value.trim() === '';
-            const isTxtEmpty = txtArea.value.trim() === '';
-
             // Détection du sens de conversion
             if (txtArea.className.includes(activClassId())) {
                 binArea.value = Binary.convertTxtToBin(txtArea.value.trim());
