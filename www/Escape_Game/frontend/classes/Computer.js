@@ -9,6 +9,7 @@ import { Browser } from "./UI/Browser.js";
 import { Explorer } from "./UI/Explorer.js";
 import { Terminal } from "./UI/Terminal.js";
 import { WindowApp } from "./UI/WindowApp.js";
+import { Binary } from "./UI/Binary.js";
 
 export class Computer {
 	#iconPosition;
@@ -23,6 +24,7 @@ export class Computer {
 	#explorer;
 	#browser;
 	#terminal;
+	#binary;
 
 	get Tree() { return this.#tree }
 
@@ -42,11 +44,12 @@ export class Computer {
 		// Initialisation des applications fictives
 		this.#tree = [
 			new Directory(`Documents`, [
-				new File(`mdp_crypte`, this, `01001100 01100101 00100000 01101101 01101111 01110100 00100000 01100100 01100101 00100000 01110000 01100001 01110011 01110011 01100101 00100000 01110000 01101111 01110101 01110010 00100000 01101100 01100101 00100000 01100100 01101111 01110011 01110011 01101001 01100101 01110010 00100000 00111010 00100000 01010011 01110101 01110000 01100101 01110010`)
+				new File(`mdp_chiffre`, this, `01001100 01100101 00100000 01101101 01101111 01110100 00100000 01100100 01100101 00100000 01110000 01100001 01110011 01110011 01100101 00100000 01110000 01101111 01110101 01110010 00100000 01101100 01100101 00100000 01100100 01101111 01110011 01110011 01101001 01100101 01110010 00100000 00111010 00100000 01010011 01110101 01110000 01100101 01110010`, ChmodConstructor(true, false, false))
 			])
 		];
 		this.#terminal = new Terminal(this);
 		this.#explorer = new Explorer(this);
+		this.#binary = new Binary(this);
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
 			new Website("News", "news.com", SiteMaker.news()),
@@ -59,7 +62,7 @@ export class Computer {
 			[this.#explorer.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[this.#terminal.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[this.#browser.desktopIconApp.element, null, null, null, null, null, null, null, null],
-			[null, null, null, null, null, null, null, null, null],
+			[this.#binary.desktopIconApp.element, null, null, null, null, null, null, null, null],
 			[null, null, null, null, null, null, null, null, null]
 		];
 
