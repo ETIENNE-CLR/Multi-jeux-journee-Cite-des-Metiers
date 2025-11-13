@@ -179,8 +179,8 @@ export class Terminal extends WindowApp {
             // Tab
             if (e.key === VALID_KEYS.tab) {
                 if (['pwd', 'echo', 'whoami'].includes(commandName)) return;
-                let paramsWithoutLastParams = params[params.length - 1].split('/');
-                let lastParam = paramsWithoutLastParams.pop();
+                let paramsWithoutLastParams = (params.length > 0) ? params[params.length - 1].split('/') : [];
+                let lastParam = paramsWithoutLastParams.pop() ?? '';
 
                 // Récupération du bon chemin
                 let path = (paramsStr[0] !== '/')
