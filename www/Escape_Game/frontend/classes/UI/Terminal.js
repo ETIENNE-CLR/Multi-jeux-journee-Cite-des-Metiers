@@ -101,10 +101,12 @@ export class Terminal extends WindowApp {
             if (!inp) return;
             const sel = window.getSelection();
             if (!sel.rangeCount || !inp.contains(sel.anchorNode)) {
-                // On recentre le focus dans l’input
-                placeCaretAtEnd(inp);
-                // Laisse passer les flèches, sinon bloque
+                // Si on est en train de sélectionner du texte, ne pas casser la sélection
+                if (window.getSelection().type === 'Range') return;
+
+                // Sinon, on refocus si c’est une vraie saisie clavier
                 if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    placeCaretAtEnd(inp);
                     e.preventDefault();
                 }
             }
