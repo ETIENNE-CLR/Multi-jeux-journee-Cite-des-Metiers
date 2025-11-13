@@ -145,20 +145,22 @@ export class Terminal extends WindowApp {
 
         let nbTabClicked = 0;
         let indexHistory = -1;
+        const VALID_KEYS = {
+            tab: 'Tab',
+            enter: 'Enter',
+            arrowUp: 'ArrowUp',
+            arrowDown: 'ArrowDown'
+        };
+
         input.addEventListener('keydown', (e) => {
-            const VALID_KEYS = {
-                tab: 'Tab',
-                enter: 'Enter',
-                arrowUp: 'ArrowUp',
-                arrowDown: 'ArrowDown'
-            };
             if (!Object.values(VALID_KEYS).includes(e.key)) return;
             e.preventDefault();
 
-            // Découpage de la commande - NE PREND PAS EN COMPTE SUDO POUR L'INSTANT
-            const preparedSpecialChar = '§';
-            const command = input.innerText.trim()
-            if (command === '') return;
+            // Découpage de la commande
+            const preparedSpecialChar = '§!§';
+            let command = input.innerText.trim()
+            const isSudo = (command.startsWith('sudo'));
+            if (isSudo) { command = command.substring(5, command.length) }
             const preparedCommand = command.replace(' ', preparedSpecialChar);
 
             const commandArray = preparedCommand.split(preparedSpecialChar);
@@ -193,7 +195,7 @@ export class Terminal extends WindowApp {
                 const searchResults = actualContent.filter(item => {
                     let isCorrectType = true;
                     isCorrectType = (commandName === 'cd' || commandName === 'touch' || commandName === 'ls' || commandName === 'll') ? item instanceof Directory : isCorrectType;
-                    const correctPerms = (item instanceof File && parseChmod(item.chmod).read) || (item instanceof Directory && parseChmod(item.chmod).execute);
+                    const correctPerms = (item instanceof File && (parseChmod(item.chmod).read || isSudo)) || (item instanceof Directory && (parseChmod(item.chmod).execute || isSudo));
                     return item.name.startsWith(lastParam) && isCorrectType && correctPerms;
                 });
 
@@ -231,8 +233,7 @@ export class Terminal extends WindowApp {
 
             // Historique
             if (e.key === VALID_KEYS.arrowUp || e.key === VALID_KEYS.arrowDown) {
-                if (this.#history.length === 0) return;
-
+                if (this.#history.length <= 0) return;
                 if (e.key === VALID_KEYS.arrowUp) {
                     if (indexHistory < this.#history.length - 1) indexHistory++;
                 } else {
@@ -243,11 +244,13 @@ export class Terminal extends WindowApp {
                     ? ''
                     : this.#history[indexHistory];
 
-                input.innerText = commandToFill;
+                currentInput().innerText = commandToFill;
                 return;
             }
 
             // Enter - Execution de la commande
+            if (command === '') return;
+
             // Création du resultat
             let returnText = '';
             const commandReturn = document.createElement('div');
@@ -281,7 +284,7 @@ export class Terminal extends WindowApp {
 
                     // Navigation dans l'arborescence pour la syncronisation
                     for (const part of allParts) {
-                        const found = g(currentDir).find(c => c.name === part && c instanceof Directory);
+                        const found = getChildren(currentDir).find(c => c.name === part && c instanceof Directory);
                         if (!found) {
                             if (strict) throw new Error("Le chemin est invalide pour la navigation dans l'arborescence !");
                             else return false;
@@ -290,7 +293,7 @@ export class Terminal extends WindowApp {
                     return currentDir;
                 }
 
-                function g(value) {
+                function getChildren(value) {
                     if (value instanceof Directory) {
                         return value.children
                     } else {
@@ -324,8 +327,8 @@ export class Terminal extends WindowApp {
                         pwdSplitted.forEach(dirname => {
                             if (!iHaveThePerms) { return }
                             if (dirname === '') { return }
-                            innerDir = g(innerDir).find(c => c instanceof Directory && c.name === dirname);
-                            if (parseChmod(innerDir.chmod).execute) {
+                            innerDir = getChildren(innerDir).find(c => c instanceof Directory && c.name === dirname);
+                            if (parseChmod(innerDir.chmod).execute || isSudo) {
                                 this.#pwd += dirname + '/';
                             } else {
                                 returnText += `<span class="line return error">cd: ${innerDir.name}/: Permission denied</span>`;
@@ -377,12 +380,12 @@ export class Terminal extends WindowApp {
                             // tests
                             const isRacine = (this.Pwd === '/')
                             const parentDir = currentDir;
-                            const parentWritable = isRacine ? true : parseChmod(parentDir.chmod).write;
+                            const parentWritable = isRacine ? true : (parseChmod(parentDir.chmod).write || isSudo);
                             if (!parentWritable) {
                                 returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': Permission denied</span>\n`;
                                 continue;
                             }
-                            if (g(parentDir).find(c => c.name === dirName)) {
+                            if (getChildren(parentDir).find(c => c.name === dirName)) {
                                 returnText += `<span class="error">${commandName}: cannot create ${wantDir ? 'directory' : 'file'} '${fullPath}': File already exists</span>\n`;
                                 continue;
                             }
@@ -390,7 +393,7 @@ export class Terminal extends WindowApp {
                             // création effective
                             const parentChmodParsed = (isRacine) ? null : parseChmod(parentDir.chmod);
                             const chmod = (isRacine) ? ChmodConstructor(true, true, wantDir) : ChmodConstructor(parentChmodParsed.read, parentChmodParsed.write, wantDir);
-                            const emplacement = g(parentDir);
+                            const emplacement = getChildren(parentDir);
                             emplacement.push(wantDir
                                 ? new Directory(dirName, [], chmod)
                                 : new File(dirName, this.#computer, '', chmod)
@@ -415,7 +418,7 @@ export class Terminal extends WindowApp {
                         }
 
                         let pwd = this.#normalizePwd(preparedPwdArguments_relatifPwd)
-                        let content = this.#getSortedContent(pwd).filter(e => (isLs) ? parseChmod(e.chmod).read : true);
+                        let content = this.#getSortedContent(pwd).filter(e => (isLs) ? (parseChmod(e.chmod).read || isSudo) : true);
                         returnText = (isLs) ? '' : `<p class="line">total ${content.length}</p>`;
 
                         for (const el of content) {
@@ -448,19 +451,20 @@ export class Terminal extends WindowApp {
                             let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
 
                             if (Array.isArray(children)) {
-                                children = children.filter(e => parseChmod(e.chmod).read);
+                                children = children.filter(e => parseChmod(e.chmod).read || isSudo);
                             }
 
                             let pFormatted = p.split('/').filter(Boolean).pop();
                             let file = !Array.isArray(children)
                                 ? children
-                                : (children.find(c => c.name === pFormatted) ?? g(parent).find(c => c.name === pFormatted));
+                                : (children.find(c => c.name === pFormatted) ?? getChildren(parent).find(c => c.name === pFormatted));
 
                             if (!file) {
                                 returnText += `<span class="line error">${commandName}: ${p}: No such file or directory</span>`;
                             } else if (!wantRm && !(file instanceof File)) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Is not a file</span>`;
-                            } else if ((!wantRm && !parseChmod(file.chmod).read) || (wantRm && !parseChmod(file.chmod).write)) {
+                            } else if ((!wantRm && (!parseChmod(file.chmod).read || !isSudo)) ||
+                                (wantRm && (!parseChmod(file.chmod).write || !isSudo))) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Permission denied</span>`;
                             } else {
                                 // Tous les tests sont passés
@@ -469,11 +473,11 @@ export class Terminal extends WindowApp {
                                     let currentDir = getParentElementFromTree(this.#normalizePwd(preparedPwdArguments_relatifPwd));
 
                                     // Suppression de l'élement
-                                    let el = g(currentDir).find(e => {
+                                    let el = getChildren(currentDir).find(e => {
                                         const typeCondition = (args.includes('-d')) ? e instanceof Directory : e instanceof File;
                                         return e.name === pFormatted && typeCondition;
                                     });
-                                    const children = g(currentDir);
+                                    const children = getChildren(currentDir);
                                     const index = children.indexOf(el);
                                     if (index !== -1) {
                                         children.splice(index, 1);
@@ -506,7 +510,7 @@ export class Terminal extends WindowApp {
                             let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
                             let pFormatted = p.split('/').filter(Boolean).pop();
 
-                            let file = g(parent).find(e => e.name === pFormatted);
+                            let file = getChildren(parent).find(e => e.name === pFormatted);
                             if (!file) {
                                 returnText += `<span class="error">${commandName}: ${p}: No such file or directory</span>`;
                             }
@@ -538,18 +542,18 @@ export class Terminal extends WindowApp {
                         }
 
                         // Permissions
-                        const testPermsSrc = (this.Pwd === '/') ? false : (!parseChmod(currentDir.chmod).read);
-                        const testPermsDest = (this.Pwd === '/') ? false : (!parseChmod(destinaDir.chmod).write);
+                        const testPermsSrc = (this.Pwd === '/') ? false : (!parseChmod(currentDir.chmod).read || !isSudo);
+                        const testPermsDest = (this.Pwd === '/') ? false : (!parseChmod(destinaDir.chmod).write || !isSudo);
 
-                        const testPermsDir = (!parseChmod(destinaDir.chmod).write || !parseChmod(destinaDir.chmod).execute)
-                        const testPermsFile = (!isMv && originFile instanceof File && !parseChmod(originFile.chmod).read)
+                        const testPermsDir = (!parseChmod(destinaDir.chmod).write || (!parseChmod(destinaDir.chmod).execute || !isSudo))
+                        const testPermsFile = (!isMv && originFile instanceof File && (!parseChmod(originFile.chmod).read || !isSudo))
                         if (testPermsSrc || testPermsDest) {
                             returnText = `<span class="error">${commandName}: ${dstArg}: Permission denied</span>`;
                         }
 
                         // Recup fichier ou dossier
                         let copyFile = undefined;
-                        let originFile = g(currentDir).find(c => c.name === currFile);
+                        let originFile = getChildren(currentDir).find(c => c.name === currFile);
                         if (!originFile) {
                             returnText = `<span class="error">${commandName}: no such file or directory</span>`;
                             break;
@@ -557,12 +561,12 @@ export class Terminal extends WindowApp {
 
                         // move
                         if (currentDir !== destinaDir || !isMv) {
-                            g(destinaDir).push(originFile);
-                            copyFile = g(destinaDir).find(e => e.name === originFile.name && (!isMv && e !== originFile));
+                            getChildren(destinaDir).push(originFile);
+                            copyFile = getChildren(destinaDir).find(e => e.name === originFile.name && (!isMv && e !== originFile));
 
                             if (isMv) {
                                 // Suppression de l'autre fichier
-                                const children = g(currentDir);
+                                const children = getChildren(currentDir);
                                 const index = children.indexOf(originFile);
                                 if (index !== -1) {
                                     children.splice(index, 1);
@@ -575,12 +579,6 @@ export class Terminal extends WindowApp {
                         if (newName.trim() !== '') {
                             ((isMv) ? originFile : copyFile).Name = newName;
                         }
-
-                        // // Syncronisation
-                        // let currentDirForSync = getParentElementFromTree(this.#normalizePwd(this.Pwd + currFile + '../'), false);
-                        // let destinaDirForSync = getParentElementFromTree(this.#normalizePwd(this.Pwd + destFile + (destFile.endsWith('/') ? currFile : '../')), false);
-                        // currentDirForSync = currentDir;
-                        // destinaDirForSync = destinaDir;
                         break;
 
                     default:
