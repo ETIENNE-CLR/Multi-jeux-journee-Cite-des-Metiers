@@ -451,6 +451,7 @@ export class Terminal extends WindowApp {
                             let parent = this.#computer.getContentFromPath(this.#normalizePwd(this.#normalizePwd(pathToFile) + '../'));
 
                             if (Array.isArray(children)) {
+                                // Si c'est à la racine
                                 children = children.filter(e => parseChmod(e.chmod).read || isSudo);
                             }
 
@@ -461,11 +462,14 @@ export class Terminal extends WindowApp {
 
                             if (!file) {
                                 returnText += `<span class="line error">${commandName}: ${p}: No such file or directory</span>`;
+
                             } else if (!wantRm && !(file instanceof File)) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Is not a file</span>`;
-                            } else if ((!wantRm && (!parseChmod(file.chmod).read || !isSudo)) ||
-                                (wantRm && (!parseChmod(file.chmod).write || !isSudo))) {
+
+                            } else if ((!wantRm && (!parseChmod(file.chmod).read && !isSudo)) ||
+                                        (wantRm && (!parseChmod(file.chmod).write && !isSudo))) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Permission denied</span>`;
+
                             } else {
                                 // Tous les tests sont passés
                                 if (wantRm) {
