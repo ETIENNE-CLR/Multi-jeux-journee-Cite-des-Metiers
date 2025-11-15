@@ -10,20 +10,7 @@ import { Explorer } from "./UI/Explorer.js";
 import { Terminal } from "./UI/Terminal.js";
 import { Binary } from "./UI/Binary.js";
 import { ZipFile } from "./UI/ZipFile.js";
-
-let texteObjectif = `
-[NOTE TROUVÉE SUR LE BUREAU]
-
-J'ai pu récupérer le mot de passe du fichier zip de x.
-Mais il est illisible, j'ai besoin que tu m'aides à déchiffrer.
-
-Si tu as besoin d'aide, tu peux toujours chercher dans le navigateur.
-
-Il faut récupérer le contenu du dossier zippé de x sinon...
-c'est la fin du monde
-
-— Un utilisateur inconnu
-`;
+import { MOT_DE_PASSE_ZIP, TXT_OBJECTIFS } from "./EscapeGameConst.js";
 
 export class Computer {
 	#iconPosition;
@@ -61,14 +48,14 @@ export class Computer {
 		// Initialisation des applications fictives
 		this.#tree = [
 			new Directory(`Documents`, [
-				new File(`mdp_chiffre`, this, `01001100 01100101 00100000 01101101 01101111 01110100 00100000 01100100 01100101 00100000 01110000 01100001 01110011 01110011 01100101 00100000 01110000 01101111 01110101 01110010 00100000 01101100 01100101 00100000 01100100 01101111 01110011 01110011 01101001 01100101 01110010 00100000 00111010 00100000 01010011 01110101 01110000 01100101 01110010`, ChmodConstructor(true, false, false))
+				new File(`mdp_chiffre`, this, Binary.convertTxtToBin(`Le mot de passe pour le zip : ${MOT_DE_PASSE_ZIP}`), ChmodConstructor(true, false, false))
 			])
 		];
 		this.#terminal = new Terminal(this);
 		this.#explorer = new Explorer(this);
 		this.#binary = new Binary(this);
 		this.#zipfile = new ZipFile('dossier zip', this);
-		this.#file = new File(`Objectif de l'escape game`, this, texteObjectif, ChmodConstructor(true, false, false), 'Objectif');
+		this.#file = new File(`Objectif de l'escape game`, this, TXT_OBJECTIFS, ChmodConstructor(true, false, false), 'Objectif');
 
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
@@ -89,6 +76,16 @@ export class Computer {
 
 		// Gestionnaire d'événement lié à l'ouverture du login
 		this.#openLogInHandler = this.#openLogIn.bind(this);
+	}
+
+	zipExtract() {
+		// Ajouter le fichier extrait dans Documents
+		const dir = this.getContentFromPath('/Documents');
+		if (!dir) { throw new Error("Le dossier n'existe pas !") }
+
+		dir.push(new Directory('ContenuZip', [
+			new File('image_bizarre.png', this, 'coucou', ChmodConstructor(false, false, false))
+		]));
 	}
 
 	start() {
