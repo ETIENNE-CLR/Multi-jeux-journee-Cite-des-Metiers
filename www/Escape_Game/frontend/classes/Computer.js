@@ -47,6 +47,7 @@ export class Computer {
 
 		// Initialisation des applications fictives
 		this.#tree = [
+			new File('image.png', this, 'bravo', ChmodConstructor(true, false, false)),
 			new Directory(`Documents`, [
 				new File(`mdp_chiffre`, this, Binary.convertTxtToBin(`Le mot de passe pour le zip : ${MOT_DE_PASSE_ZIP}`), ChmodConstructor(true, false, false))
 			])
@@ -84,7 +85,7 @@ export class Computer {
 		if (!dir) { throw new Error("Le dossier n'existe pas !") }
 
 		dir.push(new Directory('ContenuZip', [
-			new File('image_bizarre.png', this, 'coucou', ChmodConstructor(false, false, false))
+			new File('image_bizarre.png', this, 'Bravo vous avez réussi !', ChmodConstructor(true, false, false))
 		]));
 	}
 

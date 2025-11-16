@@ -468,6 +468,9 @@ export class Terminal extends WindowApp {
                             } else if (!wantRm && !(file instanceof File)) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Is not a file</span>`;
 
+                            } else if (!wantRm && file.name.endsWith('.png')) {
+                                returnText += `<span class="line error">${commandName}: ${p}: Cannot display a picture</span>`;
+
                             } else if ((!wantRm && (!parseChmod(file.chmod).read && !isSudo)) ||
                                         (wantRm && (!parseChmod(file.chmod).write && !isSudo))) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Permission denied</span>`;
@@ -548,14 +551,14 @@ export class Terminal extends WindowApp {
                         }
 
                         // Permissions
-                        const testPermsSrc = (this.Pwd === '/') ? false : (!parseChmod(currentDir.chmod).read || !isSudo);
-                        const testPermsDest = (this.Pwd === '/') ? false : (!parseChmod(destinaDir.chmod).write || !isSudo);
+                        // const testPermsSrc = (this.Pwd === '/') ? false : (!parseChmod(currentDir.chmod).read || !isSudo);
+                        // const testPermsDest = (this.Pwd === '/') ? false : (!parseChmod(destinaDir.chmod).write || !isSudo);
 
-                        const testPermsDir = (!parseChmod(destinaDir.chmod).write || (!parseChmod(destinaDir.chmod).execute || !isSudo))
-                        const testPermsFile = (!isMv && originFile instanceof File && (!parseChmod(originFile.chmod).read || !isSudo))
-                        if (testPermsSrc || testPermsDest) {
-                            returnText = `<span class="error">${commandName}: ${dstArg}: Permission denied</span>`;
-                        }
+                        // const testPermsDir = (!parseChmod(destinaDir.chmod).write || (!parseChmod(destinaDir.chmod).execute || !isSudo))
+                        // const testPermsFile = (!isMv && originFile instanceof File && (!parseChmod(originFile.chmod).read || !isSudo))
+                        // if (testPermsSrc || testPermsDest) {
+                        //     returnText = `<span class="error">${commandName}: ${dstArg}: Permission denied</span>`;
+                        // }
 
                         // Recup fichier ou dossier
                         let copyFile = undefined;
