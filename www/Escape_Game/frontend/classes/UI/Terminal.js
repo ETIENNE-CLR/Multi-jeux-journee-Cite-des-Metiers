@@ -179,7 +179,7 @@ export class Terminal extends WindowApp {
             const preparedPwdArguments_relatifPwd = (dest[0] === '/') ? dest : (this.Pwd + '/' + dest)
 
             // Tab
-            if (e.key === VALID_KEYS.tab) {
+            if (e.key === VALID_KEYS.tab && this.isCommandOperatorValid(commandName)) {
                 if (['pwd', 'echo', 'whoami'].includes(commandName)) return;
                 let paramsWithoutLastParams = (params.length > 0) ? params[params.length - 1].split('/') : [];
                 let lastParam = paramsWithoutLastParams.pop() ?? '';
