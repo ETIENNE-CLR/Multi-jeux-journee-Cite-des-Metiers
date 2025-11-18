@@ -60,9 +60,15 @@ export class File extends WindowApp {
 				this.innerFrame.style.height = '400px';
 			}
 			textArea.value = this.content;
+			
+			let isdemanded = false;
 			textArea.addEventListener('change', () => {
 				if (!parseChmod(this.chmod).write) {
-					alert("Vous n'avez pas la permission d'écrire dans ce fichier.");
+					if (!isdemanded) {
+						isdemanded = true;
+						alert("Vous n'avez pas la permission d'écrire dans ce fichier.");
+						isdemanded = false;
+					}
 					textArea.value = this.content;
 					return;
 				}
