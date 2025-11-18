@@ -47,7 +47,7 @@ export class Computer {
 
 		// Initialisation des applications fictives
 		this.#tree = [
-			new File('image.png', this, 'bravo', ChmodConstructor(true, false, false)),
+			// new File('image.png', this, 'bravo', ChmodConstructor(true, false, false)),
 			new Directory(`Documents`, [
 				new File(`mdp_chiffre`, this, Binary.convertTxtToBin(`Le mot de passe pour le zip : ${MOT_DE_PASSE_ZIP}`), ChmodConstructor(true, false, false))
 			])
