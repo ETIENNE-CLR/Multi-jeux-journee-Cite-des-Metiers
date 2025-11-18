@@ -31,3 +31,14 @@ body {
 	border-top: 5px solid #555;
 	background-size: cover;
 }
+
+.cfpt-logo {
+	--SIZE: 160px;
+	position: absolute;
+	top: 50%;
+	left: 90%;
+	transform: translate(-50%, -50%);
+	height: var(--SIZE);
+	width: var(--SIZE);
+	border-radius: 100%;
+}
