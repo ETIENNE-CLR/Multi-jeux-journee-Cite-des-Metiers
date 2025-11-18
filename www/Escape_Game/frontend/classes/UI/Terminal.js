@@ -562,7 +562,8 @@ export class Terminal extends WindowApp {
 
                         // Recup fichier ou dossier
                         let copyFile = undefined;
-                        let originFile = getChildren(currentDir).find(c => c.name === currFile);
+                        let researchedFile = currFile.split('/').filter(Boolean).pop()
+                        let originFile = getChildren(currentDir).find(c => c.name === researchedFile);
                         if (!originFile) {
                             returnText = `<span class="error">${commandName}: no such file or directory</span>`;
                             break;
