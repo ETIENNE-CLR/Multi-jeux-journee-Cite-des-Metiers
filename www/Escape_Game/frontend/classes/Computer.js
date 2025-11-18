@@ -10,7 +10,7 @@ import { Explorer } from "./UI/Explorer.js";
 import { Terminal } from "./UI/Terminal.js";
 import { Binary } from "./UI/Binary.js";
 import { ZipFile } from "./UI/ZipFile.js";
-import { MOT_DE_PASSE_ZIP, TXT_OBJECTIFS } from "./EscapeGameConst.js";
+import { MOT_DE_PASSE_ZIP, SOLUCE, TXT_OBJECTIFS } from "./EscapeGameConst.js";
 
 export class Computer {
 	#iconPosition;
@@ -47,7 +47,7 @@ export class Computer {
 
 		// Initialisation des applications fictives
 		this.#tree = [
-			// new File('image.png', this, 'bravo', ChmodConstructor(true, false, false)),
+			new File('soluce', this, SOLUCE, ChmodConstructor(false, false, false)),
 			new Directory(`Documents`, [
 				new File(`mdp_chiffre`, this, Binary.convertTxtToBin(`Le mot de passe pour le zip : ${MOT_DE_PASSE_ZIP}`), ChmodConstructor(true, false, false))
 			])
