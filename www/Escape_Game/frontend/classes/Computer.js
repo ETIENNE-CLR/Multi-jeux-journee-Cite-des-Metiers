@@ -10,7 +10,7 @@ import { Explorer } from "./UI/Explorer.js";
 import { Terminal } from "./UI/Terminal.js";
 import { Binary } from "./UI/Binary.js";
 import { ZipFile } from "./UI/ZipFile.js";
-import { MOT_DE_PASSE_ZIP, SOLUCE, TXT_OBJECTIFS } from "./EscapeGameConst.js";
+import { MESSAGE, MOT_DE_PASSE_ZIP, SECRET_MECHANT, SOLUCE, TXT_OBJECTIFS, UPDATE_DIRECTIVE } from "./EscapeGameConst.js";
 
 export class Computer {
 	#iconPosition;
@@ -61,7 +61,8 @@ export class Computer {
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
 			new Website("Mon forum", "forum.com", SiteMaker.forum()),
-			new Website("Page d'aide", "help.com", SiteMaker.help())
+			new Website("Page d'aide", "aide.com", SiteMaker.help()),
+			new Website("Tout sur le terminal", "tout-sur-le-terminal.com", SiteMaker.allAboutTerminal())
 		]);
 
 		this.#iconPosition = [
@@ -82,9 +83,17 @@ export class Computer {
 		const dir = this.getContentFromPath('/Documents');
 		if (!dir) { throw new Error("Le dossier n'existe pas !") }
 
-		dir.push(new Directory('ContenuZip', [
-			new File('image_bizarre.png', this, 'Bravo vous avez réussi !', ChmodConstructor(true, false, false))
-		]));
+		dir.push(
+			new Directory('ContenuZip', [
+				new File('secret.png', this, SECRET_MECHANT, ChmodConstructor(true, false, false)),
+				new File('ahah', this, MESSAGE, ChmodConstructor(true, false, false))
+			])
+		);
+		this.#tree.push(
+			new Directory('Boite de réception', [
+				new File('message_intercepte.txt', this, UPDATE_DIRECTIVE, ChmodConstructor(true, false, false))
+			])
+		);
 	}
 
 	start() {

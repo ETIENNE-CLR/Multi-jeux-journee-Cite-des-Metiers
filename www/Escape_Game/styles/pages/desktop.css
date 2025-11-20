@@ -22,7 +22,7 @@
     cursor: pointer;
 }
 
-.desktop-app > * {
+.desktop-app>* {
     cursor: pointer;
 }
 
@@ -43,6 +43,11 @@
     font-size: 85%;
     color: whitesmoke;
     text-shadow: 2px 2px 4px black;
+    /* background-color: cornflowerblue; */
+    max-width: 130%;
+    white-space: normal;
+    display: inline-block;
+    text-align: center;
 }
 
 

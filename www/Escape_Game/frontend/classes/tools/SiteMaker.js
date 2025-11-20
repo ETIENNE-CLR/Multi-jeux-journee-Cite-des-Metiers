@@ -5,43 +5,175 @@ export class SiteMaker {
 	static home() {
 		const body = document.createElement('div');
 		body.innerHTML = `
-            <div class="container text-center mt-5">
-                <h1>Welcome to Home</h1>
-                <p>This is the starting page of your pseudo-internet.</p>
+        <div class="container mt-5">
+            <h1 class="text-center">IntraNet – Accueil</h1>
+            <p class="mt-3 text-center">
+                Bienvenue sur l’IntraNet local. Utilisez la barre d’adresse
+                pour parcourir les différents sites disponibles.
+            </p>
+
+            <div class="alert alert-info mt-4">
+                Astuce : si vous laissez la barre de recherche vide et validez, 
+                vous verrez tous les sites installés sur la machine.
             </div>
-        `;
+
+            <p class="text-center mt-3">
+                Bon courage, utilisateur.
+            </p>
+        </div>
+		`;
 		return body;
 	}
 
 	static forum() {
 		const body = document.createElement('div');
 		body.innerHTML = `
-            <div class="container mt-4">
-                <h1>Underground Forum</h1>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <h5 class="card-title">User: Anonymous123</h5>
-                        <p class="card-text">Has anyone found the hidden access code?</p>
-                    </div>
-                </div>
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <h5 class="card-title">User: Hackerman</h5>
-                        <p class="card-text">Try checking the source code of news.com...</p>
-                    </div>
+        <div class="container mt-4">
+            <h1>Underground Forum</h1>
+
+            <p class="text-muted">Un vieux forum rétro retrouvé dans le système…</p>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">User: CorruptedFile42</h5>
+                    <p class="card-text">
+                        J’ai un fichier qui devrait afficher une image… mais il ne montre rien.
+                        Quelqu’un sait pourquoi ?
+                    </p>
                 </div>
             </div>
-        `;
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Réponse: TerminalGeek</h5>
+                    <p class="card-text">
+                        Si l’image s'affiche pas, elle est sûrement “corrompue”.<br>
+                        En vrai, c’est peut-être juste une <strong>mauvaise extension</strong>.<br>
+						<b>Dans le terminal,</b> tu peux renommer un fichier avec la commande <code>mv</code> :<br>
+						<code>mv fichierDeBase fichierRenomme</code>
+                    </p>
+                </div>
+            </div>
+
+			<div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Réponse: TerminalGeek</h5>
+                    <p class="card-text">
+                        Si tu as besoin de plus d'aide pour utiliser un terminal va sur "tout-sur-le-terminal.com". C'est un bon site pour t'expliquer les bases !
+                    </p>
+                </div>
+            </div><br>
+        </div>
+		`;
 		return body;
 	}
 
 	static help() {
 		const body = document.createElement('div');
 		body.innerHTML = `
-            <div class="container text-center mt-5">
-                <h1 class="text-danger">HELP</h1>
+        <div class="container mt-4">
+            <h1>Centre d'Aide</h1>
+            <p class="text-muted">Quelques conseils pour vous aider à progresser.</p>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Binaire</h5>
+                    <p class="card-text">
+						Le code binaire est une encryption de caratères. Le binaire est une suite de <code>0</code> et de <code>1</code>.
+						On peut facilement utiliser un convertisseur pour le décoder.
+                    </p>
+                </div>
             </div>
-        `;
+        </div>
+		`;
+		return body;
+	}
+
+	static allAboutTerminal() {
+		const body = document.createElement('div');
+		body.innerHTML = `
+        <div class="container mt-4">
+			<h1>Tout sur le Terminal</h1>
+			<p class="text-muted">Un guide rapide pour comprendre les bases du terminal.</p>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">📁 Se déplacer</h5>
+					<p class="card-text">
+						<code>cd dossier</code> – entrer dans un dossier<br>
+						<code>cd ..</code> – revenir en arrière<br>
+						<code>pwd</code> – afficher votre position actuelle
+					</p>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">📚 Voir les fichiers</h5>
+					<p class="card-text">
+						<code>ls</code> – liste les fichiers<br>
+						<code>ll</code> – liste détaillée
+					</p>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">🛠 Manipuler fichiers et dossiers</h5>
+					<p class="card-text">
+						<code>mkdir nom</code> – créer un dossier<br>
+						<code>touch nom</code> – créer un fichier vide<br>
+						<code>rm fichier</code> – supprimer un fichier<br>
+						<code>mv a b</code> – renommer / déplacer un fichier
+					</p>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">📄 Lire</h5>
+					<p class="card-text">
+						<code>cat fichier</code> – afficher le contenu<br>
+					</p>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">🔒 Permissions (optionnel)</h5>
+					<p class="card-text">
+						<code>chmod</code> – changer les droits d’un fichier<br>
+						<code>4</code> vaut pour la valeur de lecture<br>
+						<code>2</code> vaut pour la valeur d'écriture<br>
+						<code>1</code> vaut pour la valeur d'execution<br>
+						<br>
+						<hr>
+						<br>
+
+						Exemple :
+						<code>chmod 6</code> : permissions de lecture et d'écriture<br>
+						<code>chmod 3</code> : permissions d'écriture et d'execution<br>
+						<code>chmod 5</code> : permissions de lecture et d'execution<br>
+					</p>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h5 class="card-title">👤 Utilisateur & historique</h5>
+					<p class="card-text">
+						<code>whoami</code> – afficher l’utilisateur actuel<br>
+						<code>history</code> – afficher les dernières commandes
+					</p>
+				</div>
+			</div>
+
+			<p class="mt-4 text-muted text-center">
+				Ces commandes suffisent pour explorer, lire, renommer ou manipuler les fichiers du système.<br>
+				À vous de trouver comment en tirer parti…
+			</p>
+		</div>
+		`;
 		return body;
 	}
 
@@ -56,6 +188,7 @@ export class SiteMaker {
 
 		// Récupérer les correspondances
 		browser.URLs.forEach(website => {
+			console.log(website.url, search);			
 			if (website.url.includes(search)) {
 				results.push(website);
 			}

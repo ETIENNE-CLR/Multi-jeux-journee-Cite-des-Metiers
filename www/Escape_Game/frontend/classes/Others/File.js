@@ -33,11 +33,12 @@ export class File extends WindowApp {
 		if (this.name.endsWith('.png')) {
 			let img = this.innerFrame.querySelector('img');
 			if (!img) {
+				this.innerFrame.innerHTML = '';
 				img = document.createElement('img');
 				this.innerFrame.appendChild(img);
 				FunctionAsset.applyStyle(img, {
 					width: '100%',
-					height: '55vh',
+					height: '38vh',
 					backgroundColor: 'rgb(34, 34, 34)',
 					display: 'block'
 				});
@@ -47,6 +48,7 @@ export class File extends WindowApp {
 		} else {
 			let textArea = this.innerFrame.querySelector('textarea');
 			if (!textArea) {
+				this.innerFrame.innerHTML = '';
 				textArea = document.createElement('textarea');
 				FunctionAsset.applyStyle(textArea, {
 					resize: 'none',

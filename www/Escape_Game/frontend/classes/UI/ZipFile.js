@@ -14,23 +14,31 @@ export class ZipFile extends WindowApp {
             alignItems: 'center',
             justifyContent: 'center',
             // backgroundColor: 'red',
-            height: '50vh',
+            height: '35vh',
             gap: '1%'
         });
 
         const inpt_mdp = document.createElement('input');
         inpt_mdp.type = 'text';
         container.appendChild(inpt_mdp);
-
+        inpt_mdp.addEventListener('input', () => {
+            if (inpt_mdp.style.color !== 'black') {
+                inpt_mdp.style.color = 'black';
+            }
+        });
+        
         const btn_valid = document.createElement('button');
         btn_valid.textContent = 'Valider';
         container.appendChild(btn_valid);
-
+        
         btn_valid.addEventListener('click', () => {
             let mdp = inpt_mdp.value.trim();
             let mdpCorrect = (mdp === MOT_DE_PASSE_ZIP);
-            alert('Mot de passe ' + (mdpCorrect ? 'correct' : 'incorrect') + ' !');
-            if (!mdpCorrect) { return }
+            // alert('Mot de passe ' + (mdpCorrect ? 'correct' : 'incorrect') + ' !');
+            if (!mdpCorrect) {
+                inpt_mdp.style.color = 'red';
+                return;
+            }
 
             // Mdp correct
             inpt_mdp.remove();

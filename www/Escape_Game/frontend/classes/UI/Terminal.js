@@ -24,8 +24,9 @@ export class Terminal extends WindowApp {
         // Commandes valides
         this.#commandName = [
             'cd', 'mkdir', 'pwd', 'ls', 'll',
-            'rm', 'cp', 'mv', 'cat', 'chmod',
-            'touch', 'echo', 'whoami', 'history'
+            'rm', 'mv', 'cat', 'chmod',
+            'touch', 'whoami', 'history',
+            // 'echo', 'cp'
         ];
         this.#history = [];
 
@@ -472,7 +473,7 @@ export class Terminal extends WindowApp {
                                 returnText += `<span class="line error">${commandName}: ${p}: Cannot display a picture</span>`;
 
                             } else if ((!wantRm && (!parseChmod(file.chmod).read && !isSudo)) ||
-                                        (wantRm && (!parseChmod(file.chmod).write && !isSudo))) {
+                                (wantRm && (!parseChmod(file.chmod).write && !isSudo))) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Permission denied</span>`;
 
                             } else {
@@ -594,11 +595,11 @@ export class Terminal extends WindowApp {
                     default:
                         throw new Error(`${commandName} considérée comme correcte n'a pas été implémenté !`);
                 }
-
-                // Ajoute la commande au tout début du tableau history
-                this.#history.unshift(command);
-                indexHistory = -1;
             }
+
+            // Ajoute la commande au tout début du tableau history
+            this.#history.unshift((isSudo ? 'sudo ' : '') + command);
+            indexHistory = -1;
             endCommandLineReturn();
         });
 
