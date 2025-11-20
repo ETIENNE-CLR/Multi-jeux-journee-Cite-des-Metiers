@@ -94,7 +94,7 @@ export class Computer {
 			])
 		);
 		this.#tree.push(
-			new Directory('Boite de réception', [
+			new Directory('Boite_de_réception', [
 				new File('message_intercepte.txt', this, UPDATE_DIRECTIVE, ChmodConstructor(true, false, false))
 			])
 		);
