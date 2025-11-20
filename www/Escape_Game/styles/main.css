@@ -33,18 +33,17 @@ body {
 }
 
 .main-logo {
-	margin: -30% 0;
+	margin: 2% 0;
 }
 
 .cfpt-logo {
 	--SIZE: 160px;
-	position: absolute;
-	top: 50%;
-	left: 90%;
-	transform: translate(-50%, -50%);
-	/* height: var(--SIZE); */
+	/* position: absolute;
+	top: 25%;
+	left: 85%; */
+	/* transform: translate(-50%, -50%); */
 	width: var(--SIZE);
-	border-radius: 100%;
-	background-color: #eaeced80;
-	box-shadow: #eaeced 0 0 20px 2px;
+	/* border-radius: 100%; */
+	/* background-color: #eaecedc7; */
+	/* box-shadow: #494949 0px 3px 13px 1px; */
 }
