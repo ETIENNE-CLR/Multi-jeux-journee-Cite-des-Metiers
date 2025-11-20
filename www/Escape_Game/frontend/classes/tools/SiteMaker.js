@@ -13,18 +13,6 @@ export class SiteMaker {
 		return body;
 	}
 
-	static news() {
-		const body = document.createElement('div');
-		body.innerHTML = `
-            <div class="container mt-4">
-                <h1 class="mb-3">Breaking News</h1>
-                <div class="alert alert-warning">Mysterious signals detected on local networks...</div>
-                <p>Authorities are investigating a strange anomaly that has appeared in the city’s network system...</p>
-            </div>
-        `;
-		return body;
-	}
-
 	static forum() {
 		const body = document.createElement('div');
 		body.innerHTML = `
@@ -47,35 +35,11 @@ export class SiteMaker {
 		return body;
 	}
 
-	static company() {
-		const body = document.createElement('div');
-		body.innerHTML = `
-            <div class="container mt-4">
-                <h1>SecureTech Inc.</h1>
-                <p>Your trusted cybersecurity partner.</p>
-                <form class="mt-3">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-            </div>
-        `;
-		return body;
-	}
-
-	static notFound() {
+	static help() {
 		const body = document.createElement('div');
 		body.innerHTML = `
             <div class="container text-center mt-5">
-                <h1 class="text-danger">404 - Page Not Found</h1>
-                <p>Oops! The page you're looking for does not exist.</p>
-                <small class="text-muted">...but maybe the error code holds a secret?</small>
+                <h1 class="text-danger">HELP</h1>
             </div>
         `;
 		return body;

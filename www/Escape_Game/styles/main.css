@@ -1,13 +1,13 @@
 body {
 	background-color: rgba(0, 150, 255, 0.25);
-		height: 100vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		margin: 0;
-		width: 50%;
-		margin: 0 auto;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+	width: 50%;
+	margin: 0 auto;
 }
 
 .computer {
@@ -32,13 +32,19 @@ body {
 	background-size: cover;
 }
 
+.main-logo {
+	margin: -30% 0;
+}
+
 .cfpt-logo {
 	--SIZE: 160px;
 	position: absolute;
 	top: 50%;
 	left: 90%;
 	transform: translate(-50%, -50%);
-	height: var(--SIZE);
+	/* height: var(--SIZE); */
 	width: var(--SIZE);
 	border-radius: 100%;
+	background-color: #eaeced80;
+	box-shadow: #eaeced 0 0 20px 2px;
 }

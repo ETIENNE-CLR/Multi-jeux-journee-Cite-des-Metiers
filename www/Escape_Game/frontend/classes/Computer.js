@@ -60,10 +60,8 @@ export class Computer {
 
 		this.#browser = new Browser(this, [
 			new Website("Home", "home.com", SiteMaker.home()),
-			new Website("News", "news.com", SiteMaker.news()),
 			new Website("Mon forum", "forum.com", SiteMaker.forum()),
-			new Website("Ma compagnie", "ma-compagnie.com", SiteMaker.company()),
-			new Website("Not found", "not-found", SiteMaker.notFound()),
+			new Website("Page d'aide", "help.com", SiteMaker.help())
 		]);
 
 		this.#iconPosition = [
