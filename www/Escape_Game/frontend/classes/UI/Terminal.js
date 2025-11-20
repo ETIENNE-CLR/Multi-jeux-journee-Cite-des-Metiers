@@ -1,3 +1,4 @@
+import { ImageExtension } from "../Computer.js";
 import { ChmodConstructor, chmodToString, parseChmod } from "../Others/ChmodConstructor.js";
 import { Directory } from "../Others/Directory.js";
 import { File } from "../Others/File.js";
@@ -469,8 +470,9 @@ export class Terminal extends WindowApp {
                             } else if (!wantRm && !(file instanceof File)) {
                                 returnText += `<span class="line error">${commandName}: ${p}: Is not a file</span>`;
 
-                            } else if (!wantRm && file.name.endsWith('.png')) {
-                                returnText += `<span class="line error">${commandName}: ${p}: Cannot display a picture</span>`;
+                                
+                            } else if (!wantRm && ImageExtension.some(e => file.name.toLowerCase().endsWith(e))) {
+                                returnText += `<span class="line error">${commandName}: ${p}: A picture cannot be displayed</span>`;
 
                             } else if ((!wantRm && (!parseChmod(file.chmod).read && !isSudo)) ||
                                 (wantRm && (!parseChmod(file.chmod).write && !isSudo))) {

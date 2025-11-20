@@ -31,10 +31,10 @@ export const UPDATE_DIRECTIVE = `
 [INFORMATEUR]
 
 Bien joué ! Tu as réussi à ouvrir le zip… mais ${MECHANT_NAME} avait anticipé ton avancée.
-Le fichier extrait semble inutilisable. Ce n’est pas un hasard.
+Le fichier extrait semble inutilisable. Ce n'est pas un hasard.
 
-Regarde bien ce que tu as obtenu : parfois, ce qui paraît “cassé” ne l’est pas vraiment.
-Continue d’enquêter. Tu es proche du but.
+Regarde bien ce que tu as obtenu : parfois, ce qui paraît “cassé” ne l'est pas vraiment.
+Continue d'enquêter. Tu es proche du but.
 
 Surement quelqu'un a déjà eu ce genre de problème, regarde dans un forum.
 `;
@@ -48,8 +48,8 @@ export const SOLUCE = `1. Le mdp du zip est dans 'Documents/mdp_chiffre'
 export const SECRET_MECHANT = `
 Tu as percé tous mes pièges… impressionnant.
 
-Ce fichier n’était pas vraiment une image. C’était un test.
-Et tu l’as réussi.
+Ce fichier n'était pas vraiment une image. C'était un test.
+Et tu l'as réussi.
 
 Tu es digne de rentrer au ${ECOLE} !
 

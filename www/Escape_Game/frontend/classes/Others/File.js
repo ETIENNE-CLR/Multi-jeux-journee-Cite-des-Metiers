@@ -1,3 +1,4 @@
+import { ImageExtension } from "../Computer.js";
 import { FunctionAsset } from "../Tools/FunctionAsset.js";
 import { WindowApp } from "../UI/WindowApp.js";
 import { ChmodConstructor, parseChmod } from "./ChmodConstructor.js";
@@ -30,7 +31,7 @@ export class File extends WindowApp {
 	}
 
 	displayView() {
-		if (this.name.endsWith('.png')) {
+		if (ImageExtension.some(e => this.name.toLowerCase().endsWith(e))) {
 			let img = this.innerFrame.querySelector('img');
 			if (!img) {
 				this.innerFrame.innerHTML = '';
@@ -62,7 +63,7 @@ export class File extends WindowApp {
 				this.innerFrame.style.height = '400px';
 			}
 			textArea.value = this.content;
-			
+
 			let isdemanded = false;
 			textArea.addEventListener('change', () => {
 				if (!parseChmod(this.chmod).write) {

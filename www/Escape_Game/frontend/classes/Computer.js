@@ -12,6 +12,10 @@ import { Binary } from "./UI/Binary.js";
 import { ZipFile } from "./UI/ZipFile.js";
 import { MESSAGE, MOT_DE_PASSE_ZIP, SECRET_MECHANT, SOLUCE, TXT_OBJECTIFS, UPDATE_DIRECTIVE } from "./EscapeGameConst.js";
 
+export const ImageExtension = [
+	'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.tiff', '.svg', '.ico', '.heic', '.jfif'
+];
+
 export class Computer {
 	#iconPosition;
 	username;
